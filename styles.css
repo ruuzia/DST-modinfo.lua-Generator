@@ -1,0 +1,82 @@
+.str {
+    color: rgb(108, 108, 255);
+}
+
+.bool {
+    color: rgb(212, 72, 250);
+}
+
+.num {
+    color: rgb(20, 136, 34);
+}
+
+.comment, .comment * {
+    color: grey !important;
+}
+
+.header {
+    color: black;
+}
+
+.error {
+    color: red;
+}
+
+.option-data-input {
+    width: 20%;
+}
+
+.option-label-input {
+    width: 25%;
+}
+
+.option-hover-input {
+    width: 35%;
+}
+
+.option-delete, .option-duplicate {
+    align-self: flex-end;
+}
+
+code {
+    line-height: 1.8;
+    color: rgb(0, 143, 143);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+legend { 
+    float: none; 
+    padding: inherit; 
+    width: auto;
+}
+
+label {
+    display: unset;
+}
+
+.add-option {
+    transform: scale(0.9);
+}
+
+.add-option-select {
+    transform: scale(0.9);
+    width: 200px; 
+    display: inline;
+}
+
+.remove-config {
+    transform: scale(0.8);
+    margin-left: 20%;
+}
+
+.configuration input {
+    height: 30px;
+}
+
+
+#main {
+    margin-bottom: 10%;
+}
