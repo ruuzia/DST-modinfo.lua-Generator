@@ -11,7 +11,6 @@ const numberRegex = /^\-?\d*\.?\d*$/;
         "'": "&#039;",
         "\n": "<br>",
         "]": "\\\]" 
-<<<<<<< HEAD
     }
     const str = '[' + Object.keys(replacements)
                         .join('')
@@ -23,19 +22,6 @@ const numberRegex = /^\-?\d*\.?\d*$/;
             return replacements[match]
         });
     }
-=======
-    }
-    const str = '[' + Object.keys(replacements)
-                        .join('')
-                        .replace(']', '\\]') + ']';
-    const pattern = new RegExp(str, 'g');
-    
-    function escapeText(text) {
-        return text.replaceAll(pattern, match => {
-            return replacements[match]
-        });
-    }
->>>>>>> c827c35b1e036c66dec955a7c0feb0c68f7a7225
 }
 
 HTMLElement.prototype.getParentWithClass = function(classHTML) {
@@ -328,7 +314,6 @@ function onOptionDeleteClick(event) {
     option.remove();
 }
 
-<<<<<<< HEAD
 function unCheckRadios(parent) {
     parent.applyToAllChildrenDeep(elem => {
         if (elem.type == "radio") {
@@ -371,8 +356,6 @@ function dragdropped(event) {
     console.log(content);
 }
 
-=======
->>>>>>> c827c35b1e036c66dec955a7c0feb0c68f7a7225
 function onOptionDuplicateClick(event) {
     const btn = event.target;
     if (!btn.optionDiv) {
