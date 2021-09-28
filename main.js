@@ -2,7 +2,7 @@ let configIdCount = 0;
 const code = document.getElementById("code");
 const numberRegex = /^\-?\d*\.?\d*$/;
 
-function escapeText(text) {
+{
     const replacements = {
         "&": "&amp;",
         "<": "&lt;",
@@ -10,15 +10,19 @@ function escapeText(text) {
         "\"": "\\&quot;",
         "'": "&#039;",
         "\n": "<br>",
-        "\]": "\\\]"
+        "]": "\\\]" 
     }
-    const str = '[' + Object.keys(replacements).join('').replace(']', '\\]') + ']';
+    const str = '[' + Object.keys(replacements)
+                        .join('')
+                        .replace(']', '\\]') + ']';
     const pattern = new RegExp(str, 'g');
-    return text.replaceAll(pattern, match => {
-        return replacements[match]
-    });
+    
+    function escapeText(text) {
+        return text.replaceAll(pattern, match => {
+            return replacements[match]
+        });
+    }
 }
-
 
 HTMLElement.prototype.getParentWithClass = function(classHTML) {
     parent = this.parentNode
@@ -97,9 +101,9 @@ function typeAndOutput(value, outputs) {
         text = value[0] + escapeText(value.slice(1,-1)) + value[0];
     } else if (/^\[\[.*\]\]$/.test(value)) {
         type = "str";
-        text = '[[' + escapeText(value.slice(2,-2))  + ']]'
+        text = '[[' + escapeText(value.slice(2,-2))  + ']]';
     } else if (numberRegex.test(value)) {
-        type = "num"
+        type = "num";
         text = escapeText(value);
     } else {
         type = "str";
@@ -118,13 +122,22 @@ function makeCollapsable(toggle, content) {
     toggle.style.cursor = "pointer";
     toggle.addEventListener("click", _ => {
         content.toggleAttribute("hidden");
-        toggle.innerHTML = (content.hidden && '►' || '▼') + toggle.innerText.replace(/[►▼]/, '');
+        toggle.innerText.replace(/[►▼]/, content.hidden && '►' || '▼')
+    });
+}
+
+function unCheckRadios(parent) {
+    # doesnt require parent to be inserted in document yet
+    parent.applyToAllChildrenDeep(elem => {
+        if (elem.type == "radio") {
+            elem.checked = false;
+        }
     });
 }
 
 function copyButtonHandler() {
-    btn = document.getElementById("copy-button");
-//    code = document.getElementById("code");
+    # hacks - cant use clipboard API for compatibility with Firefox
+    const btn = document.getElementById("copy-button");
     btn.addEventListener("click", _ => {
         const temp = document.createElement("textarea");
         const text = code.innerText;
@@ -132,7 +145,7 @@ function copyButtonHandler() {
         document.body.appendChild(temp);
         temp.select();
         document.execCommand("copy");
-        document.body.removeChild(temp);
+        temp.remove();
     });
 }
 
@@ -155,9 +168,8 @@ function modiconCheckBox() {
 
 function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
     const config = optionsDiv.getParentWithClass("configuration");
-    console.log(radioChecked);
-
-    countStr = optionsDiv.getAttribute("optioncount");
+    const countStr = optionsDiv.getAttribute("optioncount");
+    
     option.optionid = countStr;
     option.id = `config-${config.configid}-option-${option.optionid}-input`;
     option.output = optionCode;
@@ -177,7 +189,7 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
     const radio = document.querySelector(`#${option.id} .option-radio-input`);
     registerRadioConfigListener(radio, config, radioChecked);
     window.scrollBy(0, option.clientHeight);
-    console.log("Option set up with id of " + option.optionid);
+    console.log("Option set up with id of " + option.id);
 }
 
 function registerOptionInputListener(input, option, calcDataType=false) {
@@ -301,14 +313,6 @@ function onOptionDeleteClick(event) {
     const option = event.target.getParentWithClass("option");
     option.output.remove();
     option.remove();
-}
-
-function unCheckRadios(parent) {
-    parent.applyToAllChildrenDeep(elem => {
-        if (elem.type == "radio") {
-            elem.checked = false;
-        }
-    });
 }
 
 function onOptionDuplicateClick(event) {
