@@ -1,28 +1,30 @@
+"use strict"
+
 let configIdCount = 0;
 const code = document.getElementById("code");
 const numberRegex = /^\-?\d*\.?\d*$/;
 
-{
-    const replacements = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "\"": "\\&quot;",
-        "'": "&#039;",
-        "\n": "<br>",
-        "]": "\\\]" 
-    }
-    const str = '[' + Object.keys(replacements)
-                        .join('')
-                        .replace(']', '\\]') + ']';
-    let pattern = new RegExp(str, 'g');
-    
-    function escapeText(text) {
-        return text.replaceAll(pattern, match => {
-            return replacements[match]
-        });
-    }
+
+const replacements = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "\\&quot;",
+    "'": "&#039;",
+    "\n": "<br>",
+    "]": "\\\]" 
 }
+const str = '[' + Object.keys(replacements)
+                    .join('')
+                    .replace(']', '\\]') + ']';
+var pattern = new RegExp(str, 'g');
+
+function escapeText(text) {
+    return text.replaceAll(pattern, match => {
+        return replacements[match]
+    });
+}
+
 
 HTMLElement.prototype.getParentWithClass = function(classHTML) {
     parent = this.parentNode
@@ -66,6 +68,7 @@ function getOutputForInput(inputElem) {
 }
 
 function setCodeFromInput(input, override=null, typeCheck=false) {
+    let text;
     if (typeCheck) {
         text = typeAndOutput(input.value, input.outputs || [input.output]);
     } else {
@@ -92,6 +95,7 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
 
 function typeAndOutput(value, outputs) {
     let text = "";
+    let type = "";
     if (/^(false|true)$/.test(value)) {
         type = "bool";
         text = escapeText(value);
@@ -194,7 +198,7 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
 function registerOptionInputListener(input, option, calcDataType=false) {
     input.output = document.querySelector(`#${option.output.id} .${input.name}`)
     input.addEventListener("input", _ => {
-        setCodeFromInput(input, override=null, typeCheck = input.name == "option-data")
+        setCodeFromInput(input, null, input.name == "option-data")
     });
 }
 
@@ -218,38 +222,35 @@ function registerRadioConfigListener(radio, config, startChecked) {
     radio.addEventListener("change", onchange);
 }
 
-{
-    const optionClone = document.querySelector(".option");
-    optionClone.optionid = 0
-    const optionCodeClone = document.querySelector(".option-code");
-    function onAddOptionClick(event) {
-        const btn = event.target;
-        if (!btn.optionsDiv) {
-            btn.optionsDiv = btn.parentNode.getChildWithClass("options");
-        }
-        newOption = optionClone.cloneNode(deep=true);
-        newOptionCode = optionCodeClone.cloneNode(deep=true)
-        unCheckRadios(newOption);
-        btn.optionsDiv.appendChild(newOption);
-        btn.optionsDiv.output.appendChild(newOptionCode);
-        optionSetUp(newOption, btn.optionsDiv, newOptionCode);
+const optionClone = document.querySelector(".option");
+optionClone.optionid = 0
+const optionCodeClone = document.querySelector(".option-code");
+function onAddOptionClick(event) {
+    const btn = event.target;
+    if (!btn.optionsDiv) {
+        btn.optionsDiv = btn.parentNode.getChildWithClass("options");
     }
+    const newOption = optionClone.cloneNode(true);
+    const newOptionCode = optionCodeClone.cloneNode(true)
+    unCheckRadios(newOption);
+    btn.optionsDiv.appendChild(newOption);
+    btn.optionsDiv.output.appendChild(newOptionCode);
+    optionSetUp(newOption, btn.optionsDiv, newOptionCode);
 }
 
 
-{
-    const addBtn = document.getElementById("add-config");
-    const configClone = document.querySelector(".configuration");
-    addBtn.addEventListener("click", addConfig);
-    function addConfig() {
-        const newConfig = configClone.cloneNode(deep=true);
-        newConfig.hidden = false;
-        addBtn.parentNode.insertBefore(newConfig, addBtn);
-        configIdCount++;
-        configSetup(newConfig);
-        window.scrollBy(0, newConfig.clientHeight);
-        
-    }
+
+const addBtn = document.getElementById("add-config");
+const configClone = document.querySelector(".configuration");
+addBtn.addEventListener("click", addConfig);
+function addConfig() {
+    const newConfig = configClone.cloneNode(true);
+    newConfig.hidden = false;
+    addBtn.parentNode.insertBefore(newConfig, addBtn);
+    configIdCount++;
+    configSetup(newConfig);
+    window.scrollBy(0, newConfig.clientHeight);
+    
 }
 
 function configSetup(config) {
@@ -262,21 +263,22 @@ function configSetup(config) {
     console.log("Config set up with id of " + config.configid);
     createConfigCode(config);
 }
-{
-    const configCodeClone = document.querySelector(".configCode");
-    const configs = document.getElementById("configs");
 
-    function createConfigCode(configForm) {
-        const newConfigCode = configCodeClone.cloneNode(deep=true);
-        newConfigCode.hidden = false;
-        configForm.output = newConfigCode;
-        configs.appendChild(newConfigCode);
-        const id = "configcode-" + configForm.configid;
-        newConfigCode.id = id;
 
-        configInputSetup(configForm.id, id);
-    }
+const configCodeClone = document.querySelector(".configCode");
+const configs = document.getElementById("configs");
+
+function createConfigCode(configForm) {
+    const newConfigCode = configCodeClone.cloneNode(true);
+    newConfigCode.hidden = false;
+    configForm.output = newConfigCode;
+    configs.appendChild(newConfigCode);
+    const id = "configcode-" + configForm.configid;
+    newConfigCode.id = id;
+
+    configInputSetup(configForm.id, id);
 }
+
 
 function configInputSetup(formId, codeId) {
     console.log("CONFIG INPUT SETUP");
@@ -298,12 +300,12 @@ function configInputSetup(formId, codeId) {
 
     const optionForms = document.querySelectorAll(`#${formId} .option`);
     const optionCodes = document.querySelectorAll(`#${codeId} .option-code`);
-    for (i = 0; i < optionForms.length; i++) {
+    for (let i = 0; i < optionForms.length; i++) {
         const form = optionForms[i];
         const code = optionCodes[i];
         
         form.parentNode.output = code.parentNode;
-        optionSetUp(form, form.parentNode, code, radioChecked = form==optionForms[0]);
+        optionSetUp(form, form.parentNode, code, form==optionForms[0]);
     }
 }
 
@@ -343,17 +345,26 @@ function receivedText() {
     document.getElementById('editor').appendChild(document.createTextNode(fr.result));
   }    
 
+const codeImportInput = document.getElementById("code-input");
 function dragdropped(event) {
     dragCount = 0;
     event.target.classList.remove("dragover")
-    console.log(event.target.files);
-    let content = "";
+}
+
+function fileSelected(event) {
+    const file = event.target.files[0];
+    const ext = file.name.slice(-4);
+    if (ext != '.lua') {
+        event.preventDefault();
+        event.stopPropagation();
+        event.target.value = "";
+        return;
+    }
     let fr = new FileReader();
     fr.onloadend = function() {
-        content = fr.result;
+        codeImportInput.value = fr.result;
     }
-    fr.readAsText(event.target.files[0]);
-    console.log(content);
+    fr.readAsText(file);
 }
 
 function onOptionDuplicateClick(event) {
@@ -362,9 +373,9 @@ function onOptionDuplicateClick(event) {
         btn.option = btn.getParentWithClass("option");
     }
 
-    const newOption = btn.option.cloneNode(deep=true);
+    const newOption = btn.option.cloneNode(true);
     const optionsDiv = btn.option.parentNode
-    const optionCode = btn.option.output.cloneNode(deep=true);
+    const optionCode = btn.option.output.cloneNode(true);
     unCheckRadios(newOption);
     optionsDiv.insertBefore(newOption, btn.option.nextElementSibling);
     optionsDiv.output.insertBefore(optionCode, btn.option.output.nextElementSibling);
@@ -450,7 +461,7 @@ function respondToInputs() {
                     const suffix = item.getAttribute("suffix");
                     item.addEventListener('input', _ => {
                         if (!item.value.endsWith(suffix)) {
-                            setCodeFromInput(item, override=item.value + suffix);
+                            setCodeFromInput(item, item.value + suffix);
                         } else {
                             setCodeFromInput(item);
                         }
@@ -478,9 +489,8 @@ function respondToInputs() {
                             item.output.innerHTML = "";
                             return;
                         }
-                        args = item.value.replaceAll(argSplit, ' ').trim().split(/\s+/)
-                        console.log(args);
-                        for (i = 0; i < args.length; i++) {
+                        const args = item.value.replaceAll(argSplit, ' ').trim().split(/\s+/)
+                        for (let i = 0; i < args.length; i++) {
                             args[i] = `<span class="str">"${escapeText(args[i])}"</span>, `
                         }
                         item.output.innerHTML = args.join('');

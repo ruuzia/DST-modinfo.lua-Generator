@@ -16,17 +16,22 @@
 
     <!-- Modal -->
 
-    <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade modal-lg" id="import-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 75%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="basicModalLabel">Import</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body file-upload-wrapper">
-                    <label class="form-label" for="customFile">Default file input example</label>
-                    <input type="file" class="form-control" id="customFile" ondragenter="dragenter(event)"
-                        ondragleave="dragleave(event)" ondrop="dragdropped(event)" />
+                    <input type="file" class="form-control" id="customFile" accept=".lua,.txt"
+                        ondragenter="dragenter(event)" ondragleave="dragleave(event)" ondrop="dragdropped(event)"
+                        onchange="fileSelected(event)" />
+                    <div class="form-floating mt-3">
+                        <textarea id="code-input" class="form-control mb-4" placeholder=""
+                            style="min-height: 500px;"></textarea>
+                        <label for="code-input" class="text-secondary">Modinfo Content</label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary">Import</button>
@@ -262,15 +267,13 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;options = {
                         <div class="options-code">
                             <span class="option-code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-                                description = <span class="str">"<span class="option-label"></span>"</span>,
                                 data = <span class="option-data">0</span>,
+                                description = <span class="str">"<span class="option-label"></span>"</span>,
                                 hover = <span class="str">"<span class="option-hover"></span>"</span>
                             },<br></span>
-                        </div>
-                        <div class="options-code">
                             <span class="option-code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-                                description = <span class="str">"<span class="option-label"></span>"</span>,
                                 data = <span class="option-data">0</span>,
+                                description = <span class="str">"<span class="option-label"></span>"</span>,
                                 hover = <span class="str">"<span class="option-hover"></span>"</span>
                             },<br></span>
                         </div>
