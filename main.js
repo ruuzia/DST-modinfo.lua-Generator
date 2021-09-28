@@ -127,7 +127,7 @@ function makeCollapsable(toggle, content) {
 }
 
 function unCheckRadios(parent) {
-    # doesnt require parent to be inserted in document yet
+    // doesnt require parent to be inserted in document yet
     parent.applyToAllChildrenDeep(elem => {
         if (elem.type == "radio") {
             elem.checked = false;
