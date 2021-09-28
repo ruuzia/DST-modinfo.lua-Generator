@@ -67,10 +67,10 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
     } else {
         text = escapeText(override != null && override || input.value);
     }
-                 
+    console.log(input.outputs);
     
     function inner(output) {
-        code.scrollTop = output.offsetTop - 400;
+        code.scrollTop = output.offsetTop - 150;
         if (input.type.match(/checkbox|radio/)) {
             output.innerText = input.checked && "true" || "false";
             return
@@ -187,14 +187,17 @@ function registerOptionInputListener(input, option, calcDataType=false) {
     });
 }
 
+let checkedRadio;
 function registerRadioConfigListener(radio, config, startChecked) {
-    radio.name = radio.name.replace(/#/, config.configid);
     const output = config.output.getChildWithClass("config-default");
-    const input = radio.parentNode.getChildWithClass("option-data-input");
+    radio.name = radio.name.replace(/#/, config.configid);
+    radio.input = radio.parentNode.getChildWithClass("option-data-input");
 
-    const onchange = function() {
-        output.innerText = typeAndOutput(input.value, output);
-        input.outputs = [input.output, output];
+    function onchange() {
+        if (checkedRadio) checkedRadio.input.outputs = null;
+        output.innerText = typeAndOutput(radio.input.value, output);
+        radio.input.outputs = [radio.input.output, output];
+        checkedRadio = radio;
     }
     if (startChecked) {
         radio.checked = true;
