@@ -30,6 +30,10 @@
     width: 25%;
 }
 
+.dragover {
+    border-color: blue;
+}
+
 .option-hover-input {
     width: 35%;
 }

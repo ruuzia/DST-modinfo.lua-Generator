@@ -2,7 +2,7 @@ let configIdCount = 0;
 const code = document.getElementById("code");
 const numberRegex = /^\-?\d*\.?\d*$/;
 
-function escapeText(text) {
+{
     const replacements = {
         "&": "&amp;",
         "<": "&lt;",
@@ -10,13 +10,18 @@ function escapeText(text) {
         "\"": "\\&quot;",
         "'": "&#039;",
         "\n": "<br>",
-        "\]": "\\\]"
+        "]": "\\\]" 
     }
-    const str = '[' + Object.keys(replacements).join('').replace(']', '\\]') + ']';
-    const pattern = new RegExp(str, 'g');
-    return text.replaceAll(pattern, match => {
-        return replacements[match]
-    });
+    const str = '[' + Object.keys(replacements)
+                        .join('')
+                        .replace(']', '\\]') + ']';
+    let pattern = new RegExp(str, 'g');
+    
+    function escapeText(text) {
+        return text.replaceAll(pattern, match => {
+            return replacements[match]
+        });
+    }
 }
 
 
@@ -67,7 +72,6 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
     } else {
         text = escapeText(override != null && override || input.value);
     }
-    console.log(input.outputs);
     
     function inner(output) {
         code.scrollTop = output.offsetTop - 150;
@@ -311,6 +315,40 @@ function unCheckRadios(parent) {
     });
 }
 
+let dragCount = 0;
+let dragged;
+function dragenter(event) {
+    if (!dragged) dragged = event.target;
+    if (event.target === dragged) 
+    event.target.classList.add("dragover");
+    dragCount++;
+}
+
+function dragleave(event) {
+    dragCount--;
+    if (dragCount == 0) {
+        event.target.classList.remove("dragover")
+        dragged = null;
+    }
+}
+
+function receivedText() {
+    document.getElementById('editor').appendChild(document.createTextNode(fr.result));
+  }    
+
+function dragdropped(event) {
+    dragCount = 0;
+    event.target.classList.remove("dragover")
+    console.log(event.target.files);
+    let content = "";
+    let fr = new FileReader();
+    fr.onloadend = function() {
+        content = fr.result;
+    }
+    fr.readAsText(event.target.files[0]);
+    console.log(content);
+}
+
 function onOptionDuplicateClick(event) {
     const btn = event.target;
     if (!btn.optionDiv) {
@@ -417,18 +455,34 @@ function respondToInputs() {
                     const errorText = document.getElementById("priority-error");
                     item.addEventListener('input', _ => {
                         if (numberRegex.test(item.value)) {
-                            console.log("YES");
                             setCodeFromInput(item)
                             errorText.hidden = true;
                         } else {
-                            console.log("NO");
                             errorText.hidden = false;
                         }
                     });
                     break;
                 }
+            case "filtertags-input":
+                {
+                    const argSplit = /[\s,;"']+/g
+                    item.addEventListener("input", _ => {
+                        if (!item.value) {
+                            item.output.innerHTML = "";
+                            return;
+                        }
+                        args = item.value.replaceAll(argSplit, ' ').trim().split(/\s+/)
+                        console.log(args);
+                        for (i = 0; i < args.length; i++) {
+                            args[i] = `<span class="str">"${escapeText(args[i])}"</span>, `
+                        }
+                        item.output.innerHTML = args.join('');
+                    });
+                    break;
+                }
             default:
                 {
+                    console.log(item.id);
                     item.addEventListener("input", _ => {
                         setCodeFromInput(item);
                     });
