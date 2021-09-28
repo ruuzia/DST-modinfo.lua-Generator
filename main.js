@@ -136,7 +136,7 @@ function unCheckRadios(parent) {
 }
 
 function copyButtonHandler() {
-    # hacks - cant use clipboard API for compatibility with Firefox
+    // hacks - cant use clipboard API for compatibility with Firefox
     const btn = document.getElementById("copy-button");
     btn.addEventListener("click", _ => {
         const temp = document.createElement("textarea");
