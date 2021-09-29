@@ -57,6 +57,14 @@ legend {
     width: auto;
 }
 
+#forumthread-link {
+    color: blue;
+}
+
+#forumthread-link:hover {
+    color: rgb(58, 58, 245);
+}
+
 label {
     display: unset;
 }

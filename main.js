@@ -445,12 +445,22 @@ function respondToInputs() {
             case "forumthread-input":
                 {
                     const errorText = document.getElementById("forumthread-error");
+                    const link = document.getElementById("forumthread-link");
                     item.addEventListener('input', _ => {
-                        if (item.value && !item.value.startsWith('https://forums.kleientertainment.com/')) {
-                            errorText.hidden = false;
-                        } else {
+                        const outputSite = "http://forums.kleientertainment.com/index.php?";
+                        const site = 'https://forums.kleientertainment.com';
+                        if (item.value && item.value.startsWith(site + '/')) {
+                            let place = item.value.split(site)[1];
+                            setCodeFromInput(item, place);
+                            link.innerText = outputSite + place;
+                            link.href = outputSite + place;
+                        } else if (item.value) {
                             setCodeFromInput(item);
-                            errorText.hidden = true;
+                            link.innerText = outputSite + item.value;
+                            link.href = outputSite + item.value;
+                        } else {
+                            link.innerText = "";
+                            link.href = "";
                         }
                     });
                     break;
