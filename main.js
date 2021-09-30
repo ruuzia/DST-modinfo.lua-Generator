@@ -72,7 +72,7 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
     if (typeCheck) {
         text = typeAndOutput(input.value, input.outputs || [input.output]);
     } else {
-        text = escapeText(override != null && override || input.value);
+        text = escapeText(override != null ? override : input.value);
     }
     
     function inner(output) {
@@ -125,7 +125,7 @@ function makeCollapsable(toggle, content) {
     toggle.style.cursor = "pointer";
     toggle.addEventListener("click", _ => {
         content.toggleAttribute("hidden");
-        toggle.innerText.replace(/[►▼]/, content.hidden && '►' || '▼')
+        toggle.innerText = toggle.innerText.replace(/[►▼]/, content.hidden && '►' || '▼')
     });
 }
 
@@ -351,6 +351,32 @@ function dragdropped(event) {
     event.target.classList.remove("dragover")
 }
 
+function importCodeButtonSetup() {
+    const btn = document.getElementById("import-button");
+    const code = codeImportInput.value;
+    const varnameToInputId = {
+        "name": "name-input",
+        "author": "author-input",
+        "description": "description-input",
+        "version": "version-input",
+        "dst_compatible": "dst-check",
+        "dont_starve_compatible": "ds-check",
+        "reign_of_giants_compatible": "rog-check",
+        "hamlet_compatible": "ham-check",
+        "shipwrecked_compatible": "sw-check",
+        "forge_compatible": "forge-check",
+        "gorge_compatible": "gorge-check",
+        "client_only_mod": "client-check",
+        "all_clients_require_mod": "server-check",
+        "icon_atlas": "modiconxml-input",
+        "icon": "modicontex-input",
+        "forumthread": "forumthread-input",
+        "api_version": "apiversion-input",
+        "priority": "priority-input",
+        "server_filter_tags": "filtertags-input"
+    }
+}
+
 function fileSelected(event) {
     const file = event.target.files[0];
     const ext = file.name.slice(-4);
@@ -396,6 +422,7 @@ function onRemoveConfigClick(event) {
     const btn = event.target;
     const config = btn.getParentWithClass("configuration");
     config.output.remove();
+    window.scrollBy(0, config.clientHeight * -1);
     config.remove();
     resetConfigLegendNumbers();
 }
@@ -418,6 +445,7 @@ function respondToInputs() {
         setCodeFromInput(item);
         switch (item.id) {
             case "version-input":
+            case "dsapiversion-input":
             case "apiversion-input":
                 {
                     const versionError = document.getElementById(item.output.id + "-error");
@@ -447,21 +475,22 @@ function respondToInputs() {
                     const errorText = document.getElementById("forumthread-error");
                     const link = document.getElementById("forumthread-link");
                     item.addEventListener('input', _ => {
-                        const outputSite = "http://forums.kleientertainment.com/index.php?";
-                        const site = 'https://forums.kleientertainment.com';
-                        if (item.value && item.value.startsWith(site + '/')) {
-                            let place = item.value.split(site)[1];
-                            setCodeFromInput(item, place);
-                            link.innerText = outputSite + place;
-                            link.href = outputSite + place;
-                        } else if (item.value) {
-                            setCodeFromInput(item);
-                            link.innerText = outputSite + item.value;
-                            link.href = outputSite + item.value;
-                        } else {
+                        if (!item.value) {
                             link.innerText = "";
                             link.href = "";
+                            setCodeFromInput(item);
+                            return;
                         }
+                        if (/ /.test(item.value)) {
+                            errorText.hidden = false;
+                            return;
+                        }
+                        const outputSite = "https://forums.kleientertainment.com/index.php?";
+                        const value = item.value.replace(/^(?:https?:\/\/)?forums\.kleientertainment\.com/, '');
+                        setCodeFromInput(item, value);
+                        link.innerText = outputSite + value;
+                        link.href = outputSite + value;
+                        errorText.hidden = true;
                     });
                     break;
                 }
@@ -507,6 +536,22 @@ function respondToInputs() {
                     });
                     break;
                 }
+            case "ds-check":
+            case "dst-check":
+                {
+                    const hiddenElements = document.getElementsByClassName(item.id.split('-')[0] + "-require");
+                    Array.from(hiddenElements, elem => {elem.hidden = !item.checked;});
+
+                    item.addEventListener("input", _ => {
+                        setCodeFromInput(item);
+
+                        const hidden = !item.checked;
+                        Array.from(hiddenElements, elem => {
+                            elem.hidden = hidden;
+                        });
+                    });
+                break;
+                }
             default:
                 {
                     console.log(item.id);
@@ -525,3 +570,4 @@ makeCollapsable(document.getElementById("advanced-toggle"), document.getElementB
 //makeCollapsable(document.querySelector(".configuration-legend"), document.querySelector(".configuration-content"));
 modiconCheckBox();
 copyButtonHandler();
+importCodeButtonSetup();
