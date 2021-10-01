@@ -3,7 +3,7 @@
 let configIdCount = 0;
 const code = document.getElementById("code");
 const numberRegex = /^\-?\d*\.?\d*$/;
-
+const modiconCheck = document.getElementById("modicon-check")
 
 const replacements = {
     "&": "&amp;",
@@ -77,7 +77,7 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
     
     function inner(output) {
         code.scrollTop = output.offsetTop - 150;
-        if (input.type.match(/checkbox|radio/)) {
+        if (/checkbox|radio/.test(input.type)) {
             output.innerText = input.checked && "true" || "false";
             return
         }
@@ -153,14 +153,13 @@ function copyButtonHandler() {
 }
 
 function modiconCheckBox() {
-    const checkBox = document.getElementById("modicon-check");
     const modInputs = document.getElementById("modicons");
     const tex = document.getElementById("comment-modicon-tex");
     const xml = document.getElementById("comment-modicon-xml");
     const texLine = document.getElementById("modicontex-line");
     const xmlLine = document.getElementById("modiconxml-line");
-    checkBox.checked = false;
-    checkBox.addEventListener("change", event => {
+    modiconCheck.checked = false;
+    modiconCheck.addEventListener("change", event => {
         modInputs.toggleAttribute("hidden");
         tex.toggleAttribute("hidden");
         xml.toggleAttribute("hidden");
@@ -351,9 +350,9 @@ function dragdropped(event) {
     event.target.classList.remove("dragover")
 }
 
+
 function importCodeButtonSetup() {
     const btn = document.getElementById("import-button");
-    const code = codeImportInput.value;
     const varnameToInputId = {
         "name": "name-input",
         "author": "author-input",
@@ -373,8 +372,31 @@ function importCodeButtonSetup() {
         "forumthread": "forumthread-input",
         "api_version": "apiversion-input",
         "priority": "priority-input",
-        "server_filter_tags": "filtertags-input"
     }
+    btn.addEventListener("click", _ => {
+        const code = codeImportInput.value;
+        const foundVars = new Set();
+        console.log("CODE", code[3]);
+        const info = lua_load(code)().str;
+        console.log(info);
+        for (const varName in varnameToInputId) {
+            const inputElem = document.getElementById(varnameToInputId[varName]);
+            let result = info[varName];
+            if ((inputElem.type == "checkbox" || inputElem.type == "radio") && typeof(result) == "boolean") {
+                inputElem.checked = result
+            } else {
+                inputElem.value = result;
+ 
+            }
+            inputElem.dispatchEvent(new Event("input"));
+        }
+        if (info.icon) {
+            modiconCheck.checked = true;
+            modiconCheck.dispatchEvent(new Event("change"));
+        }
+        //TODO: support server filter tags import
+        //TODO: support configurations import
+    });
 }
 
 function fileSelected(event) {
@@ -437,7 +459,7 @@ function respondToInputs() {
     const inputs = document.getElementsByClassName("input-code");
     Array.from(inputs, item => {
         item.output = getOutputForInput(item);
-        if (item.type.match(/checkbox|radio/)) {
+        if (/checkbox|radio/.test(item.type)) {
             item.checked = Boolean(item.getAttribute("default"));
         } else {
             item.value = item.getAttribute("default") || '';
@@ -450,7 +472,7 @@ function respondToInputs() {
                 {
                     const versionError = document.getElementById(item.output.id + "-error");
                     item.addEventListener("input", _ => {
-                        if (item.value.match(/[^.\d]/)) {
+                        if (/[^\.\d]/.test(item.value)) {
                             versionError.hidden = false;
                             return
                         }
@@ -564,7 +586,7 @@ function respondToInputs() {
     
     });
 }
-
+console.log(lua_load);
 respondToInputs();
 makeCollapsable(document.getElementById("advanced-toggle"), document.getElementById("advanced"));
 //makeCollapsable(document.querySelector(".configuration-legend"), document.querySelector(".configuration-content"));
