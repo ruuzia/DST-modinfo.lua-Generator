@@ -82,20 +82,31 @@ HTMLElement.prototype.applyToAllChildrenDeep = function(func) {
     inner(this);
 }
 
+function getLuaClassType(elem) {
+    const classMatch =  elem.classList.value.match((/str|bool|num/));
+    return classMatch && classMatch[0] || null 
+}
+
+function setLuaClassType(elem, newClass) {
+    const classList = elem.classList;
+    classList.value = classList.value.replaceAll(/ (str|bool|num)/g, '') + ` ${newClass}`
+}
+
 function getOutputForInput(inputElem) {
     return document.getElementById(inputElem.id.split("-")[0]);
 }
 
 function setCodeFromInput(input, override=null, typeCheck=false) {
+    const inputValue = override != null ? override : input.value;
     let text;
     if (typeCheck) {
-        text = typeAndOutput(input.value, input.outputs || [input.output]);
+        text = typeAndOutput(inputValue, input.outputs || [input.output]);
     } else {
-        text = escapeText(override != null ? override : input.value);
+        text = escapeText(inputValue);
     }
     
     function inner(output) {
-        code.scrollTop = output.offsetTop - 150;
+        code.scrollTop = output.offsetTop - code.clientHeight;
         if (input.isCheckable()) {
             output.innerText = input.checked && "true" || "false";
             return
@@ -135,7 +146,7 @@ function typeAndOutput(value, outputs) {
         outputs = [outputs];
     }
     outputs.forEach(elem => {
-        elem.classList.value = elem.classList.value.replaceAll(/ (str|bool|num)/g, '') + ` ${type}`;
+        setLuaClassType(elem, type);
     });
     return text
 }
@@ -201,15 +212,15 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
         switch (input.name) {
             case "option-data":
                 option.dataInput = input;
-                registerOptionInputListener(input, option, true);
+                registerDataOptionInput(input, option);
                 break;
             case "option-label":
                 option.labelInput = input;
-                registerOptionInputListener(input, option, false);
+                registerLabelOptionInput(input, option);
                 break;
             case "option-hover":
                 option.hoverInput = input;
-                registerOptionInputListener(input, option, false);
+                registerHoverOptionInput(input, option);
                 break;
         }
     });
@@ -217,13 +228,32 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
     option.default = radio;
     registerRadioConfigListener(radio, config, radioChecked);
     window.scrollBy(0, option.clientHeight);
-    console.log("Option set up with id of " + option.id);
 }
 
-function registerOptionInputListener(input, option, calcDataType=false) {
-    input.output = document.querySelector(`#${option.output.id} .${input.name}`)
+function registerDataOptionInput(input, option) {
+    input.output = document.querySelector(`#${option.output.id} .option-data`)
     input.addEventListener("input", _ => {
-        setCodeFromInput(input, null, input.name == "option-data")
+        setCodeFromInput(input, input.value ? null : '""', true)
+    });
+}
+
+function registerLabelOptionInput(input, option) {
+    input.output = document.querySelector(`#${option.output.id} .option-label`)
+    input.addEventListener("input", _ => {
+        setCodeFromInput(input, null, false)
+    });
+}
+
+function registerHoverOptionInput(input, option) {
+    input.output = document.querySelector(`#${option.output.id} .option-hover`)
+    const line = input.output.getParentWithClass("option-hover-line");
+    input.addEventListener("input", _ => {
+        if (input.value) {
+            setCodeFromInput(input, null, false)
+            line.hidden = false;
+        } else {
+            line.hidden = true;
+        }
     });
 }
 
@@ -235,8 +265,8 @@ function registerRadioConfigListener(radio, config, startChecked) {
 
     function onchange() {
         if (checkedRadio) checkedRadio.input.outputs = null;
-        output.innerText = typeAndOutput(radio.input.value, output);
         radio.input.outputs = [radio.input.output, output];
+        radio.input.dispatchEvent(new Event("input"));
         checkedRadio = radio;
     }
     if (startChecked) {
@@ -255,8 +285,25 @@ function onAddOptionClick(event) {
     const btn = event.target;
     if (!btn.optionsDiv) {
         btn.optionsDiv = btn.parentNode.getChildWithClass("options");
+        btn.select = btn.nextElementSibling;
     }
-    addOption(btn.optionsDiv)
+
+    switch (btn.select.value) {
+        case "1":
+            addOption(btn.optionsDiv);
+            break;
+        case "KEYS":
+            const KEY_A = 65;
+            const KEY_Z = KEY_A + 25;
+            for (let i = KEY_A; i <= KEY_Z; i++) {
+                console.log("TEST");
+                const newOption = addOption(btn.optionsDiv);
+                const char = String.fromCharCode(i);
+                newOption.dataInput.triggerSetValue(char);
+                newOption.labelInput.triggerSetValue(char);
+            }
+            break;
+    }
 }
 
 function addOption(optionsDiv) {
@@ -650,12 +697,15 @@ function importCodeButtonSetup() {
                 inputConfig.labelInput.triggerSetValue(luaConfig.label);
                 inputConfig.legend.dispatchEvent(new Event("click"));
                 const luaOptions = luaConfig.options?.uints;
+
                 const inputOptions = inputConfig.optionsArr;
                 const defaultOption = luaConfig.default;
                 if (!luaOptions) continue;
-
-                for (let i = 0; i < luaOptions.length; i++) {
-                    const codeOption = luaOptions[i].str;
+                let start = 1;
+                if (luaOptions instanceof Array) start = 0;
+                for (let i = start; true; i++) { // cant use luaOptions.length because lua js can be funky
+                    const codeOption = luaOptions[i]?.str;
+                    if (codeOption == null) break;
                     const formOption = inputOptions[i] || addOption(inputConfig.optionsForm);
                     formOption.dataInput.triggerSetValue(codeOption.data);
                     formOption.labelInput.triggerSetValue(codeOption.description);
@@ -665,7 +715,7 @@ function importCodeButtonSetup() {
                     }
                 }
             }
-        }        
+        }     
     });
 }
 
