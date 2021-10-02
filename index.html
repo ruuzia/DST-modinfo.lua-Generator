@@ -46,26 +46,26 @@
 
     <h1 class="text-center fw-bold">DS/T Modinfo.lua Generator</h1>
     <div class="row justify-content-center" id="main">
-        <form class="mt-5 col-11 col-md-5 col-xl-4 me-md-5">
+        <form class="mt-5 col-11 col-md-5 col-xl-4 me-md-5" id="input-form">
             <div class="form-outline">
                 <button type="button" class="btn btn-outline-dark mb-2" id="import-code" data-bs-target="#import-modal"
                     data-bs-toggle="modal">Import
                     Code</button>
                 <div class="form-floating">
-                    <input type="text" id="name-input" class="input-code form-control mb-4" placeholder="">
+                    <input type="text" id="name-input" class="input-code form-control mb-4" placeholder="" required>
                     <label for="name-input" class="text-secondary">Name of Mod</label>
                 </div>
                 <div class="form-floating">
-                    <input type="text" id="author-input" class="input-code form-control mb-4" placeholder="">
+                    <input type="text" id="author-input" class="input-code form-control mb-4" placeholder="" required>
                     <label for="author-input" class="text-secondary">Name of Author</label>
                 </div>
                 <div class="form-floating">
                     <textarea id="description-input" class="input-code form-control mb-4" placeholder=""
-                        style="height: 100px; min-height: 60px; max-height: 300px;"></textarea>
+                        style="height: 100px; min-height: 60px; max-height: 300px;" required></textarea>
                     <label for="description-input" class="text-secondary">Mod Description</label>
                 </div>
                 <div class="form-floating">
-                    <input type="text" class="input-code form-control mb-4" id="version-input" default="1.0.0">
+                    <input type="text" class="input-code form-control mb-4" id="version-input" default="1.0.0" required>
                     <label for="version-input">
                         Version<span class='error' id="version-error" hidden> ** invalid characters</span>
                     </label>
@@ -156,7 +156,7 @@
 
         <form class="col-11 col-lg-9 col-xl-7 order-md-last mt-3">
 
-            <fieldset class="border px-3">
+            <fieldset class="border px-3" id="configs-form">
                 <legend class="fs-5"><span class="header">Configurations</span></legend>
                 <fieldset class="configuration border border-end-0 border-start-0 border-bottom-0 mt-3 mb-2 pb-2 ps-3"
                     id="config-#" hidden>
@@ -173,7 +173,7 @@
                         <div class="options" optioncount="1">
                             <div class="option mb-2">
                                 <input type="radio" title="Default Option"
-                                    class="form-check-input me-1 option-radio-input" name="option-default-#">
+                                    class="form-check-input me-1 option-radio-input" name="option-default-#" required>
                                 <input type="text" title="Data value returned"
                                     class="input-config form-control d-inline option-data-input" name="option-data"
                                     placeholder="data">
@@ -195,7 +195,7 @@
                             </div>
                             <div class="option mb-2">
                                 <input type="radio" title="Default Option"
-                                    class="form-check-input me-1 option-radio-input" name="option-default-#">
+                                    class="form-check-input me-1 option-radio-input" name="option-default-#" required>
                                 <input type="text" title="Data value returned"
                                     class="input-config form-control d-inline option-data-input" name="option-data"
                                     placeholder="data">
@@ -314,7 +314,7 @@
                 </div>
             </code>
             <div class="d-flex align-items-end flex-column align-self-end mt-n5">
-                <button class=" btn btn-outline-light" id="copy-button"
+                <button type="button" form="input-form" class=" btn btn-outline-light" id="copy-button"
                     style="transform: translateY(-40px);">Copy</button>
             </div>
         </div>

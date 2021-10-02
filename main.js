@@ -4,8 +4,9 @@ let configIdCount = 0;
 const code = document.getElementById("code");
 const numberRegex = /^\-?\d*\.?\d*$/;
 const modiconCheck = document.getElementById("modicon-check")
-const configsDiv = document.getElementById("configs");
-
+const configsCode = document.getElementById("configs");
+const configs = document.getElementById("configs-form");
+const formInputs = [];
 
 const replacements = {
     "&": "&amp;",
@@ -171,7 +172,7 @@ function unCheckRadios(parent) {
 function copyButtonHandler() {
     // hacks - cant use clipboard API for compatibility with Firefox
     const btn = document.getElementById("copy-button");
-    btn.addEventListener("click", _ => {
+    btn.addEventListener("click", event => {
         const temp = document.createElement("textarea");
         const text = code.innerText;
         temp.value = text;
@@ -179,6 +180,36 @@ function copyButtonHandler() {
         temp.select();
         document.execCommand("copy");
         temp.remove();
+        //searchForErrors();
+    });
+}
+
+function searchForErrors() {
+    // name, author, description, version, priority REQUIRED
+    // minimum 1 game compatibility checked
+    // Mod type radio must be selected
+    // one of the API Versions must have a value
+    // each config must have name, label
+    // a default option radio in a config must be selected
+    formInputs.forEach(input => {
+        switch (input.id) {
+            case "name-input":
+            case "author-input":
+            case "description-input":
+            case "version-input":
+            case "priority-input":
+                if (!input.value) {
+                    window.scrollTo(input);
+                    let label = input.nextElementSibling
+                    let name = label instanceof HTMLLabelElement ? label.innerText : input.id.split("-")[0];
+                    input.classList.toggle("unfilled");
+                    //window.alert(`${name} input unfilled.`);
+                }
+                break;
+        
+            default:
+                break;
+        }
     });
 }
 
@@ -201,7 +232,6 @@ function modiconCheckBox() {
 function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
     const config = optionsDiv.getParentWithClass("configuration");
     const countStr = optionsDiv.getAttribute("optioncount");
-    
     option.optionid = countStr;
     option.config = config;
     option.id = `config-${config.configid}-option-${option.optionid}-input`;
@@ -335,7 +365,7 @@ function addConfig() {
 
 function configSetup(config) {
     config.optionsArr = [];
-    configsDiv.configsArr.push(config); // will need to move this once configs can be duplicated
+    configs.configsArr.push(config); // will need to move this once configs can be duplicated
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
 
@@ -361,7 +391,7 @@ function createConfigCode(configForm) {
     const newConfigCode = configCodeClone.cloneNode(true);
     newConfigCode.hidden = false;
     configForm.output = newConfigCode;
-    configsDiv.appendChild(newConfigCode);
+    configsCode.appendChild(newConfigCode);
     const id = "configcode-" + configForm.configid;
     newConfigCode.id = id;
 
@@ -492,7 +522,7 @@ function onRemoveConfigClick(event) {
     const btn = event.target;
     const config = btn.getParentWithClass("configuration");
     config.output.remove();
-    configsDiv.configsArr.splice(configsDiv.configsArr.indexOf(config), 1);
+    configs.configsArr.splice(configs.configsArr.indexOf(config), 1);
     window.scrollBy(0, config.clientHeight * -1);
     config.remove();
     resetConfigLegendNumbers();
@@ -513,6 +543,7 @@ function respondToInputs() {
         } else {
             item.value = item.getAttribute("default") || '';
         }
+        formInputs.push(item);
         setCodeFromInput(item);
         switch (item.id) {
             case "version-input":
@@ -725,7 +756,7 @@ function importCodeButtonSetup() {
 
 
 
-configsDiv.configsArr = [];
+configs.configsArr = [];
 respondToInputs();
 makeCollapsable(document.getElementById("advanced-toggle"), document.getElementById("advanced"));
 //makeCollapsable(document.querySelector(".configuration-legend"), document.querySelector(".configuration-content"));
