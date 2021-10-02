@@ -4,6 +4,8 @@ let configIdCount = 0;
 const code = document.getElementById("code");
 const numberRegex = /^\-?\d*\.?\d*$/;
 const modiconCheck = document.getElementById("modicon-check")
+const configsDiv = document.getElementById("configs");
+
 
 const replacements = {
     "&": "&amp;",
@@ -25,6 +27,25 @@ function escapeText(text) {
     });
 }
 
+HTMLElement.prototype.isCheckable = function() {
+    return this instanceof HTMLInputElement && /check|radio/.test(this.type);
+}
+
+HTMLInputElement.prototype.triggerSetValue = function(value) {
+    if (this.isCheckable()) {
+        this.checked =  value || false;
+        this.dispatchEvent(new Event("change"));
+    } else {
+        this.value = value ?? "";
+    }
+    this.dispatchEvent(new Event("input"));
+}
+
+HTMLTextAreaElement.prototype.triggerSetValue = function(value) {
+    this.value = value || "";
+    this.dispatchEvent(new Event("input"));
+}
+
 
 HTMLElement.prototype.getParentWithClass = function(classHTML) {
     parent = this.parentNode
@@ -32,7 +53,6 @@ HTMLElement.prototype.getParentWithClass = function(classHTML) {
         parent = parent.parentNode
         if (!parent) return null;
     }
-    console.log("FOUND PARENT WITH CLASS " + classHTML)
     return parent
 }
 
@@ -45,7 +65,6 @@ HTMLElement.prototype.getChildWithClass = function(classHTML) {
         }
     });
     if (correctChild) {
-        console.log("FOUND CHILD WITH CLASS " + classHTML);
         return correctChild
     }
     console.log("Could not find child of class", classHTML)
@@ -77,7 +96,7 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
     
     function inner(output) {
         code.scrollTop = output.offsetTop - 150;
-        if (/checkbox|radio/.test(input.type)) {
+        if (input.isCheckable()) {
             output.innerText = input.checked && "true" || "false";
             return
         }
@@ -173,6 +192,7 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
     const countStr = optionsDiv.getAttribute("optioncount");
     
     option.optionid = countStr;
+    option.config = config;
     option.id = `config-${config.configid}-option-${option.optionid}-input`;
     option.output = optionCode;
     option.output.id = option.id.replace("input", "output");
@@ -180,15 +200,21 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
     Array.from(document.querySelectorAll(`#${option.id} .input-config`), input => {
         switch (input.name) {
             case "option-data":
+                option.dataInput = input;
                 registerOptionInputListener(input, option, true);
                 break;
             case "option-label":
+                option.labelInput = input;
+                registerOptionInputListener(input, option, false);
+                break;
             case "option-hover":
+                option.hoverInput = input;
                 registerOptionInputListener(input, option, false);
                 break;
         }
     });
     const radio = document.querySelector(`#${option.id} .option-radio-input`);
+    option.default = radio;
     registerRadioConfigListener(radio, config, radioChecked);
     window.scrollBy(0, option.clientHeight);
     console.log("Option set up with id of " + option.id);
@@ -224,17 +250,24 @@ function registerRadioConfigListener(radio, config, startChecked) {
 const optionClone = document.querySelector(".option");
 optionClone.optionid = 0
 const optionCodeClone = document.querySelector(".option-code");
+
 function onAddOptionClick(event) {
     const btn = event.target;
     if (!btn.optionsDiv) {
         btn.optionsDiv = btn.parentNode.getChildWithClass("options");
     }
+    addOption(btn.optionsDiv)
+}
+
+function addOption(optionsDiv) {
     const newOption = optionClone.cloneNode(true);
     const newOptionCode = optionCodeClone.cloneNode(true)
     unCheckRadios(newOption);
-    btn.optionsDiv.appendChild(newOption);
-    btn.optionsDiv.output.appendChild(newOptionCode);
-    optionSetUp(newOption, btn.optionsDiv, newOptionCode);
+    optionsDiv.appendChild(newOption);
+    optionsDiv.output.appendChild(newOptionCode);
+    optionSetUp(newOption, optionsDiv, newOptionCode);
+    newOption.config.optionsArr.push(newOption);
+    return newOption
 }
 
 
@@ -242,6 +275,7 @@ function onAddOptionClick(event) {
 const addBtn = document.getElementById("add-config");
 const configClone = document.querySelector(".configuration");
 addBtn.addEventListener("click", addConfig);
+
 function addConfig() {
     const newConfig = configClone.cloneNode(true);
     newConfig.hidden = false;
@@ -249,29 +283,38 @@ function addConfig() {
     configIdCount++;
     configSetup(newConfig);
     window.scrollBy(0, newConfig.clientHeight);
-    
+    return newConfig;
 }
 
 function configSetup(config) {
+    config.optionsArr = [];
+    configsDiv.configsArr.push(config); // will need to move this once configs can be duplicated
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
+
     const legend = config.getChildWithClass("configuration-legend");
     const count = document.querySelectorAll(".configuration").length - 1;
     legend.innerText = legend.innerText.replace(/#/, count);
     makeCollapsable(legend, legend.nextElementSibling);
-    console.log("Config set up with id of " + config.configid);
+    
+    config.nameInput = document.querySelector(`#${config.id} .config-name-input`);
+    config.hoverInput = document.querySelector(`#${config.id} .config-hover-input`);
+    config.labelInput = document.querySelector(`#${config.id} .config-label-input`);
+    config.optionsForm = document.querySelector(`#${config.id} .options`);
+    config.legend = legend;
+
     createConfigCode(config);
+    console.log("Config set up with id of " + config.id);
 }
 
 
 const configCodeClone = document.querySelector(".configCode");
-const configs = document.getElementById("configs");
 
 function createConfigCode(configForm) {
     const newConfigCode = configCodeClone.cloneNode(true);
     newConfigCode.hidden = false;
     configForm.output = newConfigCode;
-    configs.appendChild(newConfigCode);
+    configsDiv.appendChild(newConfigCode);
     const id = "configcode-" + configForm.configid;
     newConfigCode.id = id;
 
@@ -280,7 +323,6 @@ function createConfigCode(configForm) {
 
 
 function configInputSetup(formId, codeId) {
-    console.log("CONFIG INPUT SETUP");
     const inputs = [];
     inputs[0] = document.querySelector(`#${formId} .config-label-input`);
     inputs[0].output = document.querySelector(`#${codeId} .config-label`);
@@ -305,6 +347,7 @@ function configInputSetup(formId, codeId) {
         
         form.parentNode.output = code.parentNode;
         optionSetUp(form, form.parentNode, code, form==optionForms[0]);
+        form.config.optionsArr.push(form);
     }
 }
 
@@ -312,6 +355,8 @@ function configInputSetup(formId, codeId) {
 function onOptionDeleteClick(event) {
     const option = event.target.getParentWithClass("option");
     option.output.remove();
+    const optionArr = option.config.optionsArr;
+    optionArr.splice(optionArr.indexOf(option), 1);
     option.remove();
 }
 
@@ -351,53 +396,6 @@ function dragdropped(event) {
 }
 
 
-function importCodeButtonSetup() {
-    const btn = document.getElementById("import-button");
-    const varnameToInputId = {
-        "name": "name-input",
-        "author": "author-input",
-        "description": "description-input",
-        "version": "version-input",
-        "dst_compatible": "dst-check",
-        "dont_starve_compatible": "ds-check",
-        "reign_of_giants_compatible": "rog-check",
-        "hamlet_compatible": "ham-check",
-        "shipwrecked_compatible": "sw-check",
-        "forge_compatible": "forge-check",
-        "gorge_compatible": "gorge-check",
-        "client_only_mod": "client-check",
-        "all_clients_require_mod": "server-check",
-        "icon_atlas": "modiconxml-input",
-        "icon": "modicontex-input",
-        "forumthread": "forumthread-input",
-        "api_version": "apiversion-input",
-        "priority": "priority-input",
-    }
-    btn.addEventListener("click", _ => {
-        const code = codeImportInput.value;
-        const foundVars = new Set();
-        console.log("CODE", code[3]);
-        const info = lua_load(code)().str;
-        console.log(info);
-        for (const varName in varnameToInputId) {
-            const inputElem = document.getElementById(varnameToInputId[varName]);
-            let result = info[varName];
-            if ((inputElem.type == "checkbox" || inputElem.type == "radio") && typeof(result) == "boolean") {
-                inputElem.checked = result
-            } else {
-                inputElem.value = result;
- 
-            }
-            inputElem.dispatchEvent(new Event("input"));
-        }
-        if (info.icon) {
-            modiconCheck.checked = true;
-            modiconCheck.dispatchEvent(new Event("change"));
-        }
-        //TODO: support server filter tags import
-        //TODO: support configurations import
-    });
-}
 
 function fileSelected(event) {
     const file = event.target.files[0];
@@ -428,6 +426,9 @@ function onOptionDuplicateClick(event) {
     optionsDiv.insertBefore(newOption, btn.option.nextElementSibling);
     optionsDiv.output.insertBefore(optionCode, btn.option.output.nextElementSibling);
     optionSetUp(newOption, optionsDiv, optionCode);
+    const optionsArr = newOption.config.optionsArr
+    const index = optionsArr.indexOf(btn.option) + 1;
+    optionsArr.splice(index, 0, newOption);
 }
 
 function resetConfigLegendNumbers() {
@@ -444,6 +445,7 @@ function onRemoveConfigClick(event) {
     const btn = event.target;
     const config = btn.getParentWithClass("configuration");
     config.output.remove();
+    configsDiv.configsArr.splice(configsDiv.configsArr.indexOf(config), 1);
     window.scrollBy(0, config.clientHeight * -1);
     config.remove();
     resetConfigLegendNumbers();
@@ -459,7 +461,7 @@ function respondToInputs() {
     const inputs = document.getElementsByClassName("input-code");
     Array.from(inputs, item => {
         item.output = getOutputForInput(item);
-        if (/checkbox|radio/.test(item.type)) {
+        if (item.isCheckable()) {
             item.checked = Boolean(item.getAttribute("default"));
         } else {
             item.value = item.getAttribute("default") || '';
@@ -551,8 +553,9 @@ function respondToInputs() {
                             return;
                         }
                         const args = item.value.replaceAll(argSplit, ' ').trim().split(/\s+/)
-                        for (let i = 0; i < args.length; i++) {
-                            args[i] = `<span class="str">"${escapeText(args[i])}"</span>, `
+                        const numArgs = args.length;
+                        for (let i = 0; i < numArgs; i++) {
+                            args[i] = `<span class="str">"${escapeText(args[i])}"</span>${i+1 == numArgs ? "" : ", "}`
                         }
                         item.output.innerHTML = args.join('');
                     });
@@ -576,7 +579,6 @@ function respondToInputs() {
                 }
             default:
                 {
-                    console.log(item.id);
                     item.addEventListener("input", _ => {
                         setCodeFromInput(item);
                     });
@@ -586,7 +588,90 @@ function respondToInputs() {
     
     });
 }
-console.log(lua_load);
+
+
+function importCodeButtonSetup() {
+    const btn = document.getElementById("import-button");
+    const varnameToInputId = {
+        "name": "name-input",
+        "author": "author-input",
+        "description": "description-input",
+        "version": "version-input",
+        "dst_compatible": "dst-check",
+        "dont_starve_compatible": "ds-check",
+        "reign_of_giants_compatible": "rog-check",
+        "hamlet_compatible": "ham-check",
+        "shipwrecked_compatible": "sw-check",
+        "forge_compatible": "forge-check",
+        "gorge_compatible": "gorge-check",
+        "client_only_mod": "client-check",
+        "all_clients_require_mod": "server-check",
+        "icon_atlas": "modiconxml-input",
+        "icon": "modicontex-input",
+        "forumthread": "forumthread-input",
+        "api_version": "apiversion-input",
+        "priority": "priority-input",
+    }
+    btn.addEventListener("click", event => {
+        const code = codeImportInput.value;
+        const foundVars = new Set();
+        let info;
+        try {
+            info = lua_load(code)()?.str;
+        } 
+        catch (error) {
+            console.log(error, typeof(error));
+            event.preventDefault();
+            window.alert(error.toString());
+            return;
+        }
+
+        for (const varName in varnameToInputId) {
+            const inputElem = document.getElementById(varnameToInputId[varName]);
+            const result = info[varName];
+            inputElem?.triggerSetValue(result);
+        }
+        if (info.icon) {
+            modiconCheck.triggerSetValue(true);
+        }
+        const serverFilterTags = info.server_filter_tags?.uints;
+        if (serverFilterTags && serverFilterTags instanceof Array) {
+            const filterTagsInput = document.getElementById("filtertags-input");
+            filterTagsInput.triggerSetValue(serverFilterTags?.join(", "))
+        }
+
+        const configurationOptions = info.configuration_options?.uints;
+        if (configurationOptions && configurationOptions instanceof Array) {
+            for (let i = 0; i < configurationOptions.length; i++) {
+                const luaConfig = configurationOptions[i].str;
+                let inputConfig = configs.configsArr[i] || addConfig();
+                inputConfig.nameInput.triggerSetValue(luaConfig.name);
+                inputConfig.hoverInput.triggerSetValue(luaConfig.hover);
+                inputConfig.labelInput.triggerSetValue(luaConfig.label);
+                inputConfig.legend.dispatchEvent(new Event("click"));
+                const luaOptions = luaConfig.options?.uints;
+                const inputOptions = inputConfig.optionsArr;
+                const defaultOption = luaConfig.default;
+                if (!luaOptions) continue;
+
+                for (let i = 0; i < luaOptions.length; i++) {
+                    const codeOption = luaOptions[i].str;
+                    const formOption = inputOptions[i] || addOption(inputConfig.optionsForm);
+                    formOption.dataInput.triggerSetValue(codeOption.data);
+                    formOption.labelInput.triggerSetValue(codeOption.description);
+                    formOption.hoverInput.triggerSetValue(codeOption.hover);
+                    if (codeOption.data == defaultOption) {
+                        formOption.default.triggerSetValue(true);
+                    }
+                }
+            }
+        }        
+    });
+}
+
+
+
+configsDiv.configsArr = [];
 respondToInputs();
 makeCollapsable(document.getElementById("advanced-toggle"), document.getElementById("advanced"));
 //makeCollapsable(document.querySelector(".configuration-legend"), document.querySelector(".configuration-content"));
