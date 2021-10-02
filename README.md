@@ -8,5 +8,6 @@ Importing code into the app uses [luajs](https://github.com/mherkender/lua.js/) 
 TODO:
   - Add button to duplicate configurations
   - Required fields system
+  - Reset inputs
 
 https://grassdne.github.io/DST-modinfo.lua-Generator/
