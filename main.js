@@ -656,7 +656,8 @@ function importCodeButtonSetup() {
         "icon_atlas": "modiconxml-input",
         "icon": "modicontex-input",
         "forumthread": "forumthread-input",
-        "api_version": "apiversion-input",
+        "api_version_dst": "apiversion-input",
+        "api_version": "dsapiversion-input",
         "priority": "priority-input",
     }
     btn.addEventListener("click", event => {
@@ -671,6 +672,9 @@ function importCodeButtonSetup() {
             event.preventDefault();
             window.alert(error.toString());
             return;
+        }
+        if (info.api_version_dst == null) {
+            info.api_version_dst = info.api_version;
         }
 
         for (const varName in varnameToInputId) {
