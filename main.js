@@ -330,7 +330,6 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
         }
     });
     const radio = document.querySelector(`#${option.id} .option-radio-input`);
-    console.log("option setup radio", radio);
     option.default = radio;
     registerRadioConfigListener(radio, config, radioChecked);
     window.scrollBy(0, option.clientHeight);
@@ -365,7 +364,6 @@ function registerHoverOptionInput(input, option) {
 
 let checkedRadio;
 function registerRadioConfigListener(radio, config, startChecked) {
-    console.log("REGISTER RADIO CONFIG LISTENER", radio);
     radio.output = config.output.getChildWithClass("config-default");
     radio.name = radio.name.replace(/[#\d]+/, config.configid);
     radio.input = radio.parentNode.getChildWithClass("option-data-input");
@@ -435,7 +433,7 @@ function resetConfigLegendNumbers() {
     const configsArr = configs.configsArr;
     for (let i = 0; i < configsArr.length; i++) {
         const legend = configsArr[i].legend;
-        legend.innerText = legend.innerText.replace(/[\d#]/, i+1);
+        legend.innerText = legend.innerText.replace(/[\d#]+/, i+1);
     }
 }
 
@@ -451,7 +449,6 @@ function onDuplicateConfigClick(event) {
         if (option.default.checked) {
             tempUncheckIndex = index;
             tempUnchecked = option.default;
-            console.log(tempUncheckIndex, tempUnchecked); //dev
             option.default.checked = false;
             return false;
         }
@@ -461,9 +458,7 @@ function onDuplicateConfigClick(event) {
     const newConfig = btn.config.cloneNode(true);
 
     if (tempUnchecked != null) {
-        console.log("Rechecking tempUnchecked");
         tempUnchecked.checked = true;
-        console.log(tempUnchecked.checked);
     }
 
     const id = btn.config.configid;
@@ -507,7 +502,6 @@ function configSetup(config) {
     config.optionsArr = [];
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
-    console.log(config.configid, config.id);
 
     const legend = config.getChildWithClass("configuration-legend");
     const count = configs.configsArr.length;
@@ -899,6 +893,3 @@ copyButtonHandler();
 importCodeButtonSetup();
 incrementSetup();
 adjustCodeHeight();
-
-addBtn.dispatchEvent(new Event("click")); //DEV
-
