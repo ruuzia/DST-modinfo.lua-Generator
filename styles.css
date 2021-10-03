@@ -43,16 +43,40 @@
     width: 35%;
 }
 
+.btn-primary-2 {
+    background-color: #69a0f3;
+    border-width: 1px;
+    border-color: #69a0f3;
+    color: white;
+}
+
+.btn-primary-2:hover {
+    border-color: dodgerblue;
+    background-color: #2877ee;
+    color: white;
+}
+
+.btn-danger-2 {
+    background-color: rgb(255, 134, 134);
+    color: white;
+}
+
+.btn-danger-2:hover {
+    color: white;
+    background-color: red;
+}
+
 .option-delete, .option-duplicate {
     align-self: flex-end;
 }
 
 code {
     line-height: 1.8;
-    color: rgb(0, 143, 143);
+    color: rgb(194, 194, 194);
 }
 
 body {
+    background-color: #62678f;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -60,6 +84,14 @@ legend {
     float: none; 
     padding: inherit; 
     width: auto;
+}
+
+fieldset {
+    /* filter: grayscale(10%);
+    filter: saturate(115%); */
+    filter: sepia(3%);
+    background-color: #62678f;
+    border-radius: 5px;
 }
 
 #forumthread-link {
@@ -93,6 +125,9 @@ label {
     height: 30px;
 }
 
+.increment-settings-option-text {
+    background-color: #c9e8f4;
+}
 
 #main {
     margin-bottom: 10%;

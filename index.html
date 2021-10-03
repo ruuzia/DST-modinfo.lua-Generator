@@ -11,10 +11,10 @@
     <title>Modinfo Generator</title>
 </head>
 
-<body class="bg-secondary">
+<body>
 
 
-    <!-- Modal -->
+    <!-- Import Modal -->
 
     <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog" style="max-width: 75%;">
@@ -44,8 +44,69 @@
         </div>
     </div>
 
+    <!-- Increment Settings Modal for Adding Options -->
+
+    <div class="modal fade" id="increment-settings-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: rgb(244, 244, 244);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="basicModalLabel">Increment Add Option Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body container">
+                    <div class="input-group bg-gradient py-3 d-flex flex-row"
+                        style="background-color: rgb(242, 242, 242);">
+                        <span class="input-group-text">From</span>
+                        <input type="text" class="form-control" placeholder="(including)" id="increment-from-input">
+                        <span class="input-group-text">To</span>
+                        <input type="text" class="form-control" placeholder="(including)" id="increment-to-input">
+                        <span class="input-group-text">Increment</span>
+                        <input type="text" class="form-control" id="increment-every-input">
+                    </div>
+                    <div class="py-3 bg-gradient" style="background-color: rgb(237, 245, 245);">
+                        <div class="d-flex align-items-center">
+                            <div class="input-group mb-3 me-2">
+                                <select class="form-select" style="max-width: 70px;" id="increment-data-operator">
+                                    <option value=".." selected>..</option>
+                                    <option value="*">×</option>
+                                    <option value="+">+</option>
+                                </select>
+                                <input type="text" class="form-control" id="increment-data-operand-input">
+                                <span class="input-group-text increment-settings-option-text">Data</span>
+                            </div>
+                            <div class="input-group mb-3 ms-2">
+                                <input type="text" class="form-control" id="increment-label-option-input">
+                                <span class="input-group-text increment-settings-option-text">Label</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="input-group mb-3 w-75">
+                                <span class="input-group-text increment-settings-option-text">Hover</span>
+                                <input type="text" class="form-control" id="increment-hover-option-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="py-2 d-inline w-50 align-self-start me-5" style="background-color: rgb(239, 239, 250);">
+                        <div class="input-group">
+                            <span class="input-group-text border-0">With</span>
+                            <input type="text" class="form-control border-0" id="increment-var-input">
+                            <span class="input-group-text border-0">As Value</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary-2" id="generate-increment-button"
+                        data-bs-dismiss="modal">Generate</button>
+                    <button type="button" class="btn btn-danger-2" data-bs-dismiss="modal">Exit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORM -->
+
     <h1 class="text-center fw-bold">DS/T Modinfo.lua Generator</h1>
-    <div class="row justify-content-center" id="main">
+    <div class="row justify-content-center" id="main-form">
         <form class="mt-5 col-11 col-md-5 col-xl-4 me-md-5" id="input-form">
             <div class="form-outline">
                 <button type="button" class="btn btn-outline-dark mb-2" id="import-code" data-bs-target="#import-modal"
@@ -154,8 +215,9 @@
             </div>
         </form>
 
-        <form class="col-11 col-lg-9 col-xl-7 order-md-last mt-3">
+        <!-- CONFIGURATIONS -->
 
+        <form class="col-11 col-lg-9 col-xl-7 order-md-last mt-3">
             <fieldset class="border px-3" id="configs-form">
                 <legend class="fs-5"><span class="header">Configurations</span></legend>
                 <fieldset class="configuration border border-end-0 border-start-0 border-bottom-0 mt-3 mb-2 pb-2 ps-3"
@@ -221,6 +283,7 @@
                         <select class="add-option-select form-select">
                             <option value="1" selected>One Option</option>
                             <option value="KEYS">All Keys</option>
+                            <option value="INCREMENT">Increment</option>
                         </select>
                         <button class="btn btn-danger remove-config" type="button"
                             onclick="onRemoveConfigClick(event)">Remove Config</button>
@@ -230,7 +293,10 @@
                     Config</button>
             </fieldset>
         </form>
-        <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" style="max-height: 800px;">
+
+        <!-- CODE -->
+
+        <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" id="code-div" style="max-height: 800px;">
             <code>
                 <div class="overflow-scroll d-flex w-100 h-100" id="code" style="max-height: 780px; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
                 <div>

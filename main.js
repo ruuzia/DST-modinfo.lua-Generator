@@ -1,7 +1,9 @@
-"use strict"
+"use strict";
 
 let configIdCount = 0;
 const code = document.getElementById("code");
+const codeDiv = document.getElementById("code-div");
+const inputForm = document.querySelector(".form-outline");
 const numberRegex = /^\-?\d*\.?\d*$/;
 const modiconCheck = document.getElementById("modicon-check")
 const configsCode = document.getElementById("configs");
@@ -83,14 +85,23 @@ HTMLElement.prototype.applyToAllChildrenDeep = function(func) {
     inner(this);
 }
 
+function adjustCodeHeight() {
+    console.log(code.scrollTopMax);
+    let overflowHeight = parseInt(codeDiv.style.maxHeight) + code.scrollTopMax;
+    let newHeight = Math.min(inputForm.clientHeight, overflowHeight);
+    console.log(newHeight, inputForm.clientHeight, overflowHeight);
+    codeDiv.style.maxHeight = newHeight;
+    code.style.maxHeight = newHeight - 20;
+}
+
 function getLuaClassType(elem) {
-    const classMatch =  elem.classList.value.match((/str|bool|num/));
+    const classMatch =  elem.classList.value.match((/str|bool|n/));
     return classMatch && classMatch[0] || null 
 }
 
 function setLuaClassType(elem, newClass) {
     const classList = elem.classList;
-    classList.value = classList.value.replaceAll(/ (str|bool|num)/g, '') + ` ${newClass}`
+    classList.value = classList.value.replaceAll(/ (str|bool|n)/g, '') + ` ${newClass}`
 }
 
 function getOutputForInput(inputElem) {
@@ -137,7 +148,7 @@ function typeAndOutput(value, outputs) {
         type = "str";
         text = '[[' + escapeText(value.slice(2,-2))  + ']]';
     } else if (numberRegex.test(value)) {
-        type = "num";
+        type = "n";
         text = escapeText(value);
     } else {
         type = "str";
@@ -157,6 +168,7 @@ function makeCollapsable(toggle, content) {
     toggle.addEventListener("click", _ => {
         content.toggleAttribute("hidden");
         toggle.innerText = toggle.innerText.replace(/[►▼]/, content.hidden && '►' || '▼')
+        adjustCodeHeight();
     });
 }
 
@@ -181,6 +193,69 @@ function copyButtonHandler() {
         document.execCommand("copy");
         temp.remove();
         //searchForErrors();
+    });
+}
+
+const increment = {
+    "modal": new bootstrap.Modal(document.getElementById("increment-settings-modal")),
+    "from": document.getElementById("increment-from-input"),
+    "to": document.getElementById("increment-to-input"),
+    "every": document.getElementById("increment-every-input"),
+    "dataOper": document.getElementById("increment-data-operator"),
+    "data": document.getElementById("increment-data-operand-input"),
+    "label": document.getElementById("increment-label-option-input"),
+    "hover": document.getElementById("increment-hover-option-input"),
+    "var": document.getElementById("increment-var-input"),
+    "generate": document.getElementById("generate-increment-button"),
+}
+console.log(increment);
+
+function incrementSetup() {
+    increment.from.value = 0;
+    increment.to.value = 100;
+    increment.every.value = 5;
+    increment.dataOper.value = "*";
+    increment.data.value = "0.01";
+    increment.label.value = "#%";
+    increment.hover.value = "#%";
+    increment.var.value = "#";
+
+    increment.generate.addEventListener("click", _ => {
+        const start = parseFloat(increment.from.value);
+        const end = parseFloat(increment.to.value);
+        const incr = parseFloat(increment.every.value);
+        const MAX_ADDITIONS = 100;
+        if (Math.floor((end - start) / incr) > MAX_ADDITIONS) {
+            window.alert("You may not add more than 100 options.");
+            return;
+        }
+
+        const dataOperand = parseFloat(increment.data.value);
+        const labelValue = increment.label.value;
+        const hoverValue = increment.hover.value;
+        const replace = increment.var.value;
+
+        const optionsDiv = increment.modal.optionsDiv;
+        let getData;
+        console.log(increment.dataOper.value);
+        switch (increment.dataOper.value) {
+            case '*':
+                getData = (n) => { return n * dataOperand; }
+                break;
+            case '+':
+                getData = (n) => { return n + dataOperand; }
+                break;
+            case '..':
+                getData = (n) => { return n.toString() + increment.data.value; }
+                break;
+            
+        }
+        for (let n = start; n <= end; n += incr) {
+            const newOption = addOption(optionsDiv)
+            newOption.dataInput.triggerSetValue(getData(n));
+            newOption.labelInput.triggerSetValue(labelValue.replace(replace, n));
+            newOption.hoverInput.triggerSetValue(hoverValue.replace(replace, n));
+        }
     });
 }
 
@@ -226,6 +301,7 @@ function modiconCheckBox() {
         xml.toggleAttribute("hidden");
         texLine.classList.toggle("comment");
         xmlLine.classList.toggle("comment");
+        adjustCodeHeight();
     });
 }
 
@@ -326,12 +402,22 @@ function onAddOptionClick(event) {
             const KEY_A = 65;
             const KEY_Z = KEY_A + 25;
             for (let i = KEY_A; i <= KEY_Z; i++) {
-                console.log("TEST");
                 const newOption = addOption(btn.optionsDiv);
                 const char = String.fromCharCode(i);
                 newOption.dataInput.triggerSetValue(char);
                 newOption.labelInput.triggerSetValue(char);
             }
+            btn.select.value = "1";
+            break;
+        case "INCREMENT":
+            console.log("TESTTTTTTTT");
+            btn.select.value = "1";
+            
+            const modal = increment.modal;
+            console.log(modal);
+            modal.optionsDiv = btn.optionsDiv;
+            modal.show();
+            //window.alert("Not implemented");
             break;
     }
 }
@@ -692,11 +778,11 @@ function importCodeButtonSetup() {
         "priority": "priority-input",
     }
     btn.addEventListener("click", event => {
-        const code = codeImportInput.value;
+        const codeInput = codeImportInput.value;
         const foundVars = new Set();
         let info;
         try {
-            info = lua_load(code)()?.str;
+            info = lua_load(codeInput)()?.str;
         } 
         catch (error) {
             console.log(error, typeof(error));
@@ -763,3 +849,5 @@ makeCollapsable(document.getElementById("advanced-toggle"), document.getElementB
 modiconCheckBox();
 copyButtonHandler();
 importCodeButtonSetup();
+incrementSetup();
+adjustCodeHeight();
