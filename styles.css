@@ -89,6 +89,7 @@ legend {
 fieldset {
     /* filter: grayscale(10%);
     filter: saturate(115%); */
+    border: 1px solid rgba(255, 255, 255, 0.488);
     filter: sepia(3%);
     background-color: #62678f;
     border-radius: 5px;

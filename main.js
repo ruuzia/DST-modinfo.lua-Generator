@@ -8,7 +8,7 @@ const numberRegex = /^\-?\d*\.?\d*$/;
 const modiconCheck = document.getElementById("modicon-check")
 const configsCode = document.getElementById("configs");
 const configs = document.getElementById("configs-form");
-const formInputs = [];
+const formInputs = Array.from(document.getElementsByClassName("input-code"));
 
 const replacements = {
     "&": "&amp;",
@@ -211,26 +211,36 @@ const increment = {
 }
 
 function incrementSetup() {
-    increment.from.value = 0;
-    increment.to.value = 100;
-    increment.every.value = 5;
-    increment.dataOper.value = "*";
-    increment.data.value = "0.01";
-    increment.label.value = "#%";
-    increment.hover.value = "#%";
-    increment.var.value = "#";
+
+    [increment.from, increment.to, increment.every, increment.data].forEach(input => {
+        let trustedValue = "";
+        input.addEventListener("beforeinput", _ => {
+            trustedValue = input.value;
+        });
+        input.addEventListener("input", _ => {
+            if (input.value && isNaN(parseFloat(input.value))) {
+                input.value = trustedValue;
+            } else {
+                trustedValue = input.value;
+            }
+        });
+    });
 
     increment.generate.addEventListener("click", _ => {
         const start = parseFloat(increment.from.value);
         const end = parseFloat(increment.to.value);
         const incr = parseFloat(increment.every.value);
+        const dataOperand = parseFloat(increment.data.value);
+
         const MAX_ADDITIONS = 100;
         if (Math.floor((end - start) / incr) > MAX_ADDITIONS) {
             window.alert("You may not add more than 100 options.");
             return;
         }
+        if (isNaN(start) || isNaN(end) || isNaN(incr)) {
+            window.alert("You must use valid numbers for 'From', 'To', and 'Increment' inputs.")
+        }
 
-        const dataOperand = parseFloat(increment.data.value);
         const labelValue = increment.label.value;
         const hoverValue = increment.hover.value;
         const replace = increment.var.value;
@@ -605,7 +615,6 @@ function dragdropped(event) {
 }
 
 
-
 function fileSelected(event) {
     const file = event.target.files[0];
     const ext = file.name.slice(-4);
@@ -661,18 +670,36 @@ function makeConfigOutput(event) {
     if (input.output) return input.output;
 }
 
+function resetAll() {
+    formInputs.forEach(input => {
+        if (input.isCheckable()) {
+            input.checked = Boolean(input.getAttribute("default"));
+            console.log(input.checked);
+        } else {
+            input.value = input.getAttribute("default") || '';
+        }
+        setCodeFromInput(input);
+    });
+
+    increment.from.value = 0;
+    increment.to.value = 100;
+    increment.every.value = 5;
+    increment.dataOper.value = "*";
+    increment.data.value = "0.01";
+    increment.label.value = "#%";
+    increment.hover.value = "#%";
+    increment.var.value = "#";
+    // Array.from(document.getElementsByClassName("remove-config"), btn => {
+    //     console.log(btn);
+    //     btn.dispatchEvent(new Event("click"));
+    // });;
+}
+
 
 function respondToInputs() {
-    const inputs = document.getElementsByClassName("input-code");
-    Array.from(inputs, item => {
+    formInputs.forEach(item => {
         item.output = getOutputForInput(item);
-        if (item.isCheckable()) {
-            item.checked = Boolean(item.getAttribute("default"));
-        } else {
-            item.value = item.getAttribute("default") || '';
-        }
         formInputs.push(item);
-        setCodeFromInput(item);
         switch (item.id) {
             case "version-input":
             case "dsapiversion-input":
@@ -893,3 +920,4 @@ copyButtonHandler();
 importCodeButtonSetup();
 incrementSetup();
 adjustCodeHeight();
+resetAll();

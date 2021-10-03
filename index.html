@@ -110,8 +110,7 @@
         <form class="mt-5 col-11 col-md-5 col-xl-4 me-md-5" id="input-form">
             <div class="form-outline">
                 <button type="button" class="btn btn-outline-dark mb-2" id="import-code" data-bs-target="#import-modal"
-                    data-bs-toggle="modal">Import
-                    Code</button>
+                    data-bs-toggle="modal">Import Code</button>
                 <div class="form-floating">
                     <input type="text" id="name-input" class="input-code form-control mb-4" placeholder=""
                         onfocus="onInputFocus(event)" required>
@@ -135,42 +134,61 @@
                         Version<span class='error' id="version-error" hidden> ** invalid characters</span>
                     </label>
                 </div>
-                <fieldset class="border px-3 py-1 p-2">
-                    <legend class="fs-6">Game Compatibilities</legend>
-                    <input type="checkbox" class="checkbox input-code form-check-input" id="dst-check" default="check"
-                        onfocus="onInputFocus(event)">
-                    <label for="dst-check"><abbr title="Don't Starve Together">DST</abbr></label>&nbsp
+                <fieldset class="px-3 py-1 p-2 d-flex flex-row justify-content-evenly">
+                    <legend class="fs-6 ms-auto me-auto">Game Compatibilities</legend>
+                    <span>
+                        <input type="checkbox" class="checkbox input-code form-check-input" id="dst-check"
+                            default="check" onfocus="onInputFocus(event)">
+                        <label for="dst-check"><abbr title="Don't Starve Together">DST</abbr></label>&nbsp
+                    </span>
                     <span class="dst-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="forge-check"
                             onfocus="onInputFocus(event)">
                         <label for="forge-check"><abbr title="For ReForged DST Mod">Forge</abbr></label>&nbsp
+                    </span>
+                    <span class="dst-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="gorge-check"
                             onfocus="onInputFocus(event)">
                         <label for="gorge-check"><abbr title="For Re-Gorg-itated DST Mod">Gorge</abbr></label>&nbsp
                     </span>
-                    <input type="checkbox" class="checkbox input-code form-check-input" id="ds-check"
-                        onfocus="onInputFocus(event)">
-                    <label for="ds-check"><abbr title="Don't Starve">DS</abbr></label>&nbsp
+                    <span>
+                        <input type="checkbox" class="checkbox input-code form-check-input" id="ds-check"
+                            onfocus="onInputFocus(event)">
+                        <label for="ds-check"><abbr title="Don't Starve">DS</abbr></label>&nbsp
+                    </span>
                     <span class="ds-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="rog-check"
                             onfocus="onInputFocus(event)">
                         <label for="rog-check"><abbr title="Reign of Giants">ROG</abbr></label>&nbsp
+                    </span>
+                    <span class="ds-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="ham-check"
                             onfocus="onInputFocus(event)">
                         <label for="ham-check"><abbr title="Hamlet">HAM</abbr></label>&nbsp
+                    </span>
+                    <span class="ds-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="sw-check"
                             onfocus="onInputFocus(event)">
                         <label for="sw-check"><abbr title="Shipwrecked">SW</abbr></label>&nbsp
                     </span>
+                    </span>
                 </fieldset>
-                <fieldset class="border px-3 py-1 mt-4 mb-4">
-                    <legend class="fs-6">Mod Type</legend>
-                    <input type="radio" default="checked" name="modtype" id="server-check"
-                        class="input-code form-check-input me-1" onfocus="onInputFocus(event)">Server</input>
-                    <input type="radio" value="client" name="modtype" id="client-check"
-                        class="input-code form-check-input ms-3 me-1" onfocus="onInputFocus(event)">Client-Only</input>
+                <fieldset class="px-3 py-1 mt-4 mb-4">
+                    <legend class="fs-6 ms-auto me-auto">Mod Type</legend>
+                    <div class="d-flex flex-row justify-content-around">
+                        <div>
+                            <input type="radio" default="checked" name="modtype" id="server-check"
+                                class="input-code form-check-input me-1" onfocus="onInputFocus(event)">
+                            <label for="server-check">Server</label>
+                        </div>
+                        <div>
+                            <input type="radio" value="client" name="modtype" id="client-check"
+                                class="input-code form-check-input ms-3 me-1" onfocus="onInputFocus(event)">
+                            <label for="client-check">Client-Only</label>
+                        </div>
+                    </div>
                 </fieldset>
-                <fieldset class="border px-3 py-1 mt-4 mb-2">
+                <fieldset class=" px-3 py-1 mt-4 mb-2">
                     <input type="checkbox" class="form-check-input me-1" id="modicon-check">
                     <label for="modicon-check" class="smaller">I have .tex and .xml files for my mod icon in my mod
                         directory</label><br><br>
@@ -188,7 +206,7 @@
 
                     </div>
                 </fieldset>
-                <fieldset class="border px-3 py-1">
+                <fieldset class=" px-3 py-1">
                     <legend id="advanced-toggle" class="fs-5">► Advanced Settings</legend>
 
                     <div id="advanced" hidden>
@@ -234,9 +252,9 @@
         <!-- CONFIGURATIONS -->
 
         <form class="col-11 col-lg-9 col-xl-7 order-md-last mt-3">
-            <fieldset class="border px-3" id="configs-form">
+            <fieldset class=" px-3" id="configs-form">
                 <legend class="fs-5"><span class="header">Configurations</span></legend>
-                <fieldset class="configuration border border-end-0 border-start-0 border-bottom-0 mt-3 mb-2 pb-2 ps-3"
+                <fieldset class="configuration border-end-0 border-start-0 border-bottom-0 mt-3 mb-2 pb-2 ps-3"
                     id="config-#" hidden>
                     <legend class="fs-6 w-auto px-2 configuration-legend"><span class="header">▼ Config #</span>
                     </legend>
