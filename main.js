@@ -86,10 +86,8 @@ HTMLElement.prototype.applyToAllChildrenDeep = function(func) {
 }
 
 function adjustCodeHeight() {
-    console.log(code.scrollTopMax);
     let overflowHeight = parseInt(codeDiv.style.maxHeight) + code.scrollTopMax;
     let newHeight = Math.min(inputForm.clientHeight, overflowHeight);
-    console.log(newHeight, inputForm.clientHeight, overflowHeight);
     codeDiv.style.maxHeight = newHeight;
     code.style.maxHeight = newHeight - 20;
 }
@@ -118,12 +116,10 @@ function setCodeFromInput(input, override=null, typeCheck=false) {
     }
     
     function inner(output) {
-        code.scrollTop = output.offsetTop - code.clientHeight;
         if (input.isCheckable()) {
             output.innerText = input.checked && "true" || "false";
             return
         }
-        
         output.innerHTML = text;
     }
     if (input.outputs) {
@@ -148,7 +144,7 @@ function typeAndOutput(value, outputs) {
         type = "str";
         text = '[[' + escapeText(value.slice(2,-2))  + ']]';
     } else if (numberRegex.test(value)) {
-        type = "n";
+        type = "num";
         text = escapeText(value);
     } else {
         type = "str";
@@ -196,6 +192,11 @@ function copyButtonHandler() {
     });
 }
 
+function onInputFocus(event) {
+    const elem = event.target;
+    code.scrollTop = (elem.output || elem.outputs[0]).offsetTop - code.clientHeight;
+}
+
 const increment = {
     "modal": new bootstrap.Modal(document.getElementById("increment-settings-modal")),
     "from": document.getElementById("increment-from-input"),
@@ -208,7 +209,6 @@ const increment = {
     "var": document.getElementById("increment-var-input"),
     "generate": document.getElementById("generate-increment-button"),
 }
-console.log(increment);
 
 function incrementSetup() {
     increment.from.value = 0;
@@ -237,7 +237,6 @@ function incrementSetup() {
 
         const optionsDiv = increment.modal.optionsDiv;
         let getData;
-        console.log(increment.dataOper.value);
         switch (increment.dataOper.value) {
             case '*':
                 getData = (n) => { return n * dataOperand; }
@@ -331,6 +330,7 @@ function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
         }
     });
     const radio = document.querySelector(`#${option.id} .option-radio-input`);
+    console.log("option setup radio", radio);
     option.default = radio;
     registerRadioConfigListener(radio, config, radioChecked);
     window.scrollBy(0, option.clientHeight);
@@ -365,13 +365,14 @@ function registerHoverOptionInput(input, option) {
 
 let checkedRadio;
 function registerRadioConfigListener(radio, config, startChecked) {
-    const output = config.output.getChildWithClass("config-default");
-    radio.name = radio.name.replace(/#/, config.configid);
+    console.log("REGISTER RADIO CONFIG LISTENER", radio);
+    radio.output = config.output.getChildWithClass("config-default");
+    radio.name = radio.name.replace(/[#\d]+/, config.configid);
     radio.input = radio.parentNode.getChildWithClass("option-data-input");
 
     function onchange() {
         if (checkedRadio) checkedRadio.input.outputs = null;
-        radio.input.outputs = [radio.input.output, output];
+        radio.input.outputs = [radio.input.output, radio.output];
         radio.input.dispatchEvent(new Event("input"));
         checkedRadio = radio;
     }
@@ -410,11 +411,8 @@ function onAddOptionClick(event) {
             btn.select.value = "1";
             break;
         case "INCREMENT":
-            console.log("TESTTTTTTTT");
             btn.select.value = "1";
-            
             const modal = increment.modal;
-            console.log(modal);
             modal.optionsDiv = btn.optionsDiv;
             modal.show();
             //window.alert("Not implemented");
@@ -433,7 +431,61 @@ function addOption(optionsDiv) {
     return newOption
 }
 
+function resetConfigLegendNumbers() {
+    const configsArr = configs.configsArr;
+    for (let i = 0; i < configsArr.length; i++) {
+        const legend = configsArr[i].legend;
+        legend.innerText = legend.innerText.replace(/[\d#]/, i+1);
+    }
+}
 
+function onDuplicateConfigClick(event) {
+    const btn = event.target;
+    if (!btn.config) {
+        btn.config = btn.getParentWithClass("configuration");
+    }
+
+    let tempUncheckIndex; // need to do this so when it is cloned it doesnt steal the radio check before 
+    let tempUnchecked;    // its name is changed 
+    btn.config.optionsArr.every((option, index) => {
+        if (option.default.checked) {
+            tempUncheckIndex = index;
+            tempUnchecked = option.default;
+            console.log(tempUncheckIndex, tempUnchecked); //dev
+            option.default.checked = false;
+            return false;
+        }
+        return true;
+    });
+
+    const newConfig = btn.config.cloneNode(true);
+
+    if (tempUnchecked != null) {
+        console.log("Rechecking tempUnchecked");
+        tempUnchecked.checked = true;
+        console.log(tempUnchecked.checked);
+    }
+
+    const id = btn.config.configid;
+    configs.insertBefore(newConfig, btn.config.nextElementSibling);
+    const index = configs.configsArr.indexOf(btn.config) + 1;
+    configs.configsArr.splice(index, 0, newConfig);
+    
+    configSetup(newConfig, id, index+1);
+    //newConfig.legend.dispatchEvent(new Event("click"));
+    resetConfigLegendNumbers();
+    
+    const newCode = btn.config.output.cloneNode(true);
+    newCode.id = "configcode-" + newConfig.configid
+    configsCode.insertBefore(newCode, btn.config.output.nextElementSibling);
+    newConfig.output = newCode;
+    configInputSetup(newConfig, newCode.id);
+
+    if (tempUncheckIndex != null) {
+        newConfig.optionsArr[tempUncheckIndex].default.checked = true;
+    }
+    return newConfig
+}
 
 const addBtn = document.getElementById("add-config");
 const configClone = document.querySelector(".configuration");
@@ -442,22 +494,24 @@ addBtn.addEventListener("click", addConfig);
 function addConfig() {
     const newConfig = configClone.cloneNode(true);
     newConfig.hidden = false;
-    addBtn.parentNode.insertBefore(newConfig, addBtn);
-    configIdCount++;
+    configs.insertBefore(newConfig, addBtn);
+    configs.configsArr.push(newConfig); 
     configSetup(newConfig);
     window.scrollBy(0, newConfig.clientHeight);
+    createConfigCode(newConfig);
     return newConfig;
 }
 
 function configSetup(config) {
+    configIdCount++;
     config.optionsArr = [];
-    configs.configsArr.push(config); // will need to move this once configs can be duplicated
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
+    console.log(config.configid, config.id);
 
     const legend = config.getChildWithClass("configuration-legend");
-    const count = document.querySelectorAll(".configuration").length - 1;
-    legend.innerText = legend.innerText.replace(/#/, count);
+    const count = configs.configsArr.length;
+    legend.innerText = legend.innerText.replace(/[#\d]+/, count);
     makeCollapsable(legend, legend.nextElementSibling);
     
     config.nameInput = document.querySelector(`#${config.id} .config-name-input`);
@@ -466,7 +520,6 @@ function configSetup(config) {
     config.optionsForm = document.querySelector(`#${config.id} .options`);
     config.legend = legend;
 
-    createConfigCode(config);
     console.log("Config set up with id of " + config.id);
 }
 
@@ -481,36 +534,35 @@ function createConfigCode(configForm) {
     const id = "configcode-" + configForm.configid;
     newConfigCode.id = id;
 
-    configInputSetup(configForm.id, id);
+    configInputSetup(configForm, id);
 }
 
 
-function configInputSetup(formId, codeId) {
-    const inputs = [];
-    inputs[0] = document.querySelector(`#${formId} .config-label-input`);
-    inputs[0].output = document.querySelector(`#${codeId} .config-label`);
+function configInputSetup(config, codeId) {
+    config.labelInput.output = document.querySelector(`#${codeId} .config-label`);
+    config.nameInput.outputs = Array.from(document.querySelectorAll(`#${codeId} .config-name`));
+    config.hoverInput.output = document.querySelector(`#${codeId} .config-hover`);
 
-    inputs[1] = document.querySelector(`#${formId} .config-name-input`);
-    inputs[1].outputs = Array.from(document.querySelectorAll(`#${codeId} .config-name`));
-
-    inputs[2] = document.querySelector(`#${formId} .config-hover-input`);
-    inputs[2].output = document.querySelector(`#${codeId} .config-hover`);
-
-    inputs.forEach(input => {
-        input.addEventListener("input", _ => {
-            setCodeFromInput(input);
-        });
+    config.labelInput.addEventListener("input", _ => {
+        setCodeFromInput(config.labelInput);
     });
 
-    const optionForms = document.querySelectorAll(`#${formId} .option`);
+    config.nameInput.addEventListener("input", _ => {
+        setCodeFromInput(config.nameInput);
+    });
+    
+    config.hoverInput.addEventListener("input", _ => {
+        setCodeFromInput(config.hoverInput);
+    });
+
+    const optionsForm = config.optionsForm.children;
     const optionCodes = document.querySelectorAll(`#${codeId} .option-code`);
-    for (let i = 0; i < optionForms.length; i++) {
-        const form = optionForms[i];
+    config.optionsForm.output = optionCodes[0]?.parentNode || document.querySelector(`#${codeId} .options-code`);
+    for (let i = 0; i < optionsForm.length; i++) {
+        const option = optionsForm[i];
         const code = optionCodes[i];
-        
-        form.parentNode.output = code.parentNode;
-        optionSetUp(form, form.parentNode, code, form==optionForms[0]);
-        form.config.optionsArr.push(form);
+        optionSetUp(option, config.optionsForm, code, option==optionsForm[0]);
+        option.config.optionsArr.push(option);
     }
 }
 
@@ -518,8 +570,8 @@ function configInputSetup(formId, codeId) {
 function onOptionDeleteClick(event) {
     const option = event.target.getParentWithClass("option");
     option.output.remove();
-    const optionArr = option.config.optionsArr;
-    optionArr.splice(optionArr.indexOf(option), 1);
+    const optionsArr = option.config.optionsArr;
+    optionsArr.splice(optionsArr.indexOf(option), 1);
     option.remove();
 }
 
@@ -581,8 +633,14 @@ function onOptionDuplicateClick(event) {
     if (!btn.optionDiv) {
         btn.option = btn.getParentWithClass("option");
     }
+    const radio = btn.option.default;
+    const wasChecked = radio.checked; //temp
+    radio.checked = false;
 
-    const newOption = btn.option.cloneNode(true);
+    const newOption = btn.option.cloneNode(true); //dont want cloned option to steal radio check!
+
+    radio.checked = wasChecked;
+
     const optionsDiv = btn.option.parentNode
     const optionCode = btn.option.output.cloneNode(true);
     unCheckRadios(newOption);
@@ -592,16 +650,6 @@ function onOptionDuplicateClick(event) {
     const optionsArr = newOption.config.optionsArr
     const index = optionsArr.indexOf(btn.option) + 1;
     optionsArr.splice(index, 0, newOption);
-}
-
-function resetConfigLegendNumbers() {
-    let count = 0;
-    Array.from(document.querySelectorAll(".configuration-legend"), elem => {
-        if (!elem.parentNode.hidden) {
-            count++;
-            elem.innerText = elem.innerText.replace(/\d+/, count);
-        }
-    });
 }
 
 function onRemoveConfigClick(event) {
@@ -851,3 +899,6 @@ copyButtonHandler();
 importCodeButtonSetup();
 incrementSetup();
 adjustCodeHeight();
+
+addBtn.dispatchEvent(new Event("click")); //DEV
+
