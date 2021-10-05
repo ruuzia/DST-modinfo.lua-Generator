@@ -9,6 +9,7 @@ const modiconCheck = document.getElementById("modicon-check")
 const configsCode = document.getElementById("configs");
 const configs = document.getElementById("configs-form");
 const formInputs = Array.from(document.getElementsByClassName("input-code"));
+const advancedToggle = document.getElementById("advanced-toggle");
 
 const replacements = {
     "&": "&amp;",
@@ -35,6 +36,7 @@ HTMLElement.prototype.isCheckable = function() {
 }
 
 HTMLInputElement.prototype.triggerSetValue = function(value) {
+    if (value == null) return;
     if (this.isCheckable()) {
         this.checked =  value || false;
         this.dispatchEvent(new Event("change"));
@@ -314,271 +316,6 @@ function modiconCheckBox() {
     });
 }
 
-function optionSetUp(option, optionsDiv, optionCode, radioChecked=false) {
-    const config = optionsDiv.getParentWithClass("configuration");
-    const countStr = optionsDiv.getAttribute("optioncount");
-    option.optionid = countStr;
-    option.config = config;
-    option.id = `config-${config.configid}-option-${option.optionid}-input`;
-    option.output = optionCode;
-    option.output.id = option.id.replace("input", "output");
-    optionsDiv.setAttribute("optioncount", parseInt(countStr) + 1);
-    Array.from(document.querySelectorAll(`#${option.id} .input-config`), input => {
-        switch (input.name) {
-            case "option-data":
-                option.dataInput = input;
-                registerDataOptionInput(input, option);
-                break;
-            case "option-label":
-                option.labelInput = input;
-                registerLabelOptionInput(input, option);
-                break;
-            case "option-hover":
-                option.hoverInput = input;
-                registerHoverOptionInput(input, option);
-                break;
-        }
-    });
-    const radio = document.querySelector(`#${option.id} .option-radio-input`);
-    option.default = radio;
-    registerRadioConfigListener(radio, config, radioChecked);
-    window.scrollBy(0, option.clientHeight);
-}
-
-function registerDataOptionInput(input, option) {
-    input.output = document.querySelector(`#${option.output.id} .option-data`)
-    input.addEventListener("input", _ => {
-        setCodeFromInput(input, input.value ? null : '""', true)
-    });
-}
-
-function registerLabelOptionInput(input, option) {
-    input.output = document.querySelector(`#${option.output.id} .option-label`)
-    input.addEventListener("input", _ => {
-        setCodeFromInput(input, null, false)
-    });
-}
-
-function registerHoverOptionInput(input, option) {
-    input.output = document.querySelector(`#${option.output.id} .option-hover`)
-    const line = input.output.getParentWithClass("option-hover-line");
-    input.addEventListener("input", _ => {
-        if (input.value) {
-            setCodeFromInput(input, null, false)
-            line.hidden = false;
-        } else {
-            line.hidden = true;
-        }
-    });
-}
-
-let checkedRadio;
-function registerRadioConfigListener(radio, config, startChecked) {
-    radio.output = config.output.getChildWithClass("config-default");
-    radio.name = radio.name.replace(/[#\d]+/, config.configid);
-    radio.input = radio.parentNode.getChildWithClass("option-data-input");
-
-    function onchange() {
-        if (checkedRadio) checkedRadio.input.outputs = null;
-        radio.input.outputs = [radio.input.output, radio.output];
-        radio.input.dispatchEvent(new Event("input"));
-        checkedRadio = radio;
-    }
-    if (startChecked) {
-        radio.checked = true;
-        onchange();
-    }
-
-    radio.addEventListener("change", onchange);
-}
-
-const optionClone = document.querySelector(".option");
-optionClone.optionid = 0
-const optionCodeClone = document.querySelector(".option-code");
-
-function onAddOptionClick(event) {
-    const btn = event.target;
-    if (!btn.optionsDiv) {
-        btn.optionsDiv = btn.parentNode.getChildWithClass("options");
-        btn.select = btn.nextElementSibling;
-    }
-
-    switch (btn.select.value) {
-        case "1":
-            addOption(btn.optionsDiv);
-            break;
-        case "KEYS":
-            const KEY_A = 65;
-            const KEY_Z = KEY_A + 25;
-            for (let i = KEY_A; i <= KEY_Z; i++) {
-                const newOption = addOption(btn.optionsDiv);
-                const char = String.fromCharCode(i);
-                newOption.dataInput.triggerSetValue(char);
-                newOption.labelInput.triggerSetValue(char);
-            }
-            btn.select.value = "1";
-            break;
-        case "INCREMENT":
-            btn.select.value = "1";
-            const modal = increment.modal;
-            modal.optionsDiv = btn.optionsDiv;
-            modal.show();
-            //window.alert("Not implemented");
-            break;
-    }
-}
-
-function addOption(optionsDiv) {
-    const newOption = optionClone.cloneNode(true);
-    const newOptionCode = optionCodeClone.cloneNode(true)
-    unCheckRadios(newOption);
-    optionsDiv.appendChild(newOption);
-    optionsDiv.output.appendChild(newOptionCode);
-    optionSetUp(newOption, optionsDiv, newOptionCode);
-    newOption.config.optionsArr.push(newOption);
-    return newOption
-}
-
-function resetConfigLegendNumbers() {
-    const configsArr = configs.configsArr;
-    for (let i = 0; i < configsArr.length; i++) {
-        const legend = configsArr[i].legend;
-        legend.innerText = legend.innerText.replace(/[\d#]+/, i+1);
-    }
-}
-
-function onDuplicateConfigClick(event) {
-    const btn = event.target;
-    if (!btn.config) {
-        btn.config = btn.getParentWithClass("configuration");
-    }
-
-    let tempUncheckIndex; // need to do this so when it is cloned it doesnt steal the radio check before 
-    let tempUnchecked;    // its name is changed 
-    btn.config.optionsArr.every((option, index) => {
-        if (option.default.checked) {
-            tempUncheckIndex = index;
-            tempUnchecked = option.default;
-            option.default.checked = false;
-            return false;
-        }
-        return true;
-    });
-
-    const newConfig = btn.config.cloneNode(true);
-
-    if (tempUnchecked != null) {
-        tempUnchecked.checked = true;
-    }
-
-    const id = btn.config.configid;
-    configs.insertBefore(newConfig, btn.config.nextElementSibling);
-    const index = configs.configsArr.indexOf(btn.config) + 1;
-    configs.configsArr.splice(index, 0, newConfig);
-    
-    configSetup(newConfig, id, index+1);
-    //newConfig.legend.dispatchEvent(new Event("click"));
-    resetConfigLegendNumbers();
-    
-    const newCode = btn.config.output.cloneNode(true);
-    newCode.id = "configcode-" + newConfig.configid
-    configsCode.insertBefore(newCode, btn.config.output.nextElementSibling);
-    newConfig.output = newCode;
-    configInputSetup(newConfig, newCode.id);
-
-    if (tempUncheckIndex != null) {
-        newConfig.optionsArr[tempUncheckIndex].default.checked = true;
-    }
-    return newConfig
-}
-
-const addBtn = document.getElementById("add-config");
-const configClone = document.querySelector(".configuration");
-addBtn.addEventListener("click", addConfig);
-
-function addConfig() {
-    const newConfig = configClone.cloneNode(true);
-    newConfig.hidden = false;
-    configs.insertBefore(newConfig, addBtn);
-    configs.configsArr.push(newConfig); 
-    configSetup(newConfig);
-    window.scrollBy(0, newConfig.clientHeight);
-    createConfigCode(newConfig);
-    return newConfig;
-}
-
-function configSetup(config) {
-    configIdCount++;
-    config.optionsArr = [];
-    config.configid = configIdCount;
-    config.id = `configform-${configIdCount}`;
-
-    const legend = config.getChildWithClass("configuration-legend");
-    const count = configs.configsArr.length;
-    legend.innerText = legend.innerText.replace(/[#\d]+/, count);
-    makeCollapsable(legend, legend.nextElementSibling);
-    
-    config.nameInput = document.querySelector(`#${config.id} .config-name-input`);
-    config.hoverInput = document.querySelector(`#${config.id} .config-hover-input`);
-    config.labelInput = document.querySelector(`#${config.id} .config-label-input`);
-    config.optionsForm = document.querySelector(`#${config.id} .options`);
-    config.legend = legend;
-
-    console.log("Config set up with id of " + config.id);
-}
-
-
-const configCodeClone = document.querySelector(".configCode");
-
-function createConfigCode(configForm) {
-    const newConfigCode = configCodeClone.cloneNode(true);
-    newConfigCode.hidden = false;
-    configForm.output = newConfigCode;
-    configsCode.appendChild(newConfigCode);
-    const id = "configcode-" + configForm.configid;
-    newConfigCode.id = id;
-
-    configInputSetup(configForm, id);
-}
-
-
-function configInputSetup(config, codeId) {
-    config.labelInput.output = document.querySelector(`#${codeId} .config-label`);
-    config.nameInput.outputs = Array.from(document.querySelectorAll(`#${codeId} .config-name`));
-    config.hoverInput.output = document.querySelector(`#${codeId} .config-hover`);
-
-    config.labelInput.addEventListener("input", _ => {
-        setCodeFromInput(config.labelInput);
-    });
-
-    config.nameInput.addEventListener("input", _ => {
-        setCodeFromInput(config.nameInput);
-    });
-    
-    config.hoverInput.addEventListener("input", _ => {
-        setCodeFromInput(config.hoverInput);
-    });
-
-    const optionsForm = config.optionsForm.children;
-    const optionCodes = document.querySelectorAll(`#${codeId} .option-code`);
-    config.optionsForm.output = optionCodes[0]?.parentNode || document.querySelector(`#${codeId} .options-code`);
-    for (let i = 0; i < optionsForm.length; i++) {
-        const option = optionsForm[i];
-        const code = optionCodes[i];
-        optionSetUp(option, config.optionsForm, code, option==optionsForm[0]);
-        option.config.optionsArr.push(option);
-    }
-}
-
-
-function onOptionDeleteClick(event) {
-    const option = event.target.getParentWithClass("option");
-    option.output.remove();
-    const optionsArr = option.config.optionsArr;
-    optionsArr.splice(optionsArr.indexOf(option), 1);
-    option.remove();
-}
-
 function unCheckRadios(parent) {
     parent.applyToAllChildrenDeep(elem => {
         if (elem.type == "radio") {
@@ -615,6 +352,72 @@ function dragdropped(event) {
 }
 
 
+const modDependencyInputs = [];
+const codeDependencies = document.getElementById("moddependencies");
+const codeDependencyClone = document.querySelector(".dependency").cloneNode(true);
+const modDependencyClone = document.querySelector(".moddependency-div").cloneNode(true);
+const addInputBtn = document.getElementById("add-dependency-button");
+let dependencyIdCount = 0;
+modDependencyClone.hidden = false;
+
+function modDependencySetup() {
+
+    // codeDependencyClone.hidden = false;
+
+    addInputBtn.onclick = function() {
+        addModDependencyInput().focus();
+    }
+}
+
+function addModDependencyInput() {
+    const newDependency = modDependencyClone.cloneNode(true);
+    const newCode = codeDependencyClone.cloneNode(true);
+    const input = newDependency.getChildWithClass("moddependency-input");
+    
+    codeDependencies.hidden = false;
+    newCode.id = `dependency-${dependencyIdCount}`;
+    modDependencyInputs.push(input);
+    addInputBtn.parentNode.insertBefore(newDependency, addInputBtn);
+    codeDependencies.appendChild(newCode);
+    input.output = document.querySelector(`#${newCode.id} .dependency-name-output`);
+    input.deleteButton = input.parentNode.getChildWithClass("smart-input-delete-button");
+    input.output.line = newCode;
+    modDependencyInputRegister(input);
+    dependencyIdCount++;
+    return input;
+}
+
+function modDependencyInputRegister(inputElem) {
+
+    inputElem.addEventListener("input", _ => {
+        inputElem.classList.remove("unfilled");
+        let linkId = inputElem.value.match(/steamcommunity.com.+\?id=(?<id>\d{10})/)?.groups?.id;
+        if (/^workshop-\d+$/.test(inputElem.value)) {
+            setCodeFromInput(inputElem);
+        } else if (/^\d+/.test(inputElem.value)) {
+            setCodeFromInput(inputElem, `workshop-${inputElem.value}`)
+        } else if (linkId) {
+            setCodeFromInput(inputElem, `workshop-${linkId}`); 
+        } else if (inputElem.value) {
+            inputElem.classList.add("unfilled");
+        }
+        inputElem.output.line.hidden = inputElem.value ? false : true;
+    });
+}
+
+function onModDependencyDeleteClick(event) {
+    const btn = event.target;
+    const div = btn.getParentWithClass("moddependency-div");
+    const input = div.getChildWithClass("moddependency-input");
+    modDependencyInputs.splice(modDependencyInputs.indexOf(input), 1);
+    input.output.line.remove();
+    div.remove();
+    if (!modDependencyInputs.length) {
+        codeDependencies.hidden = true;
+    }
+}
+
+
 function fileSelected(event) {
     const file = event.target.files[0];
     const ext = file.name.slice(-4);
@@ -631,50 +434,10 @@ function fileSelected(event) {
     fr.readAsText(file);
 }
 
-function onOptionDuplicateClick(event) {
-    const btn = event.target;
-    if (!btn.optionDiv) {
-        btn.option = btn.getParentWithClass("option");
-    }
-    const radio = btn.option.default;
-    const wasChecked = radio.checked; //temp
-    radio.checked = false;
-
-    const newOption = btn.option.cloneNode(true); //dont want cloned option to steal radio check!
-
-    radio.checked = wasChecked;
-
-    const optionsDiv = btn.option.parentNode
-    const optionCode = btn.option.output.cloneNode(true);
-    unCheckRadios(newOption);
-    optionsDiv.insertBefore(newOption, btn.option.nextElementSibling);
-    optionsDiv.output.insertBefore(optionCode, btn.option.output.nextElementSibling);
-    optionSetUp(newOption, optionsDiv, optionCode);
-    const optionsArr = newOption.config.optionsArr
-    const index = optionsArr.indexOf(btn.option) + 1;
-    optionsArr.splice(index, 0, newOption);
-}
-
-function onRemoveConfigClick(event) {
-    const btn = event.target;
-    const config = btn.getParentWithClass("configuration");
-    config.output.remove();
-    configs.configsArr.splice(configs.configsArr.indexOf(config), 1);
-    window.scrollBy(0, config.clientHeight * -1);
-    config.remove();
-    resetConfigLegendNumbers();
-}
-
-function makeConfigOutput(event) {
-    const input = event.target;
-    if (input.output) return input.output;
-}
-
 function resetAll() {
     formInputs.forEach(input => {
         if (input.isCheckable()) {
             input.checked = Boolean(input.getAttribute("default"));
-            console.log(input.checked);
         } else {
             input.value = input.getAttribute("default") || '';
         }
@@ -877,6 +640,16 @@ function importCodeButtonSetup() {
             filterTagsInput.triggerSetValue(serverFilterTags?.join(", "))
         }
 
+        const dependencies = info.mod_dependencies?.uints;
+        console.log(dependencies);
+        if (dependencies && dependencies instanceof Array) {
+            for (let i = 0; i < dependencies.length; i++) {
+                const dependencyInput = modDependencyInputs[i] || addModDependencyInput();
+                console.log(dependencies[i].str[0]);
+                dependencyInput.triggerSetValue(Object.keys(dependencies[i].str)[0]);
+            }
+        }
+
         const configurationOptions = info.configuration_options?.uints;
         if (configurationOptions && configurationOptions instanceof Array) {
             for (let i = 0; i < configurationOptions.length; i++) {
@@ -893,8 +666,8 @@ function importCodeButtonSetup() {
                 if (!luaOptions) continue;
                 let start = 1;
                 if (luaOptions instanceof Array) start = 0;
-                for (let i = start; true; i++) { // cant use luaOptions.length because lua js can be funky
-                    const codeOption = luaOptions[i]?.str;
+                for (let i = 0; true; i++) { // cant use luaOptions.length because lua js can be funky
+                    const codeOption = luaOptions[i + start]?.str;
                     if (codeOption == null) break;
                     const formOption = inputOptions[i] || addOption(inputConfig.optionsForm);
                     formOption.dataInput.triggerSetValue(codeOption.data);
@@ -909,11 +682,9 @@ function importCodeButtonSetup() {
     });
 }
 
-
-
 configs.configsArr = [];
 respondToInputs();
-makeCollapsable(document.getElementById("advanced-toggle"), document.getElementById("advanced"));
+makeCollapsable(advancedToggle, document.getElementById("advanced"));
 //makeCollapsable(document.querySelector(".configuration-legend"), document.querySelector(".configuration-content"));
 modiconCheckBox();
 copyButtonHandler();
@@ -921,3 +692,5 @@ importCodeButtonSetup();
 incrementSetup();
 adjustCodeHeight();
 resetAll();
+modDependencySetup();
+advancedToggle.dispatchEvent(new Event("click")); // DEVELOPMENT

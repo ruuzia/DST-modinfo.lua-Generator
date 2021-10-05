@@ -1,3 +1,7 @@
+:root {
+    --bg-color: #62678f;
+}
+
 .str {
     color: rgb(108, 108, 255);
 }
@@ -15,8 +19,8 @@
 }
 
 .unfilled {
-    border-color: red;
-    border-width: 3px;
+    border-color: red !important;
+    border-width: 2px;
 }
 
 .header {
@@ -86,17 +90,47 @@ legend {
     width: auto;
 }
 
+.smart-input {
+    width: 75%;
+    height: 30px;
+    border-radius: 0px;
+    /* background-color: rgb(233, 233, 233); */
+}
+
+.add-smart-input {
+    color: dimgray;
+    width: 75%;
+    border-bottom-color: var(--bg-color);
+}
+
+.smart-input-delete-button {
+    height: 30px;
+    border-radius: 0px;
+}
+
 fieldset {
     /* filter: grayscale(10%);
     filter: saturate(115%); */
     border: 1px solid rgba(255, 255, 255, 0.488);
     filter: sepia(3%);
-    background-color: #62678f;
+    background-color: var(--bg-color);
     border-radius: 5px;
 }
 
 #forumthread-link {
     color: blue;
+}
+
+a {
+    color: blue;
+}
+
+#footer {
+    border-radius: 15px;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: white;
+    filter: contrast(200%);
 }
 
 #forumthread-link:hover {

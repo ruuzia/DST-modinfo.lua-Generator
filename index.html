@@ -13,7 +13,6 @@
 
 <body>
 
-
     <!-- Import Modal -->
 
     <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
@@ -188,7 +187,7 @@
                         </div>
                     </div>
                 </fieldset>
-                <fieldset class=" px-3 py-1 mt-4 mb-2">
+                <fieldset class="px-3 py-1 mt-4 mb-2">
                     <input type="checkbox" class="form-check-input me-1" id="modicon-check">
                     <label for="modicon-check" class="smaller">I have .tex and .xml files for my mod icon in my mod
                         directory</label><br><br>
@@ -207,7 +206,9 @@
                     </div>
                 </fieldset>
                 <fieldset class=" px-3 py-1">
-                    <legend id="advanced-toggle" class="fs-5">► Advanced Settings</legend>
+                    <legend id="advanced-toggle" class="fs-5" tabindex="0">► Advanced
+                        Settings
+                    </legend>
 
                     <div id="advanced" hidden>
                         <span class='error' id="forumthread-error" hidden>**
@@ -233,17 +234,29 @@
                                     id="dsapiversion-error" hidden>** invalid characters</span></label>
                         </div>
                         <div class="form-floating">
-                            <input type="text" class="input-code form-control mb-4" id="priority-input" default="0"
+                            <input type="text" class="input-code form-control mb-3" id="priority-input" default="0"
                                 onfocus="onInputFocus(event)">
                             <label for="priority-input">Priority <span class='error' id="priority-error" hidden>**
                                     invalid characters</span></label>
                         </div>
-                        <div class="form-floating">
-                            <input type="text" class="input-code form-control mb-4" id="filtertags-input"
+                        <div class="form-floating mb-4">
+                            <input type="text" class="input-code form-control" id="filtertags-input"
                                 onfocus="onInputFocus(event)">
                             <label for="filtertags-input">Server Filter Tags <span class='error' id="filtertags-error"
                                     hidden>** invalid characters</span></label>
                         </div>
+
+                        <div class="moddependency-div input-group" hidden>
+                            <input type="text" class="form-control smart-input moddependency-input"
+                                placeholder="Steam mod ID or link">
+                            <button tabindex="-1" type="button"
+                                class="input-group-text smart-input-delete-button border-bottom-0"
+                                onclick="onModDependencyDeleteClick(event)">X</span>
+                        </div>
+                        <button type="button"
+                            class="btn btn-light btn-sm mt-1 ms-auto me-auto add-smart-input border-bottom-0"
+                            id="add-dependency-button">Add Mod
+                            Dependency</button>
                     </div>
                 </fieldset>
             </div>
@@ -263,7 +276,8 @@
                             <input type="text" class="input-config form-control w-50 config-name-input me-auto"
                                 placeholder="Reference Name" onfocus="onInputFocus(event)">
                             <button class="btn btn-light mt-2 align-self-end translate-middle-y" type="button"
-                                id="duplicate-config" onclick="onDuplicateConfigClick(event)">Duplicate Config</button>
+                                id="duplicate-config" onclick="onDuplicateConfigClick(event)" tabindex="-1">Duplicate
+                                Config</button>
                         </div>
                         <input type="text" class="input-config form-control mb-3 w-50 config-label-input"
                             placeholder="Label" onfocus="onInputFocus(event)">
@@ -287,11 +301,11 @@
                                 <span style="white-space: nowrap;">
                                     <button title="Delete option"
                                         class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
-                                        onclick="onOptionDeleteClick(event)" onloadend="test(event)"
-                                        type="button">×</button>
+                                        onclick="onOptionDeleteClick(event)" onloadend="test(event)" type="button"
+                                        tabindex="-1">×</button>
                                     <button title="Duplicate option"
                                         class="btn btn-outline-light ms-2 option-duplicate d-inline-flex"
-                                        onclick="onOptionDuplicateClick(event)" type="button">↲</button>
+                                        onclick="onOptionDuplicateClick(event)" type="button" tabindex="-1">↲</button>
                                 </span>
                             </div>
                         </div>
@@ -307,8 +321,7 @@
 
                     </div>
                 </fieldset>
-                <button class="btn btn-success my-2" type="button" id="add-config" configcount="1">Add
-                    Config</button>
+                <button class="btn btn-success my-2" type="button" id="add-config" configcount="1">Add Config</button>
             </fieldset>
         </form>
 
@@ -318,7 +331,7 @@
             <code>
                 <div class="overflow-scroll d-flex w-100 h-100" id="code" style="max-height: 780px; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
                 <div>
-                    name = <span class="str">
+                name = <span class="str">
                     "<span class="code-data" id="name"></span>"
                 </span><br>
                 author = <span class="str">
@@ -365,6 +378,11 @@
                 priority = <span class="num">
                     <span class="code-data" id="priority"></span>
                 </span><br>
+                mod_dependencies = {<div hidden id="moddependencies">
+                    <div class="dependency" hidden>&nbsp;&nbsp;&nbsp;&nbsp;{ 
+                        [<span class="str">"<span class="dependency-name-output"></span>"</span>] = 
+                        <span class="bool">false</span> },</div>
+                </div>}<br>
                 server_filter_tags = {<span class="code-data" id="filtertags"></span>}<br>
                 configuration_options = {
                     <div id="configs">
@@ -385,7 +403,6 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;},<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;default = <span class="config-default">""</span><br>
                         },<br>
-
                         </div>
                     </div>
                 }
@@ -399,14 +416,21 @@
         </div>
     </div>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/luaparse@0.3.1/luaparse.min.js"></script> -->
+    <div id="footer" class="mx-3 mt-5 mb-5 py-2 flex-row d-flex justify-content-center" id="footer">
+        <a href="http://www.dontstarvegame.com/">Don't Starve</a> &copy; <a href="http://kleientertainment.com/">Klei
+            Entertainment</a>&nbsp; Unofficial modinfo generator&nbsp;&nbsp;<a
+            href="https://github.com/grassdne/DST-modinfo.lua-Generator">Source code</a> &nbsp;&nbsp;
+        <a href="https://github.com/grassdne/DST-modinfo.lua-Generator/issues/new">Report an issue</a>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
 
     <script src="luajs/lua+parser.min.js"></script>
-    <script src="main.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/configurations.js"></script>
 </body>
 
 </html>
