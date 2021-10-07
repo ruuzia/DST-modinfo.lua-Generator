@@ -1,126 +1,154 @@
 "use strict";
+
 let configIdCount = 0;
-const code = document.getElementById("code");
-const codeDiv = document.getElementById("code-div");
-const inputForm = document.querySelector(".form-outline");
+const code = document.getElementById("code") as HTMLDivElement;
+const codeDiv = document.getElementById("code-div") as HTMLDivElement;
+const inputForm = document.querySelector(".form-outline") as HTMLDivElement;
 const numberRegex = /^\-?\d*\.?\d*$/;
-const modiconCheck = document.getElementById("modicon-check");
-const formInputs = Array.from(document.getElementsByClassName("input-code"));
-const advancedToggle = document.getElementById("advanced-toggle");
-const replacements = {
+const modiconCheck = document.getElementById("modicon-check") as HTMLInputElement;
+const formInputs = Array.from(document.getElementsByClassName("input-code") as HTMLCollectionOf<FormInput>);
+const advancedToggle = document.getElementById("advanced-toggle") as HTMLLegendElement;
+
+
+const replacements: { [key: string]: string } = {
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     "\"": "\\&quot;",
     "'": "&#039;",
     "\n": "<br>",
-    "]": "\\\]"
-};
+    "]": "\\\]" 
+}
 const str = '[' + Object.keys(replacements)
-    .join('')
-    .replace(']', '\\]') + ']';
+                    .join('')
+                    .replace(']', '\\]') + ']';
 var pattern = new RegExp(str, 'g');
-function escapeText(text) {
+
+function escapeText(text: string): string {
     return text.replaceAll(pattern, match => {
-        return replacements[match];
+        return replacements[match]
     });
 }
-HTMLElement.prototype.isCheckable = function () {
+
+interface Node {
+    getParentWithClass (classHTML: string): HTMLElement | null;
+    getChildWithClass (classHTML: string): HTMLElement | null;
+    applyToAllChildrenDeep (func: Function): void;
+}
+
+interface HTMLInputElement {
+    triggerSetValue (value: string | boolean | number): void,
+}
+
+interface HTMLTextAreaElement {
+    triggerSetValue (value: string | boolean | number): void,
+}
+
+interface HTMLElement {
+    isCheckable (): boolean,
+}
+
+declare var bootstrap: any;
+
+HTMLElement.prototype.isCheckable = function() {
     return this instanceof HTMLInputElement && /check|radio/.test(this.type);
-};
-HTMLInputElement.prototype.triggerSetValue = function (value) {
-    if (value == null)
-        return;
+}
+
+HTMLInputElement.prototype.triggerSetValue = function(value: string | boolean | number | null) {
+    if (value == null) return;
     if (this.isCheckable()) {
-        if (typeof (value) != "boolean")
-            throw new Error();
-        this.checked = value;
+        if (typeof(value) != "boolean") throw new Error();
+        this.checked =  value;
         this.dispatchEvent(new Event("change"));
-    }
-    else {
+    } else {
         this.value = value.toString();
     }
     this.dispatchEvent(new Event("input"));
-};
-HTMLTextAreaElement.prototype.triggerSetValue = function (value) {
-    if (value == null)
-        return;
+}
+
+HTMLTextAreaElement.prototype.triggerSetValue = function(value: string | boolean | number | null) {
+    if (value == null) return;
     this.value = value.toString() || "";
     this.dispatchEvent(new Event("input"));
-};
-Node.prototype.getParentWithClass = function (classHTML) {
-    let parent = this.parentNode;
+}
+
+
+Node.prototype.getParentWithClass = function(classHTML) {
+    let parent = this.parentNode as HTMLElement;
     while (!parent.classList || !parent.classList.contains(classHTML)) {
-        parent = parent.parentNode;
-        if (!parent)
-            return null;
+        parent = parent.parentNode as HTMLElement;
+        if (!parent) return null;
     }
-    return parent;
-};
-HTMLElement.prototype.getChildWithClass = function (classHTML) {
+    return parent
+}
+
+HTMLElement.prototype.getChildWithClass = function(classHTML) {
     let correctChild;
     Array.from(this.children, child => {
         if (child.classList.contains(classHTML)) {
             correctChild = child;
-            return;
+            return
         }
     });
     if (correctChild) {
-        return correctChild;
+        return correctChild
     }
-    console.log("Could not find child of class", classHTML);
-    return null;
-};
-HTMLElement.prototype.applyToAllChildrenDeep = function (func) {
-    function inner(parent) {
-        if (!parent.hasChildNodes())
-            return;
+    console.log("Could not find child of class", classHTML)
+    return null
+}
+
+HTMLElement.prototype.applyToAllChildrenDeep = function(func) {
+    function inner(parent: HTMLElement) {
+        if (!parent.hasChildNodes()) return;
         Array.from(parent.children, child => {
-            if (!(child instanceof HTMLElement))
-                return;
+            if (!(child instanceof HTMLElement)) return;
             func(child);
             inner(child);
         });
     }
     inner(this);
-};
+}
+
 function adjustCodeHeight() {
     let overflowHeight = parseInt(codeDiv.style.maxHeight) + code.scrollHeight - code.offsetHeight;
     let newHeight = Math.min(inputForm.clientHeight, overflowHeight);
     codeDiv.style.maxHeight = newHeight.toString();
     code.style.maxHeight = (newHeight - 20).toString();
 }
-function getLuaClassType(elem) {
-    const classMatch = elem.classList.value.match((/str|bool|n/));
-    return classMatch && classMatch[0] || null;
+
+function getLuaClassType(elem: HTMLElement) {
+    const classMatch =  elem.classList.value.match((/str|bool|n/));
+    return classMatch && classMatch[0] || null 
 }
-function setLuaClassType(elem, newClass) {
+
+function setLuaClassType(elem: HTMLElement, newClass: string) {
     const classList = elem.classList;
-    classList.value = classList.value.replaceAll(/ (str|bool|n)/g, '') + ` ${newClass}`;
+    classList.value = classList.value.replaceAll(/ (str|bool|n)/g, '') + ` ${newClass}`
 }
-function getOutputForInput(inputElem) {
+
+function getOutputForInput(inputElem: HTMLElement) {
     const output = document.getElementById(inputElem.id.split("-")[0]);
     if (!output) {
         throw new Error("No output found for " + inputElem);
     }
-    return output;
+    return output
 }
-function setCodeFromInput(input, override = null, typeCheck = false) {
-    const inputValue = override != null ? override : input.value;
-    let text;
+
+function setCodeFromInput(input: FormInput, override: null | string = null, typeCheck: boolean = false) {
+    const inputValue: string = override != null ? override : input.value;
+    let text: string;
     if (typeCheck) {
-        const outputs = input.outputs || input.output;
-        if (outputs == null)
-            throw new Error();
+        const outputs: any = input.outputs || input.output;
+        if (outputs == null) throw new Error();
         text = typeAndOutput(inputValue, outputs);
-    }
-    else {
+    } else {
         text = escapeText(inputValue);
     }
-    function inner(output) {
+    
+    function inner(output: CodeOutput) {
         if (input.isCheckable()) {
-            output.innerText = input.checked && "true" || "false";
-            return;
+            output.innerText = (input as HTMLInputElement).checked && "true" || "false";
+            return
         }
         output.innerHTML = text;
     }
@@ -128,33 +156,27 @@ function setCodeFromInput(input, override = null, typeCheck = false) {
         input.outputs.forEach(elem => {
             inner(elem);
         });
-    }
-    else if (input.output) {
+    } else if (input.output) {
         inner(input.output);
-    }
-    else
-        throw new Error();
+    } else throw new Error();
 }
-function typeAndOutput(value, outputs) {
+
+function typeAndOutput(value: string, outputs: CodeOutput | CodeOutput[]) {
     let text = "";
     let type = "";
     if (/^(false|true)$/.test(value)) {
         type = "bool";
         text = escapeText(value);
-    }
-    else if (/^(["']).*\1$/.test(value)) {
+    } else if (/^(["']).*\1$/.test(value)) {
         type = "str";
-        text = value[0] + escapeText(value.slice(1, -1)) + value[0];
-    }
-    else if (/^\[\[.*\]\]$/.test(value)) {
+        text = value[0] + escapeText(value.slice(1,-1)) + value[0];
+    } else if (/^\[\[.*\]\]$/.test(value)) {
         type = "str";
-        text = '[[' + escapeText(value.slice(2, -2)) + ']]';
-    }
-    else if (numberRegex.test(value)) {
+        text = '[[' + escapeText(value.slice(2,-2))  + ']]';
+    } else if (numberRegex.test(value)) {
         type = "num";
         text = escapeText(value);
-    }
-    else {
+    } else {
         type = "str";
         text = '"' + escapeText(value) + '"';
     }
@@ -164,31 +186,32 @@ function typeAndOutput(value, outputs) {
     outputs.forEach(elem => {
         setLuaClassType(elem, type);
     });
-    return text;
+    return text
 }
-function makeCollapsable(toggle, content) {
+
+function makeCollapsable(toggle: HTMLElement, content: HTMLElement) {
     toggle.style.cursor = "pointer";
     toggle.addEventListener("click", () => {
         content.toggleAttribute("hidden");
-        toggle.innerText = toggle.innerText.replace(/[►▼]/, content.hidden && '►' || '▼');
+        toggle.innerText = toggle.innerText.replace(/[►▼]/, content.hidden && '►' || '▼')
         adjustCodeHeight();
     });
 }
-function unCheckRadios(parent) {
+
+function unCheckRadios(parent: HTMLElement) {
     // doesnt require parent to be inserted in document yet
-    parent.applyToAllChildrenDeep((elem) => {
-        if (!(elem instanceof HTMLInputElement))
-            return;
+    parent.applyToAllChildrenDeep((elem: HTMLElement) => {
+        if (!(elem instanceof HTMLInputElement)) return;
         if (elem.type == "radio") {
             elem.checked = false;
         }
     });
 }
+
 function copyButtonHandler() {
     // hacks - cant use clipboard API for compatibility with Firefox
     const btn = document.getElementById("copy-button");
-    if (!(btn instanceof HTMLButtonElement))
-        throw new Error();
+    if (!(btn instanceof HTMLButtonElement)) throw new Error();
     btn.addEventListener("click", event => {
         const temp = document.createElement("textarea");
         const text = code.innerText;
@@ -200,26 +223,30 @@ function copyButtonHandler() {
         //searchForErrors();
     });
 }
-function onInputFocus(event) {
-    const elem = event.target;
+
+function onInputFocus(event: Event) {
+    const elem = event.target as FormInput;
     const output = elem.output || elem.outputs && elem.outputs[0];
-    if (output == null)
-        throw new Error();
+    if (output == null) throw new Error();
     code.scrollTop = (output).offsetTop - code.clientHeight;
 }
-const increment = {
+
+const increment: any = {
     "modal": new bootstrap.Modal(document.getElementById("increment-settings-modal")),
-    "from": document.getElementById("increment-from-input"),
-    "to": document.getElementById("increment-to-input"),
-    "every": document.getElementById("increment-every-input"),
-    "dataOper": document.getElementById("increment-data-operator"),
-    "data": document.getElementById("increment-data-operand-input"),
-    "label": document.getElementById("increment-label-option-input"),
-    "hover": document.getElementById("increment-hover-option-input"),
-    "var": document.getElementById("increment-var-input"),
-    "generate": document.getElementById("generate-increment-button"),
-};
+    "from": document.getElementById("increment-from-input") as HTMLInputElement,
+    "to": document.getElementById("increment-to-input") as HTMLInputElement,
+    "every": document.getElementById("increment-every-input") as HTMLInputElement,
+    "dataOper": document.getElementById("increment-data-operator") as HTMLInputElement,
+    "data": document.getElementById("increment-data-operand-input") as HTMLInputElement,
+    "label": document.getElementById("increment-label-option-input") as HTMLInputElement,
+    "hover": document.getElementById("increment-hover-option-input") as HTMLInputElement,
+    "var": document.getElementById("increment-var-input") as HTMLInputElement,
+    "generate": document.getElementById("generate-increment-button") as HTMLButtonElement,
+}
+
+
 function incrementSetup() {
+
     [increment.from, increment.to, increment.every, increment.data].forEach(input => {
         let trustedValue = "";
         input.addEventListener("beforeinput", () => {
@@ -228,57 +255,62 @@ function incrementSetup() {
         input.addEventListener("input", () => {
             if (input.value && isNaN(parseFloat(input.value))) {
                 input.value = trustedValue;
-            }
-            else {
+            } else {
                 trustedValue = input.value;
             }
         });
     });
+
     increment.generate.addEventListener("click", () => {
         const start = parseFloat(increment.from.value);
         const end = parseFloat(increment.to.value);
         const incr = parseFloat(increment.every.value);
         const dataOperand = parseFloat(increment.data.value);
+
         const MAX_ADDITIONS = 100;
         if (Math.floor((end - start) / incr) > MAX_ADDITIONS) {
             window.alert("You may not add more than 100 options.");
             return;
         }
         if (isNaN(start) || isNaN(end) || isNaN(incr)) {
-            window.alert("You must use valid numbers for 'From', 'To', and 'Increment' inputs.");
+            window.alert("You must use valid numbers for 'From', 'To', and 'Increment' inputs.")
         }
+
         const labelValue = increment.label.value;
         const hoverValue = increment.hover.value;
         const replace = increment.var.value;
+
         const optionsDiv = increment.modal.optionsDiv;
-        let getData = null;
+        type GetData = (n: number) => string;
+        let getData: GetData | null = null;
         switch (increment.dataOper.value) {
             case '*':
-                getData = (n) => { return (n * dataOperand).toString(); };
+                getData = (n: number) => { return (n * dataOperand).toString(); }
                 break;
             case '+':
-                getData = (n) => { return (n + dataOperand).toString(); };
+                getData = (n: number) => { return (n + dataOperand).toString(); }
                 break;
             case '..':
-                getData = (n) => { return n.toString() + increment.data.value; };
+                getData = (n: number) => { return n.toString() + increment.data.value; }
                 break;
+            
         }
-        if (getData == null)
-            throw new Error();
+        if (getData == null) throw new Error();
         for (let n = start; n <= end; n += incr) {
-            const newOption = addOption(optionsDiv);
+            const newOption = addOption(optionsDiv)
             newOption.dataInput.triggerSetValue(getData(n));
             newOption.labelInput.triggerSetValue(labelValue.replace(replace, n));
             newOption.hoverInput.triggerSetValue(hoverValue.replace(replace, n));
         }
     });
 }
+
 function modiconCheckBox() {
-    const modInputs = document.getElementById("modicons");
-    const tex = document.getElementById("comment-modicon-tex");
-    const xml = document.getElementById("comment-modicon-xml");
-    const texLine = document.getElementById("modicontex-line");
-    const xmlLine = document.getElementById("modiconxml-line");
+    const modInputs = document.getElementById("modicons") as HTMLDivElement;
+    const tex = document.getElementById("comment-modicon-tex") as HTMLSpanElement;
+    const xml = document.getElementById("comment-modicon-xml") as HTMLSpanElement;
+    const texLine = document.getElementById("modicontex-line") as HTMLSpanElement;
+    const xmlLine = document.getElementById("modiconxml-line") as HTMLSpanElement;
     modiconCheck.checked = false;
     modiconCheck.addEventListener("change", event => {
         modInputs.toggleAttribute("hidden");
@@ -289,115 +321,119 @@ function modiconCheckBox() {
         adjustCodeHeight();
     });
 }
+
+
 let dragCount = 0;
-let dragged = null;
-function dragenter(event) {
+let dragged: HTMLElement | null = null;
+function dragenter(event: DragEvent) {
     const elem = event.target;
-    if (!(elem instanceof HTMLElement))
-        throw new Error();
-    if (dragged == null)
-        dragged = elem;
+    if (!(elem instanceof HTMLElement)) throw new Error();
+    if (dragged == null) dragged = elem;
     elem.classList.add("dragover");
     dragCount++;
 }
-function dragleave(event) {
+
+function dragleave(event: DragEvent) {
     const elem = event.target;
-    if (!(elem instanceof HTMLElement))
-        throw new Error();
+    if (!(elem instanceof HTMLElement)) throw new Error();
     dragCount--;
     if (dragCount == 0) {
-        elem.classList.remove("dragover");
+        elem.classList.remove("dragover")
         dragged = null;
     }
 }
-const codeImportInput = document.getElementById("code-input");
-function dragdropped(event) {
+
+const codeImportInput = document.getElementById("code-input") as FormInput;
+function dragdropped(event: DragEvent) {
     dragCount = 0;
-    event.target.classList.remove("dragover");
+    (event.target as HTMLElement).classList.remove("dragover")
 }
-const modDependencyInputs = [];
+
+
+const modDependencyInputs: FormInput[] = [];
 const codeDependencies = document.getElementById("moddependencies");
-const codeDependencyClone = document.querySelector(".dependency").cloneNode(true);
-const modDependencyClone = document.querySelector(".moddependency-div").cloneNode(true);
-const addInputBtn = document.getElementById("add-dependency-button");
-if (codeDependencyClone == null || !(codeDependencyClone instanceof HTMLDivElement))
-    throw new Error();
-if (modDependencyClone == null || !(modDependencyClone instanceof HTMLDivElement))
-    throw new Error();
+const codeDependencyClone = (document.querySelector(".dependency") as HTMLDivElement).cloneNode(true);
+const modDependencyClone = (document.querySelector(".moddependency-div") as HTMLDivElement).cloneNode(true);
+const addInputBtn = document.getElementById("add-dependency-button") as HTMLButtonElement;
+
+if (codeDependencyClone == null || !(codeDependencyClone instanceof HTMLDivElement)) throw new Error();
+if (modDependencyClone == null || !(modDependencyClone instanceof HTMLDivElement)) throw new Error();
+
 let dependencyIdCount = 0;
 modDependencyClone.hidden = false;
+
 function modDependencySetup() {
+
     // codeDependencyClone.hidden = false;
-    addInputBtn.onclick = function () {
+    addInputBtn.onclick = function() {
         addModDependencyInput().focus();
-    };
+    }
 }
-function addModDependencyInput() {
-    const newDependency = modDependencyClone.cloneNode(true);
-    const newCode = codeDependencyClone.cloneNode(true);
-    const input = newDependency.getChildWithClass("moddependency-input");
-    if (codeDependencies == null || !(codeDependencies instanceof HTMLDivElement))
-        throw new Error();
-    if (addInputBtn == null || !(addInputBtn instanceof HTMLButtonElement))
-        throw new Error();
+interface ModDependencyInput extends DefaultFormInput {
+    deleteButton: HTMLButtonElement,
+}
+
+function addModDependencyInput(): DefaultFormInput {
+    const newDependency = modDependencyClone.cloneNode(true) as HTMLDivElement;
+    const newCode = codeDependencyClone.cloneNode(true) as HTMLDivElement;
+    const input = newDependency.getChildWithClass("moddependency-input") as ModDependencyInput;
+    
+    if (codeDependencies == null || !(codeDependencies instanceof HTMLDivElement)) throw new Error();
+    if (addInputBtn == null || !(addInputBtn instanceof HTMLButtonElement)) throw new Error();
+
     codeDependencies.hidden = false;
     newCode.id = `dependency-${dependencyIdCount}`;
     modDependencyInputs.push(input);
     const addInputBtnParentNode = addInputBtn.parentNode;
-    if (addInputBtnParentNode == null)
-        throw new Error();
+    if (addInputBtnParentNode == null) throw new Error();
     addInputBtnParentNode.insertBefore(newDependency, addInputBtn);
     codeDependencies.appendChild(newCode);
-    input.output = document.querySelector(`#${newCode.id} .dependency-name-output`);
-    if (input.parentNode == null)
-        throw new Error();
-    input.deleteButton = input.parentNode.getChildWithClass("smart-input-delete-button");
+    input.output = document.querySelector(`#${newCode.id} .dependency-name-output`) as HTMLSpanElement;
+    if (input.parentNode == null) throw new Error();
+    input.deleteButton = input.parentNode.getChildWithClass("smart-input-delete-button") as HTMLButtonElement;
     input.output.line = newCode;
     modDependencyInputRegister(input);
     dependencyIdCount++;
     return input;
 }
-function modDependencyInputRegister(inputElem) {
+
+function modDependencyInputRegister(inputElem: DefaultFormInput) {
+
     inputElem.addEventListener("input", () => {
         inputElem.classList.remove("unfilled");
         let linkId = inputElem.value.match(/steamcommunity.com.+\?id=(?<id>\d{10})/)?.groups?.id;
         if (/^workshop-\d+$/.test(inputElem.value)) {
             setCodeFromInput(inputElem);
-        }
-        else if (/^\d+/.test(inputElem.value)) {
-            setCodeFromInput(inputElem, `workshop-${inputElem.value}`);
-        }
-        else if (linkId) {
-            setCodeFromInput(inputElem, `workshop-${linkId}`);
-        }
-        else if (inputElem.value) {
+        } else if (/^\d+/.test(inputElem.value)) {
+            setCodeFromInput(inputElem, `workshop-${inputElem.value}`)
+        } else if (linkId) {
+            setCodeFromInput(inputElem, `workshop-${linkId}`); 
+        } else if (inputElem.value) {
             inputElem.classList.add("unfilled");
         }
-        if (inputElem?.output?.line == null)
-            throw new Error();
+        if (inputElem?.output?.line == null) throw new Error();
         inputElem.output.line.hidden = inputElem.value ? false : true;
     });
 }
-function onModDependencyDeleteClick(event) {
+
+function onModDependencyDeleteClick(event: Event) {
     const btn = event.target;
-    if (!(btn instanceof HTMLButtonElement))
-        throw new Error();
+    if (!(btn instanceof HTMLButtonElement)) throw new Error();
     const div = btn.getParentWithClass("moddependency-div");
-    if (!(div instanceof HTMLDivElement))
-        throw new Error();
-    const input = div.getChildWithClass("moddependency-input");
+    if (!(div instanceof HTMLDivElement)) throw new Error();
+    const input = div.getChildWithClass("moddependency-input") as FormInput;
     modDependencyInputs.splice(modDependencyInputs.indexOf(input), 1);
-    if (!input?.output?.line)
-        throw new Error();
+    if (!input?.output?.line) throw new Error();
     input.output.line.remove();
     div.remove();
     if (!modDependencyInputs.length) {
-        if (codeDependencies == null)
-            throw new Error();
+        if (codeDependencies == null) throw new Error();
         codeDependencies.hidden = true;
     }
 }
-function fileSelected(event) {
+
+
+function fileSelected(event: any) {
     const file = event.target.files[0];
     const ext = file.name.slice(-4);
     if (ext != '.lua') {
@@ -407,23 +443,23 @@ function fileSelected(event) {
         return;
     }
     let fr = new FileReader();
-    fr.onloadend = function () {
-        if (codeImportInput == null)
-            throw new Error();
-        codeImportInput.value = fr.result;
-    };
+    fr.onloadend = function() {
+        if (codeImportInput == null) throw new Error();
+        codeImportInput.value = fr.result as string;
+    }
     fr.readAsText(file);
 }
+
 function resetAll() {
     formInputs.forEach(input => {
         if (input.isCheckable() && input instanceof HTMLInputElement) {
             input.checked = Boolean(input.getAttribute("default"));
-        }
-        else {
+        } else {
             input.value = input.getAttribute("default") || '';
         }
         setCodeFromInput(input);
     });
+
     increment.from.value = 0;
     increment.to.value = 100;
     increment.every.value = 5;
@@ -437,6 +473,8 @@ function resetAll() {
     //     btn.dispatchEvent(new Event("click"));
     // });;
 }
+
+
 function respondToInputs() {
     formInputs.forEach(item => {
         item.output = getOutputForInput(item);
@@ -447,14 +485,14 @@ function respondToInputs() {
             case "apiversion-input":
                 {
                     const versionError = document.getElementById(item.output.id + "-error");
-                    if (versionError == null)
-                        throw new Error();
+                    if (versionError == null) throw new Error();
                     item.addEventListener("input", () => {
                         if (/[^\.\d]/.test(item.value)) {
                             versionError.hidden = false;
-                            return;
+                            return
                         }
                         versionError.hidden = true;
+                        
                         setCodeFromInput(item);
                     });
                     break;
@@ -462,17 +500,17 @@ function respondToInputs() {
             case "server-check":
             case "client-check":
                 {
-                    const otherCheck = document.getElementById(item.id == "client-check" && "server-check" || "client-check");
+                    const otherCheck = document.getElementById(item.id == "client-check" && "server-check" || "client-check") as HTMLInputElement
                     item.addEventListener("change", () => {
-                        setCodeFromInput(otherCheck);
+                        setCodeFromInput(otherCheck as FormInput);
                         setCodeFromInput(item);
                     });
                     break;
                 }
             case "forumthread-input":
                 {
-                    const errorText = document.getElementById("forumthread-error");
-                    const link = document.getElementById("forumthread-link");
+                    const errorText = document.getElementById("forumthread-error") as HTMLSpanElement;
+                    const link = document.getElementById("forumthread-link") as HTMLLinkElement;
                     item.addEventListener('input', () => {
                         if (!item.value) {
                             link.innerText = "";
@@ -497,13 +535,11 @@ function respondToInputs() {
             case "modiconxml-input":
                 {
                     const suffix = item.getAttribute("suffix");
-                    if (suffix == null)
-                        throw new Error();
+                    if (suffix == null) throw new Error();
                     item.addEventListener('input', () => {
                         if (!item.value.endsWith(suffix)) {
                             setCodeFromInput(item, item.value + suffix);
-                        }
-                        else {
+                        } else {
                             setCodeFromInput(item);
                         }
                     });
@@ -512,14 +548,12 @@ function respondToInputs() {
             case "priority-input":
                 {
                     const errorText = document.getElementById("priority-error");
-                    if (errorText == null)
-                        throw new Error();
+                    if (errorText == null) throw new Error();
                     item.addEventListener('input', () => {
                         if (numberRegex.test(item.value)) {
-                            setCodeFromInput(item);
+                            setCodeFromInput(item)
                             errorText.hidden = true;
-                        }
-                        else {
+                        } else {
                             errorText.hidden = false;
                         }
                     });
@@ -527,18 +561,17 @@ function respondToInputs() {
                 }
             case "filtertags-input":
                 {
-                    const argSplit = /[\s,;"']+/g;
+                    const argSplit = /[\s,;"']+/g
                     item.addEventListener("input", () => {
-                        if (item.output == null)
-                            throw new Error();
+                        if (item.output == null) throw new Error();
                         if (!item.value) {
                             item.output.innerHTML = "";
                             return;
                         }
-                        const args = item.value.replaceAll(argSplit, ' ').trim().split(/\s+/);
+                        const args = item.value.replaceAll(argSplit, ' ').trim().split(/\s+/)
                         const numArgs = args.length;
                         for (let i = 0; i < numArgs; i++) {
-                            args[i] = `<span class="str">"${escapeText(args[i])}"</span>${i + 1 == numArgs ? "" : ", "}`;
+                            args[i] = `<span class="str">"${escapeText(args[i])}"</span>${i+1 == numArgs ? "" : ", "}`
                         }
                         item.output.innerHTML = args.join('');
                     });
@@ -547,18 +580,19 @@ function respondToInputs() {
             case "ds-check":
             case "dst-check":
                 {
-                    const hiddenElements = document.getElementsByClassName(item.id.split('-')[0] + "-require");
-                    if (!(item instanceof HTMLInputElement))
-                        throw new Error();
-                    Array.from(hiddenElements, elem => { elem.hidden = !item.checked; });
+                    const hiddenElements = document.getElementsByClassName(item.id.split('-')[0] + "-require") as HTMLCollectionOf<HTMLElement>;
+                    if (!(item instanceof HTMLInputElement)) throw new Error();
+                    Array.from(hiddenElements, elem => {elem.hidden = !item.checked;});
+
                     item.addEventListener("input", () => {
                         setCodeFromInput(item);
+
                         const hidden = !item.checked;
                         Array.from(hiddenElements, elem => {
                             elem.hidden = hidden;
                         });
                     });
-                    break;
+                break;
                 }
             default:
                 {
@@ -568,11 +602,15 @@ function respondToInputs() {
                     break;
                 }
         }
+    
     });
 }
+
+declare var lua_load: any;
+
 function importCodeButtonSetup() {
-    const btn = document.getElementById("import-button");
-    const varnameToInputId = {
+    const btn = document.getElementById("import-button") as HTMLButtonElement;
+    const varnameToInputId: { [key: string]: string } = {
         "name": "name-input",
         "author": "author-input",
         "description": "description-input",
@@ -592,16 +630,16 @@ function importCodeButtonSetup() {
         "api_version_dst": "apiversion-input",
         "api_version": "dsapiversion-input",
         "priority": "priority-input",
-    };
+    }
     btn.addEventListener("click", event => {
         const codeInput = codeImportInput.value;
         const foundVars = new Set();
         let info;
         try {
             info = lua_load(codeInput)()?.str;
-        }
-        catch (error) {
-            console.log(error, typeof (error));
+        } 
+        catch (error: any) {
+            console.log(error, typeof(error));
             event.preventDefault();
             window.alert(error.toString());
             return;
@@ -609,11 +647,12 @@ function importCodeButtonSetup() {
         if (info.api_version_dst == null) {
             info.api_version_dst = info.api_version;
         }
+
         for (const varName in varnameToInputId) {
             const inputElem = document.getElementById(varnameToInputId[varName]);
             const result = info[varName];
-            if (!(inputElem instanceof HTMLInputElement || inputElem instanceof HTMLTextAreaElement))
-                throw new Error(inputElem?.toString());
+            if (!(inputElem instanceof HTMLInputElement || inputElem instanceof HTMLTextAreaElement)) throw new Error(inputElem?.toString());
+            
             inputElem?.triggerSetValue(result);
         }
         if (info.icon) {
@@ -621,9 +660,10 @@ function importCodeButtonSetup() {
         }
         const serverFilterTags = info.server_filter_tags?.uints;
         if (serverFilterTags && serverFilterTags instanceof Array) {
-            const filterTagsInput = document.getElementById("filtertags-input");
-            filterTagsInput.triggerSetValue(serverFilterTags?.join(", "));
+            const filterTagsInput = document.getElementById("filtertags-input") as HTMLInputElement;
+            filterTagsInput.triggerSetValue(serverFilterTags?.join(", "))
         }
+
         const dependencies = info.mod_dependencies?.uints;
         if (dependencies && dependencies instanceof Array) {
             for (let i = 0; i < dependencies.length; i++) {
@@ -631,6 +671,7 @@ function importCodeButtonSetup() {
                 dependencyInput.triggerSetValue(Object.keys(dependencies[i].str)[0]);
             }
         }
+
         const configurationOptions = info.configuration_options?.uints;
         if (configurationOptions && configurationOptions instanceof Array) {
             for (let i = 0; i < configurationOptions.length; i++) {
@@ -641,17 +682,15 @@ function importCodeButtonSetup() {
                 inputConfig.labelInput.triggerSetValue(luaConfig.label);
                 inputConfig.legend.dispatchEvent(new Event("click"));
                 const luaOptions = luaConfig.options?.uints;
+
                 const inputOptions = inputConfig.optionsArr;
                 const defaultOption = luaConfig.default;
-                if (!luaOptions)
-                    continue;
+                if (!luaOptions) continue;
                 let start = 1;
-                if (luaOptions instanceof Array)
-                    start = 0;
+                if (luaOptions instanceof Array) start = 0;
                 for (let i = 0; true; i++) { // cant use luaOptions.length because lua js can be funky
                     const codeOption = luaOptions[i + start]?.str;
-                    if (codeOption == null)
-                        break;
+                    if (codeOption == null) break;
                     const formOption = inputOptions[i] || addOption(inputConfig.optionsForm);
                     formOption.dataInput.triggerSetValue(codeOption.data);
                     formOption.labelInput.triggerSetValue(codeOption.description);
@@ -661,11 +700,12 @@ function importCodeButtonSetup() {
                     }
                 }
             }
-        }
+        }     
     });
 }
+
 respondToInputs();
-makeCollapsable(advancedToggle, document.getElementById("advanced"));
+makeCollapsable(advancedToggle, document.getElementById("advanced") as HTMLDivElement);
 //makeCollapsable(document.querySelector(".configuration-legend"), document.querySelector(".configuration-content"));
 modiconCheckBox();
 copyButtonHandler();
