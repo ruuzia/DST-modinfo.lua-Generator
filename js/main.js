@@ -205,8 +205,7 @@ function onInputFocus(event) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null)
         throw new Error();
-    code.scrollTop = (output).offsetTop - code.clientHeight;
-    console.log(code.scrollTop);
+    code.scrollTop = code.clientHeight - output.offsetTop;
 }
 const increment = {
     "modal": new bootstrap.Modal(document.getElementById("increment-settings-modal")),

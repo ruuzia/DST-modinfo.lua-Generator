@@ -93,7 +93,6 @@ function onDuplicateConfigClick(event) {
     const index = configsElem.configsArr.indexOf(btn.config) + 1;
     const newConfig = configSetup(newConfigDiv);
     //newConfig.legend.dispatchEvent(new Event("click"));
-    resetConfigLegendNumbers();
     const newCode = btn.config.output.cloneNode(true);
     newCode.id = "configcode-" + newConfig.configid;
     configsCode.insertBefore(newCode, btn.config.output.nextElementSibling);
@@ -103,6 +102,7 @@ function onDuplicateConfigClick(event) {
         newConfig.optionsArr[tempUncheckIndex].default.checked = true;
     }
     configsElem.configsArr.splice(index, 0, newConfigDiv);
+    resetConfigLegendNumbers();
     return newConfig;
 }
 const addBtn = document.getElementById("add-config");
@@ -126,7 +126,7 @@ function configSetup(config) {
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
     const legend = config.getChildWithClass("configuration-legend");
-    const count = configsElem.configsArr.length;
+    const count = configsElem.configsArr.length + 1;
     legend.innerText = legend.innerText.replace(/[#\d]+/, count.toString());
     makeCollapsable(legend, legend.nextElementSibling);
     config.nameInput = document.querySelector(`#${config.id} .config-name-input`);
