@@ -228,7 +228,8 @@ function onInputFocus(event: Event) {
     const elem = event.target as FormInput;
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null) throw new Error();
-    code.scrollTop = (output).offsetTop - code.clientHeight;
+    code.scrollTop = code.clientHeight - output.offsetTop;
+    
 }
 
 const increment: any = {
