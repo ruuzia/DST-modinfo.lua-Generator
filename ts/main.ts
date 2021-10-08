@@ -208,7 +208,21 @@ function unCheckRadios(parent: HTMLElement) {
     });
 }
 
-function copyButtonHandler() {
+function roundFixFloatingPoint(num: number, maxDeximalPlaces=4): string {
+    if (Number.isInteger(num)) return num.toString();
+    // round to 4th place and remove 
+    const rounded: string = num.toFixed(maxDeximalPlaces);
+    console.log(rounded);
+    
+    for (let i: number = rounded.length-1; i >= 0; i--) {
+        if (/[1-9]/.test(rounded[i])) {
+            return rounded.slice(0, i+1)
+        }
+    }
+    return '0'
+}
+
+function copyButtonHandler(): void { 
     // hacks - cant use clipboard API for compatibility with Firefox
     const btn = document.getElementById("copy-button");
     if (!(btn instanceof HTMLButtonElement)) throw new Error();
@@ -227,6 +241,7 @@ function copyButtonHandler() {
 function onInputFocus(elem: FormInput) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null) throw new Error();
+    output.hidden = false;
     code.scrollTop = output.offsetTop - Math.min(elem.getBoundingClientRect().y, code.clientHeight - 50);
     
 }
@@ -285,10 +300,10 @@ function incrementSetup() {
         let getData: GetData | null = null;
         switch (increment.dataOper.value) {
             case '*':
-                getData = (n: number) => { return (n * dataOperand).toString(); }
+                getData = (n: number) => { return roundFixFloatingPoint(n * dataOperand); }
                 break;
             case '+':
-                getData = (n: number) => { return (n + dataOperand).toString(); }
+                getData = (n: number) => { return roundFixFloatingPoint(n + dataOperand); }
                 break;
             case '..':
                 getData = (n: number) => { return n.toString() + increment.data.value; }

@@ -184,6 +184,19 @@ function unCheckRadios(parent) {
         }
     });
 }
+function roundFixFloatingPoint(num, maxDeximalPlaces = 4) {
+    if (Number.isInteger(num))
+        return num.toString();
+    // round to 4th place and remove 
+    const rounded = num.toFixed(maxDeximalPlaces);
+    console.log(rounded);
+    for (let i = rounded.length - 1; i >= 0; i--) {
+        if (/[1-9]/.test(rounded[i])) {
+            return rounded.slice(0, i + 1);
+        }
+    }
+    return '0';
+}
 function copyButtonHandler() {
     // hacks - cant use clipboard API for compatibility with Firefox
     const btn = document.getElementById("copy-button");
@@ -204,6 +217,7 @@ function onInputFocus(elem) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null)
         throw new Error();
+    output.hidden = false;
     code.scrollTop = output.offsetTop - Math.min(elem.getBoundingClientRect().y, code.clientHeight - 50);
 }
 const increment = {
@@ -253,10 +267,10 @@ function incrementSetup() {
         let getData = null;
         switch (increment.dataOper.value) {
             case '*':
-                getData = (n) => { return (n * dataOperand).toString(); };
+                getData = (n) => { return roundFixFloatingPoint(n * dataOperand); };
                 break;
             case '+':
-                getData = (n) => { return (n + dataOperand).toString(); };
+                getData = (n) => { return roundFixFloatingPoint(n + dataOperand); };
                 break;
             case '..':
                 getData = (n) => { return n.toString() + increment.data.value; };
