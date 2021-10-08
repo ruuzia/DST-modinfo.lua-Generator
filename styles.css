@@ -161,6 +161,11 @@ label {
     margin-left: 20%;
 }
 
+#duplicate-config {
+    width: 125;
+    font-size: smaller;
+}
+
 .configuration input {
     height: 30px;
 }
