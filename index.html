@@ -338,6 +338,10 @@
               "<span class="code-data" id="version"></span>"
             </span><br>
             dst_compatible = <span class="bool" id="dst"></span><br>
+            <span class="dst-require">
+              forge_compatible = <span class="bool" id="forge"></span><br>
+              gorge_compatible = <span class="bool" id="gorge"></span><br>
+            </span>
             dont_starve_compatible = <span class="bool" id="ds"></span><br>
             <span class="ds-require">
               reign_of_giants_compatible = <span class="bool" id="rog"></span><br>
@@ -346,10 +350,6 @@
             </span>
             client_only_mod = <span class="bool" id="client"></span><br>
             all_clients_require_mod = <span class="bool" id="server"></span><br>
-            <span class="dst-require">
-              forge_compatible = <span class="bool" id="forge"></span><br>
-              gorge_compatible = <span class="bool" id="gorge"></span><br>
-            </span>
             <span id="modiconxml-line" class="comment"><span id="comment-modicon-xml">--</span>icon_atlas = <span class="str">
               "<span class="code-data" id="modiconxml"></span>"</span>
             </span><br>
@@ -375,7 +375,8 @@
             mod_dependencies = {<div hidden id="moddependencies">
               <div class="dependency" hidden>&nbsp;&nbsp;&nbsp;&nbsp;{ 
                 [<span class="str">"<span class="dependency-name-output"></span>"</span>] = 
-                <span class="bool">false</span> },</div>
+                <span class="bool">false</span> },
+              </div>
             </div>}<br>
             server_filter_tags = {<span class="code-data" id="filtertags"></span>}<br>
             configuration_options = {

@@ -105,10 +105,6 @@ function getOutputForInput(inputElem) {
     }
     return output;
 }
-function getFocusForInput(inputElem) {
-    const focusElem = document.getElementById(inputElem.id.split("-")[0] + '-focus');
-    return focusElem;
-}
 function setCodeFromInput(input, override = null, typeCheck = false) {
     const inputValue = override != null ? override : input.value;
     let text;
@@ -221,8 +217,10 @@ function onInputFocus(elem) {
     const output = elem.focusElem || elem.output || (elem.outputs && elem.outputs[0]);
     if (output == null)
         throw new Error();
-    // 30 < (elem.getBoundingClientRect().top - code.getBoundingClientRect().top) < (code.clientHeight - 30)
-    const inputHeightFromCodeTop = Math.max(Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - 30), 30);
+    const minPadding = 30;
+    // minPadding < (elem.getBoundingClientRect().top - code.getBoundingClientRect().top) < (code.clientHeight - minPadding)
+    const inputHeightFromCodeTop = Math.max(Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - minPadding), minPadding);
+    // scroll up less the further down the input is on the screen
     code.scrollTop = output.offsetTop - inputHeightFromCodeTop;
 }
 const increment = {
@@ -452,7 +450,6 @@ function resetAll() {
 function respondToInputs() {
     formInputs.forEach(item => {
         item.output = getOutputForInput(item);
-        item.focusElem = getFocusForInput(item);
         formInputs.push(item);
         switch (item.id) {
             case "version-input":
