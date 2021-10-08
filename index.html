@@ -1,452 +1,441 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
 
-    <title>Modinfo Generator</title>
+  <title>Modinfo Generator</title>
 </head>
 
 <body>
 
-    <!-- Import Modal -->
+  <!-- Import Modal -->
 
-    <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 75%;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="basicModalLabel">Import</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body file-upload-wrapper">
-                    <input type="file" class="form-control" id="customFile" accept=".lua,.txt"
-                        ondragenter="dragenter(this)" ondragleave="dragleave(this)" ondrop="dragdropped(this)"
-                        onchange="fileSelected(event)" />
-                    <div class="form-floating mt-3">
-                        <textarea id="code-input" class="form-control mb-4" placeholder=""
-                            style="min-height: 500px;"></textarea>
-                        <label for="code-input" class="text-secondary">Modinfo Content</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-primary" id="import-button" data-bs-dismiss="modal">
-                        Import
-                    </button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Exit</button>
-                </div>
-            </div>
+  <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 75%;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="basicModalLabel">Import</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-    </div>
-
-    <!-- Increment Settings Modal for Adding Options -->
-
-    <div class="modal fade" id="increment-settings-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="background-color: rgb(244, 244, 244);">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="basicModalLabel">Increment Add Option Settings</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body container">
-                    <div class="input-group bg-gradient py-3 d-flex flex-row"
-                        style="background-color: rgb(242, 242, 242);">
-                        <span class="input-group-text">From</span>
-                        <input type="text" class="form-control" placeholder="(including)" id="increment-from-input">
-                        <span class="input-group-text">To</span>
-                        <input type="text" class="form-control" placeholder="(including)" id="increment-to-input">
-                        <span class="input-group-text">Increment</span>
-                        <input type="text" class="form-control" id="increment-every-input">
-                    </div>
-                    <div class="py-3 bg-gradient" style="background-color: rgb(237, 245, 245);">
-                        <div class="d-flex align-items-center">
-                            <div class="input-group mb-3 me-2">
-                                <select class="form-select" style="max-width: 70px;" id="increment-data-operator">
-                                    <option value=".." selected>..</option>
-                                    onfocus="onInputFocus(this)" <option value="*">×</option>
-                                    <option value="+">+</option>
-                                </select>
-                                <input type="text" class="form-control" id="increment-data-operand-input">
-                                <span class="input-group-text increment-settings-option-text">Data</span>
-                            </div>
-                            <div class="input-group mb-3 ms-2">
-                                <input type="text" class="form-control" id="increment-label-option-input">
-                                <span class="input-group-text increment-settings-option-text">Label</span>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <div class="input-group mb-3 w-75">
-                                <span class="input-group-text increment-settings-option-text">Hover</span>
-                                <input type="text" class="form-control" id="increment-hover-option-input">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="py-2 d-inline w-50 align-self-start me-5" style="background-color: rgb(239, 239, 250);">
-                        <div class="input-group">
-                            <span class="input-group-text border-0">With</span>
-                            <input type="text" class="form-control border-0" id="increment-var-input">
-                            <span class="input-group-text border-0">As Value</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-primary-2" id="generate-increment-button"
-                        data-bs-dismiss="modal">Generate</button>
-                    <button type="button" class="btn btn-danger-2" data-bs-dismiss="modal">Exit</button>
-                </div>
-            </div>
+        <div class="modal-body file-upload-wrapper">
+          <input type="file" class="form-control" id="customFile" accept=".lua,.txt" ondragenter="dragenter(this)"
+            ondragleave="dragleave(this)" ondrop="dragdropped(this)" onchange="fileSelected(event)" />
+          <div class="form-floating mt-3">
+            <textarea id="code-input" class="form-control mb-4" placeholder="" style="min-height: 500px;"></textarea>
+            <label for="code-input" class="text-secondary">Modinfo Content</label>
+          </div>
         </div>
-    </div>
+        <div class="modal-footer">
 
-    <!-- FORM -->
-
-    <h1 class="text-center fw-bold">DS/T Modinfo.lua Generator</h1>
-    <div class="row justify-content-center" id="main-form">
-        <form class="mt-5 col-11 col-md-5 col-xl-4 me-md-5" id="input-form">
-            <div class="form-outline">
-                <button type="button" class="btn btn-outline-dark mb-2" id="import-code" data-bs-target="#import-modal"
-                    data-bs-toggle="modal">Import Code</button>
-                <div class="form-floating">
-                    <input type="text" id="name-input" class="input-code form-control mb-4" placeholder=""
-                        onfocus="onInputFocus(this)" required>
-                    <label for="name-input" class="text-secondary">Name of Mod</label>
-                </div>
-                <div class="form-floating">
-                    <input type="text" id="author-input" class="input-code form-control mb-4" placeholder=""
-                        onfocus="onInputFocus(this)" required>
-                    <label for="author-input" class="text-secondary">Name of Author</label>
-                </div>
-                <div class="form-floating">
-                    <textarea id="description-input" class="input-code form-control mb-4" placeholder=""
-                        style="height: 100px; min-height: 60px; max-height: 300px;" onfocus="onInputFocus(this)"
-                        required></textarea>
-                    <label for="description-input" class="text-secondary">Mod Description</label>
-                </div>
-                <div class="form-floating">
-                    <input type="text" class="input-code form-control mb-4" id="version-input" default="1.0.0"
-                        onfocus="onInputFocus(this)" required>
-                    <label for="version-input">
-                        Version<span class='error' id="version-error" hidden> ** invalid characters</span>
-                    </label>
-                </div>
-                <fieldset class="px-3 py-1 p-2 d-flex flex-row justify-content-evenly">
-                    <legend class="fs-6 ms-auto me-auto">Game Compatibilities</legend>
-                    <span>
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="dst-check"
-                            default="check" onfocus="onInputFocus(this)" checked>
-                        <label for="dst-check"><abbr title="Don't Starve Together">DST</abbr></label>&nbsp
-                    </span>
-                    <span class="dst-require">
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="forge-check"
-                            onfocus="onInputFocus(this)">
-                        <label for="forge-check"><abbr title="ReForged DST Mod">Forge</abbr></label>&nbsp
-                    </span>
-                    <span class="dst-require">
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="gorge-check"
-                            onfocus="onInputFocus(this)">
-                        <label for="gorge-check"><abbr title="Re-Gorg-itated DST Mod">Gorge</abbr></label>&nbsp
-                    </span>
-                    <span>
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="ds-check"
-                            onfocus="onInputFocus(this)">
-                        <label for="ds-check"><abbr title="Don't Starve">DS</abbr></label>&nbsp
-                    </span>
-                    <span class="ds-require">
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="rog-check"
-                            onfocus="onInputFocus(this)">
-                        <label for="rog-check"><abbr title="Reign of Giants">ROG</abbr></label>&nbsp
-                    </span>
-                    <span class="ds-require">
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="ham-check"
-                            onfocus="onInputFocus(this)">
-                        <label for="ham-check"><abbr title="Hamlet">HAM</abbr></label>&nbsp
-                    </span>
-                    <span class="ds-require">
-                        <input type="checkbox" class="checkbox input-code form-check-input" id="sw-check"
-                            onfocus="onInputFocus(this)">
-                        <label for="sw-check"><abbr title="Shipwrecked">SW</abbr></label>&nbsp
-                    </span>
-                    </span>
-                </fieldset>
-                <fieldset class="px-3 py-1 mt-4 mb-4">
-                    <legend class="fs-6 ms-auto me-auto">Mod Type</legend>
-                    <div class="d-flex flex-row justify-content-around">
-                        <div>
-                            <input type="radio" default="checked" name="modtype" id="server-check"
-                                class="input-code form-check-input me-1" onfocus="onInputFocus(this)">
-                            <label for="server-check">Server</label>
-                        </div>
-                        <div>
-                            <input type="radio" value="client" name="modtype" id="client-check"
-                                class="input-code form-check-input ms-3 me-1" onfocus="onInputFocus(this)">
-                            <label for="client-check">Client-Only</label>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset class="px-3 py-1 mt-4 mb-2">
-                    <input type="checkbox" class="form-check-input me-1" id="modicon-check">
-                    <label for="modicon-check" class="smaller">I have .tex and .xml files for my mod icon in my mod
-                        directory</label><br><br>
-                    <div id="modicons" hidden>
-                        <div class="form-floating">
-                            <input type="text" class="input-code form-control mb-4" id="modiconxml-input"
-                                default="modicon.xml" suffix=".xml" onfocus="onInputFocus(this)">
-                            <label for="modiconxml-input">Name of .xml File</label>
-                        </div>
-                        <div class="form-floating">
-                            <input type="text" class="input-code form-control mb-4" id="modicontex-input"
-                                default="modicon.tex" suffix=".tex" onfocus="onInputFocus(this)">
-                            <label for="modicontex-input">Name of .tex File</label>
-                        </div>
-
-                    </div>
-                </fieldset>
-                <fieldset class=" px-3 py-1">
-                    <legend id="advanced-toggle" class="fs-5" tabindex="0">► Advanced
-                        Settings
-                    </legend>
-
-                    <div id="advanced" hidden>
-                        <span class='error' id="forumthread-error" hidden>**
-                            invalid characters</span>
-                        <div class="form-floating">
-                            <input type="text" class="input-code form-control mb-1" id="forumthread-input"
-                                onfocus="onInputFocus(this)">
-                            <label for="forumthread-input">Klei Forums Thread</label>
-                        </div>
-
-                        <a id="forumthread-link" target="_blank"></a>
-
-                        <div class="form-floating mt-3">
-                            <input type="text" class="input-code form-control mb-4" id="apiversion-input" default="10"
-                                onfocus="onInputFocus(this)">
-                            <label for="apiversion-input">DST API Version <span class='error' id="apiversion-error"
-                                    hidden>** invalid characters</span></label>
-                        </div>
-                        <div class="form-floating mt-3 ds-require">
-                            <input type="text" class="input-code form-control mb-4" id="dsapiversion-input" default="6"
-                                onfocus="onInputFocus(this)">
-                            <label for="dsapiversion-input">DS Singleplayer API Version <span class='error'
-                                    id="dsapiversion-error" hidden>** invalid characters</span></label>
-                        </div>
-                        <div class="form-floating">
-                            <input type="text" class="input-code form-control mb-3" id="priority-input" default="0"
-                                onfocus="onInputFocus(this)">
-                            <label for="priority-input">Priority <span class='error' id="priority-error" hidden>**
-                                    invalid characters</span></label>
-                        </div>
-                        <div class="form-floating mb-4">
-                            <input type="text" class="input-code form-control" id="filtertags-input"
-                                onfocus="onInputFocus(this)">
-                            <label for="filtertags-input">Server Filter Tags <span class='error' id="filtertags-error"
-                                    hidden>** invalid characters</span></label>
-                        </div>
-
-                        <div class="moddependency-div input-group" hidden>
-                            <input type="text" class="form-control smart-input moddependency-input"
-                                placeholder="Steam mod ID or link">
-                            <button tabindex="-1" type="button"
-                                class="input-group-text smart-input-delete-button border-bottom-0"
-                                onclick="onModDependencyDeleteClick(this)">X</span>
-                        </div>
-                        <button type="button"
-                            class="btn btn-light btn-sm mt-1 ms-auto me-auto add-smart-input border-bottom-0"
-                            id="add-dependency-button">Add Mod
-                            Dependency</button>
-                    </div>
-                </fieldset>
-            </div>
-        </form>
-
-        <!-- CONFIGURATIONS -->
-
-        <form class="col-11 col-lg-9 col-xl-7 order-md-last mt-3">
-            <fieldset class=" px-3" id="configs-form">
-                <legend class="fs-5"><span class="header">Configurations</span></legend>
-                <fieldset class="configuration border-end-0 border-start-0 border-bottom-0 mt-3 mb-2 pb-2 ps-3"
-                    id="config-#" hidden>
-                    <legend class="fs-6 w-auto px-2 configuration-legend"><span class="header">▼ Config #</span>
-                    </legend>
-                    <div class="configuration-content">
-                        <div class="d-flex flex-row">
-                            <input type="text" class="input-config form-control w-50 config-name-input me-auto"
-                                placeholder="Reference Name" onfocus="onInputFocus(this)">
-                            <button class="btn btn-light mt-2 align-self-end translate-middle-y" type="button"
-                                id="duplicate-config" onclick="onDuplicateConfigClick(this)" tabindex="-1">Duplicate
-                                Config</button>
-                        </div>
-                        <input type="text" class="input-config form-control mb-3 w-50 config-label-input"
-                            placeholder="Label" onfocus="onInputFocus(this)">
-                        <input type="text" class="input-config form-control mb-3 config-hover-input"
-                            placeholder="Hover Text" onfocus="onInputFocus(this)">
-                        <div class="fs-6 pb-1"><span class="header"><u>Options</u></span></div>
-                        <div class="options" optioncount="1">
-                            <div class="option mb-2">
-                                <div class="d-md-inline-flex">
-                                    <input type="radio" title="Default Option"
-                                        class="form-check-input me-2 option-radio-input" name="option-default-#"
-                                        onfocus="onInputFocus(this)" required>
-                                    <input type="text" title="Data value returned"
-                                        class="input-config form-control d-inline option-data-input" name="option-data"
-                                        placeholder="data" onfocus="onInputFocus(this)">
-                                    <input type="text" title="Label for the user"
-                                        class="input-config form-control d-inline option-label-input ms-2"
-                                        name="option-label" placeholder="label" onfocus="onInputFocus(this)">
-                                    <input type="text" title="Hover text for the user"
-                                        class="input-config form-control d-inline option-hover-input ms-2"
-                                        name="option-hover" placeholder="hover text" onfocus="onInputFocus(this)">
-                                    <span style="white-space: nowrap;">
-                                        <button title="Delete option"
-                                            class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
-                                            onclick="onOptionDeleteClick(this)" onloadend="test(this)" type="button"
-                                            tabindex="-1">×</button>
-                                        <button title="Duplicate option"
-                                            class="btn btn-outline-light ms-2 option-duplicate d-inline-flex"
-                                            onclick="onOptionDuplicateClick(this)" type="button"
-                                            tabindex="-1">↲</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
-                            Add -></button>
-                        <select class="add-option-select form-select">
-                            <option value="1" selected>One Option</option>
-                            <option value="KEYS">Letters A-Z</option>
-                            <option value="INCREMENT">Increment</option>
-                        </select>
-                        <button class="btn btn-danger remove-config" type="button"
-                            onclick="onRemoveConfigClick(this)">Remove Config</button>
-
-                    </div>
-                </fieldset>
-                <button class="btn btn-success my-2" type="button" id="add-config" configcount="1">Add Config</button>
-            </fieldset>
-        </form>
-
-        <!-- CODE -->
-
-        <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" id="code-div" style="max-height: 800px;">
-            <code>
-                <div class="overflow-scroll d-flex w-100 h-100" id="code" style="max-height: 780px; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
-                <div>
-                name = <span class="str">
-                    "<span class="code-data" id="name"></span>"
-                </span><br>
-                author = <span class="str">
-                    "<span class="code-data" id="author"></span>"
-                </span><br>
-                description = <span class="str">
-                    [[<br><span class="code-data" id="description"></span><br>]]
-                </span><br>
-                version = <span class="str">
-                    "<span class="code-data" id="version"></span>"
-                </span><br>
-                dst_compatible = <span class="bool" id="dst"></span><br>
-                dont_starve_compatible = <span class="bool" id="ds"></span><br>
-                <span class="ds-require">
-                    reign_of_giants_compatible = <span class="bool" id="rog"></span><br>
-                    hamlet_compatible = <span class="bool" id="ham"></span><br>
-                    shipwrecked_compatible = <span class="bool" id="sw"></span><br>
-                </span>
-                client_only_mod = <span class="bool" id="client"></span><br>
-                all_clients_require_mod = <span class="bool" id="server"></span><br>
-                <span class="dst-require">
-                    forge_compatible = <span class="bool" id="forge"></span><br>
-                    gorge_compatible = <span class="bool" id="gorge"></span><br>
-                </span>
-                <span id="modiconxml-line" class="comment"><span id="comment-modicon-xml">--</span>icon_atlas = <span class="str">
-                    "<span class="code-data" id="modiconxml"></span>"</span>
-                </span><br>
-                <span id="modicontex-line" class="comment"><span id="comment-modicon-tex">--</span>icon = <span class="str">
-                    "<span class="code-data" id="modicontex"></span>"</span>
-                </span><br>
-                forumthread = <span class="str">
-                    "<span class="code-data" id="forumthread"></span>"
-                </span><br>
-                <span class="dst-require">
-                    api_version_dst = <span class="num">
-                        <span class="code-data" id="apiversion"></span>
-                    </span><br>
-                </span>
-                <span class="ds-require">
-                    api_version = <span class="num">
-                        <span class="code-data" id="dsapiversion"></span>
-                    </span><br>
-                </span>
-                priority = <span class="num">
-                    <span class="code-data" id="priority"></span>
-                </span><br>
-                mod_dependencies = {<div hidden id="moddependencies">
-                    <div class="dependency" hidden>&nbsp;&nbsp;&nbsp;&nbsp;{ 
-                        [<span class="str">"<span class="dependency-name-output"></span>"</span>] = 
-                        <span class="bool">false</span> },</div>
-                </div>}<br>
-                server_filter_tags = {<span class="code-data" id="filtertags"></span>}<br>
-                configuration_options = {
-                    <div id="configs">
-                        <div class="configCode" hidden>
-                        {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">--GetModConfigInfo("<span class="config-name"></span>")</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;name = <span class="str">"<span class="config-name"></span>"</span>,<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;label = <span class="str">"<span class="config-label"></span>"</span>,<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;hover = <span class="str">"<span class="config-hover"></span>"</span>,<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;options = {
-                        <div class="options-code">
-                            <span class="option-code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-                                data = <span class="option-data">""</span>,
-                                description = <span class="str">"<span class="option-label"></span>"</span>
-                                <span class="option-hover-line" hidden>, hover = <span class="str">"<span class="option-hover"></span>"</span></span>
-                            },<br></span>
-                        </div>
-                        &nbsp;&nbsp;&nbsp;&nbsp;},<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;default = <span class="config-default">""</span><br>
-                        },<br>
-                        </div>
-                    </div>
-                }
-                </div>
-                </div>
-            </code>
-            <div class="d-flex align-items-end flex-column align-self-end mt-n5">
-                <button type="button" form="input-form" class=" btn btn-outline-light" id="copy-button"
-                    style="transform: translateY(-40px);">Copy</button>
-            </div>
+          <button type="button" class="btn btn-primary" id="import-button" data-bs-dismiss="modal">
+            Import
+          </button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Exit</button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div id="footer" class="mx-3 mt-5 mb-5 py-2 row justify-content-center" id="footer">
-        <div class="col-sm-10 col-md-3">
+  <!-- Increment Settings Modal for Adding Options -->
+
+  <div class="modal fade" id="increment-settings-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content" style="background-color: rgb(244, 244, 244);">
+        <div class="modal-header">
+          <h5 class="modal-title" id="basicModalLabel">Increment Add Option Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body container">
+          <div class="input-group bg-gradient py-3 d-flex flex-row" style="background-color: rgb(242, 242, 242);">
+            <span class="input-group-text">From</span>
+            <input type="text" class="form-control" placeholder="(including)" id="increment-from-input">
+            <span class="input-group-text">To</span>
+            <input type="text" class="form-control" placeholder="(including)" id="increment-to-input">
+            <span class="input-group-text">Increment</span>
+            <input type="text" class="form-control" id="increment-every-input">
+          </div>
+          <div class="py-3 bg-gradient" style="background-color: rgb(237, 245, 245);">
+            <div class="d-flex align-items-center">
+              <div class="input-group mb-3 me-2">
+                <select class="form-select" style="max-width: 70px;" id="increment-data-operator">
+                  <option value=".." selected>..</option>
+                  onfocus="onInputFocus(this)" <option value="*">×</option>
+                  <option value="+">+</option>
+                </select>
+                <input type="text" class="form-control" id="increment-data-operand-input">
+                <span class="input-group-text increment-settings-option-text">Data</span>
+              </div>
+              <div class="input-group mb-3 ms-2">
+                <input type="text" class="form-control" id="increment-label-option-input">
+                <span class="input-group-text increment-settings-option-text">Label</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <div class="input-group mb-3 w-75">
+                <span class="input-group-text increment-settings-option-text">Hover</span>
+                <input type="text" class="form-control" id="increment-hover-option-input">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="py-2 d-inline w-50 align-self-start me-5" style="background-color: rgb(239, 239, 250);">
+            <div class="input-group">
+              <span class="input-group-text border-0">With</span>
+              <input type="text" class="form-control border-0" id="increment-var-input">
+              <span class="input-group-text border-0">As Value</span>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary-2" id="generate-increment-button"
+            data-bs-dismiss="modal">Generate</button>
+          <button type="button" class="btn btn-danger-2" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+
+  <h1 class="text-center fw-bold">DS/T Modinfo.lua Generator</h1>
+  <div class="row justify-content-center" id="main-form">
+    <form class="mt-5 col-11 col-md-5 col-xl-4 me-md-5" id="input-form">
+      <div class="form-outline">
+        <button type="button" class="btn btn-outline-dark mb-2" id="import-code" data-bs-target="#import-modal"
+          data-bs-toggle="modal">Import Code</button>
+        <div class="form-floating">
+          <input type="text" id="name-input" class="input-code form-control mb-4" placeholder=""
+            onfocus="onInputFocus(this)" required>
+          <label for="name-input" class="text-secondary">Name of Mod</label>
+        </div>
+        <div class="form-floating">
+          <input type="text" id="author-input" class="input-code form-control mb-4" placeholder=""
+            onfocus="onInputFocus(this)" required>
+          <label for="author-input" class="text-secondary">Name of Author</label>
+        </div>
+        <div class="form-floating">
+          <textarea id="description-input" class="input-code form-control mb-4" placeholder=""
+            style="height: 100px; min-height: 60px; max-height: 300px;" onfocus="onInputFocus(this)"
+            required></textarea>
+          <label for="description-input" class="text-secondary">Mod Description</label>
+        </div>
+        <div class="form-floating">
+          <input type="text" class="input-code form-control mb-4" id="version-input" default="1.0.0"
+            onfocus="onInputFocus(this)" required>
+          <label for="version-input">
+            Version<span class='error' id="version-error" hidden> ** invalid characters</span>
+          </label>
+        </div>
+        <fieldset class="px-3 py-1 p-2 d-flex flex-row justify-content-evenly">
+          <legend class="fs-6 ms-auto me-auto">Game Compatibilities</legend>
+          <span>
+            <input type="checkbox" class="checkbox input-code form-check-input" id="dst-check" default="check"
+              onfocus="onInputFocus(this)" checked>
+            <label for="dst-check"><abbr title="Don't Starve Together">DST</abbr></label>&nbsp
+          </span>
+          <span class="dst-require">
+            <input type="checkbox" class="checkbox input-code form-check-input" id="forge-check"
+              onfocus="onInputFocus(this)">
+            <label for="forge-check"><abbr title="ReForged DST Mod">Forge</abbr></label>&nbsp
+          </span>
+          <span class="dst-require">
+            <input type="checkbox" class="checkbox input-code form-check-input" id="gorge-check"
+              onfocus="onInputFocus(this)">
+            <label for="gorge-check"><abbr title="Re-Gorg-itated DST Mod">Gorge</abbr></label>&nbsp
+          </span>
+          <span>
+            <input type="checkbox" class="checkbox input-code form-check-input" id="ds-check"
+              onfocus="onInputFocus(this)">
+            <label for="ds-check"><abbr title="Don't Starve">DS</abbr></label>&nbsp
+          </span>
+          <span class="ds-require">
+            <input type="checkbox" class="checkbox input-code form-check-input" id="rog-check"
+              onfocus="onInputFocus(this)">
+            <label for="rog-check"><abbr title="Reign of Giants">ROG</abbr></label>&nbsp
+          </span>
+          <span class="ds-require">
+            <input type="checkbox" class="checkbox input-code form-check-input" id="ham-check"
+              onfocus="onInputFocus(this)">
+            <label for="ham-check"><abbr title="Hamlet">HAM</abbr></label>&nbsp
+          </span>
+          <span class="ds-require">
+            <input type="checkbox" class="checkbox input-code form-check-input" id="sw-check"
+              onfocus="onInputFocus(this)">
+            <label for="sw-check"><abbr title="Shipwrecked">SW</abbr></label>&nbsp
+          </span>
+          </span>
+        </fieldset>
+        <fieldset class="px-3 py-1 mt-4 mb-4">
+          <legend class="fs-6 ms-auto me-auto">Mod Type</legend>
+          <div class="d-flex flex-row justify-content-around">
             <div>
-                <b>Unofficial Modinfo Generator&nbsp;&nbsp;</b>
+              <input type="radio" default="checked" name="modtype" id="server-check"
+                class="input-code form-check-input me-1" onfocus="onInputFocus(this)">
+              <label for="server-check">Server</label>
             </div>
-        </div>
-        <div class="col-sm-10 col-md-3">
-            <div class="d-flex">
-                <a href="http://www.dontstarvegame.com/">Don't Starve&nbsp;</a> &copy;
-                <a href="http://kleientertainment.com/">&nbsp;Klei Entertainment</a>
+            <div>
+              <input type="radio" value="client" name="modtype" id="client-check"
+                class="input-code form-check-input ms-3 me-1" onfocus="onInputFocus(this)">
+              <label for="client-check">Client-Only</label>
             </div>
-        </div>
-        <div class="col-sm-10 col-md-4">
-            <div class="d-flex">
-                <a href="https://github.com/grassdne/DST-modinfo.lua-Generator">Source Code</a> &nbsp;&nbsp;
-                <a href="https://github.com/grassdne/DST-modinfo.lua-Generator/issues/new">Report an Issue</a>
+          </div>
+        </fieldset>
+        <fieldset class="px-3 py-1 mt-4 mb-2">
+          <input type="checkbox" class="form-check-input me-1" id="modicon-check">
+          <label for="modicon-check" class="smaller">I have .tex and .xml files for my mod icon in my mod
+            directory</label><br><br>
+          <div id="modicons" hidden>
+            <div class="form-floating">
+              <input type="text" class="input-code form-control mb-4" id="modiconxml-input" default="modicon.xml"
+                suffix=".xml" onfocus="onInputFocus(this)">
+              <label for="modiconxml-input">Name of .xml File</label>
             </div>
+            <div class="form-floating">
+              <input type="text" class="input-code form-control mb-4" id="modicontex-input" default="modicon.tex"
+                suffix=".tex" onfocus="onInputFocus(this)">
+              <label for="modicontex-input">Name of .tex File</label>
+            </div>
+
+          </div>
+        </fieldset>
+        <fieldset class=" px-3 py-1">
+          <legend id="advanced-toggle" class="fs-5" tabindex="0">► Advanced
+            Settings
+          </legend>
+
+          <div id="advanced" hidden>
+            <span class='error' id="forumthread-error" hidden>**
+              invalid characters</span>
+            <div class="form-floating">
+              <input type="text" class="input-code form-control mb-1" id="forumthread-input"
+                onfocus="onInputFocus(this)">
+              <label for="forumthread-input">Klei Forums Thread</label>
+            </div>
+
+            <a id="forumthread-link" target="_blank"></a>
+
+            <div class="form-floating mt-3">
+              <input type="text" class="input-code form-control mb-4" id="apiversion-input" default="10"
+                onfocus="onInputFocus(this)">
+              <label for="apiversion-input">DST API Version <span class='error' id="apiversion-error" hidden>** invalid
+                  characters</span></label>
+            </div>
+            <div class="form-floating mt-3 ds-require">
+              <input type="text" class="input-code form-control mb-4" id="dsapiversion-input" default="6"
+                onfocus="onInputFocus(this)">
+              <label for="dsapiversion-input">DS Singleplayer API Version <span class='error' id="dsapiversion-error"
+                  hidden>** invalid characters</span></label>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="input-code form-control mb-3" id="priority-input" default="0"
+                onfocus="onInputFocus(this)">
+              <label for="priority-input">Priority <span class='error' id="priority-error" hidden>**
+                  invalid characters</span></label>
+            </div>
+            <div class="form-floating mb-4">
+              <input type="text" class="input-code form-control" id="filtertags-input" onfocus="onInputFocus(this)">
+              <label for="filtertags-input">Server Filter Tags <span class='error' id="filtertags-error" hidden>**
+                  invalid characters</span></label>
+            </div>
+
+            <div class="moddependency-div input-group" hidden>
+              <input type="text" class="form-control smart-input moddependency-input"
+                placeholder="Steam mod ID or link">
+              <button tabindex="-1" type="button" class="input-group-text smart-input-delete-button border-bottom-0"
+                onclick="onModDependencyDeleteClick(this)">X</span>
+            </div>
+            <button type="button" class="btn btn-light btn-sm mt-1 ms-auto me-auto add-smart-input border-bottom-0"
+              id="add-dependency-button">Add Mod
+              Dependency</button>
+          </div>
+        </fieldset>
+      </div>
+    </form>
+
+    <!-- CONFIGURATIONS -->
+
+    <form class="col-11 col-lg-9 col-xl-7 order-md-last mt-3">
+      <fieldset class=" px-3" id="configs-form">
+        <legend class="fs-5"><span class="header">Configurations</span></legend>
+        <fieldset class="configuration border-end-0 border-start-0 border-bottom-0 mt-3 mb-2 pb-2 ps-3" id="config-#"
+          hidden>
+          <legend class="fs-6 w-auto px-2 configuration-legend"><span class="header">▼ Config #</span>
+          </legend>
+          <div class="configuration-content">
+            <div class="d-flex flex-row">
+              <input type="text" class="input-config form-control w-50 config-name-input me-auto"
+                placeholder="Reference Name" onfocus="onInputFocus(this)">
+              <button class="btn btn-light mt-2 align-self-end translate-middle-y" type="button" id="duplicate-config"
+                onclick="onDuplicateConfigClick(this)" tabindex="-1">Duplicate
+                Config</button>
+            </div>
+            <input type="text" class="input-config form-control mb-3 w-50 config-label-input" placeholder="Label"
+              onfocus="onInputFocus(this)">
+            <input type="text" class="input-config form-control mb-3 config-hover-input" placeholder="Hover Text"
+              onfocus="onInputFocus(this)">
+            <div class="fs-6 pb-1"><span class="header"><u>Options</u></span></div>
+            <div class="options" optioncount="1">
+              <div class="option mb-2">
+                <div class="d-md-inline-flex">
+                  <input type="radio" title="Default Option" class="form-check-input me-2 option-radio-input"
+                    name="option-default-#" onfocus="onInputFocus(this)" required>
+                  <input type="text" title="Data value returned"
+                    class="input-config form-control d-inline option-data-input" name="option-data" placeholder="data"
+                    onfocus="onInputFocus(this)">
+                  <input type="text" title="Label for the user"
+                    class="input-config form-control d-inline option-label-input ms-2" name="option-label"
+                    placeholder="label" onfocus="onInputFocus(this)">
+                  <input type="text" title="Hover text for the user"
+                    class="input-config form-control d-inline option-hover-input ms-2" name="option-hover"
+                    placeholder="hover text" onfocus="onInputFocus(this)">
+                  <span style="white-space: nowrap;">
+                    <button title="Delete option" class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
+                      onclick="onOptionDeleteClick(this)" onloadend="test(this)" type="button" tabindex="-1">×</button>
+                    <button title="Duplicate option" class="btn btn-outline-light ms-2 option-duplicate d-inline-flex"
+                      onclick="onOptionDuplicateClick(this)" type="button" tabindex="-1">↲</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
+              Add -></button>
+            <select class="add-option-select form-select">
+              <option value="1" selected>One Option</option>
+              <option value="KEYS">Letters A-Z</option>
+              <option value="INCREMENT">Increment</option>
+            </select>
+            <button class="btn btn-danger remove-config" type="button" onclick="onRemoveConfigClick(this)">Remove
+              Config</button>
+
+          </div>
+        </fieldset>
+        <button class="btn btn-success my-2" type="button" id="add-config" configcount="1">Add Config</button>
+      </fieldset>
+    </form>
+
+    <!-- CODE -->
+
+    <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" id="code-div" style="max-height: 800px;">
+      <code>
+        <div class="overflow-scroll d-flex w-100 h-100" id="code" style="max-height: 780px; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
+          <div style="margin-top: 20%;">
+            name = <span class="str">
+              "<span class="code-data" id="name"></span>"
+            </span><br>
+            author = <span class="str">
+              "<span class="code-data" id="author"></span>"
+            </span><br>
+            description = <span class="str">
+              [[<br><span class="code-data" id="description"></span><br>]]
+            </span><br>
+            version = <span class="str">
+              "<span class="code-data" id="version"></span>"
+            </span><br>
+            dst_compatible = <span class="bool" id="dst"></span><br>
+            dont_starve_compatible = <span class="bool" id="ds"></span><br>
+            <span class="ds-require">
+              reign_of_giants_compatible = <span class="bool" id="rog"></span><br>
+              hamlet_compatible = <span class="bool" id="ham"></span><br>
+              shipwrecked_compatible = <span class="bool" id="sw"></span><br>
+            </span>
+            client_only_mod = <span class="bool" id="client"></span><br>
+            all_clients_require_mod = <span class="bool" id="server"></span><br>
+            <span class="dst-require">
+              forge_compatible = <span class="bool" id="forge"></span><br>
+              gorge_compatible = <span class="bool" id="gorge"></span><br>
+            </span>
+            <span id="modiconxml-line" class="comment"><span id="comment-modicon-xml">--</span>icon_atlas = <span class="str">
+              "<span class="code-data" id="modiconxml"></span>"</span>
+            </span><br>
+            <span id="modicontex-line" class="comment"><span id="comment-modicon-tex">--</span>icon = <span class="str">
+              "<span class="code-data" id="modicontex"></span>"</span>
+            </span><br>
+            forumthread = <span class="str">
+              "<span class="code-data" id="forumthread"></span>"
+            </span><br>
+            <span class="dst-require">
+              api_version_dst = <span class="num">
+                <span class="code-data" id="apiversion"></span>
+              </span><br>
+            </span>
+            <span class="ds-require">
+              api_version = <span class="num">
+                <span class="code-data" id="dsapiversion"></span>
+              </span><br>
+            </span>
+            priority = <span class="num">
+              <span class="code-data" id="priority"></span>
+            </span><br>
+            mod_dependencies = {<div hidden id="moddependencies">
+              <div class="dependency" hidden>&nbsp;&nbsp;&nbsp;&nbsp;{ 
+                [<span class="str">"<span class="dependency-name-output"></span>"</span>] = 
+                <span class="bool">false</span> },</div>
+            </div>}<br>
+            server_filter_tags = {<span class="code-data" id="filtertags"></span>}<br>
+            configuration_options = {
+              <div id="configs">
+                <div class="configCode" hidden>
+                {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">--GetModConfigInfo("<span class="config-name"></span>")</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;name = <span class="str">"<span class="config-name"></span>"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;label = <span class="str">"<span class="config-label"></span>"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;hover = <span class="str">"<span class="config-hover"></span>"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;options = {
+                <div class="options-code">
+                  <span class="option-code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+                    data = <span class="option-data">""</span>,
+                    description = <span class="str">"<span class="option-label"></span>"</span>
+                    <span class="option-hover-line" hidden>, hover = <span class="str">"<span class="option-hover"></span>"</span></span>
+                  },<br></span>
+                </div>
+                &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;default = <span class="config-default">""</span><br>
+                },<br>
+                </div>
+              </div>
+            }
+          </div>
         </div>
+      </code>
+      <div class="d-flex align-items-end flex-column align-self-end mt-n5">
+        <button type="button" form="input-form" class=" btn btn-outline-light" id="copy-button"
+          style="transform: translateY(-40px);">Copy</button>
+      </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+  <div id="footer" class="mx-3 mt-5 mb-5 py-2 row justify-content-center" id="footer">
+    <div class="col-sm-10 col-md-3">
+      <div>
+        <b>Unofficial Modinfo Generator&nbsp;&nbsp;</b>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-3">
+      <div class="d-flex">
+        <a href="http://www.dontstarvegame.com/">Don't Starve&nbsp;</a> &copy;
+        <a href="http://kleientertainment.com/">&nbsp;Klei Entertainment</a>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-4">
+      <div class="d-flex">
+        <a href="https://github.com/grassdne/DST-modinfo.lua-Generator">Source Code</a> &nbsp;&nbsp;
+        <a href="https://github.com/grassdne/DST-modinfo.lua-Generator/issues/new">Report an Issue</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
 
 
-    <script src="js/lua+parser.min.js"></script>
-    <script src="js/configurations.js"></script>
-    <script src="js/main.js"></script>
+  <script src="js/lua+parser.min.js"></script>
+  <script src="js/configurations.js"></script>
+  <script src="js/main.js"></script>
 </body>
 
 </html>

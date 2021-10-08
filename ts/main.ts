@@ -123,7 +123,7 @@ function getLuaClassType(elem: HTMLElement) {
 
 function setLuaClassType(elem: HTMLElement, newClass: string) {
     const classList = elem.classList;
-    classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass}`
+    classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass} `
 }
 
 function getOutputForInput(inputElem: HTMLElement) {
@@ -227,7 +227,7 @@ function copyButtonHandler() {
 function onInputFocus(elem: FormInput) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null) throw new Error();
-    code.scrollTop = code.clientHeight - output.offsetTop;
+    code.scrollTop = output.offsetTop - Math.min(elem.getBoundingClientRect().y, code.clientHeight - 50);
     
 }
 

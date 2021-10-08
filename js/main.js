@@ -96,7 +96,7 @@ function getLuaClassType(elem) {
 }
 function setLuaClassType(elem, newClass) {
     const classList = elem.classList;
-    classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass}`;
+    classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass} `;
 }
 function getOutputForInput(inputElem) {
     const output = document.getElementById(inputElem.id.split("-")[0]);
@@ -204,7 +204,7 @@ function onInputFocus(elem) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null)
         throw new Error();
-    code.scrollTop = code.clientHeight - output.offsetTop;
+    code.scrollTop = output.offsetTop - Math.min(elem.getBoundingClientRect().y, code.clientHeight - 50);
 }
 const increment = {
     "modal": new bootstrap.Modal(document.getElementById("increment-settings-modal")),
