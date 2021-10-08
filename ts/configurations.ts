@@ -219,7 +219,6 @@ function configSetup(config: Partial<Config>): Config {
     config.optionsForm = document.querySelector(`#${config.id} .options`) as Option;
     config.legend = legend;
 
-    console.log("Config set up with id of " + config.id);
     return config as Config
 }
 
@@ -301,7 +300,6 @@ function optionSetup (
         radioChecked = !config.optionsArr.some((option) => {
             return option.default.checked;
         });
-        console.log(radioChecked);
     }
 
     option.optionid = count;
@@ -368,7 +366,10 @@ interface OptionDefaultRadio extends DefaultFormInput {
 
 let checkedRadio: OptionDefaultRadio | null;
 function registerRadioConfigListener(unsetupRadio: Partial<OptionDefaultRadio> & HTMLInputElement, config: Config, startChecked: Boolean) {
+    // console.log(config.output.children);
+    
     unsetupRadio.output = config.output.getChildWithClass("config-default") as HTMLSpanElement;
+    console.assert(unsetupRadio.output && true, config.output)
     if (unsetupRadio.name == null) throw new Error("unsetupRadio.name == null");
     unsetupRadio.name = unsetupRadio.name.replace(/[#\d]+/, config.configid.toString());
     unsetupRadio.input = unsetupRadio.parentNode?.getChildWithClass("option-data-input") as DefaultFormInput;

@@ -117,13 +117,13 @@ function adjustCodeHeight() {
 }
 
 function getLuaClassType(elem: HTMLElement) {
-    const classMatch =  elem.classList.value.match((/str|bool|n/));
-    return classMatch && classMatch[0] || null 
+    const classMatch =  elem.classList.value.match(/ str|bool|num /);
+    return classMatch && classMatch[1] || null 
 }
 
 function setLuaClassType(elem: HTMLElement, newClass: string) {
     const classList = elem.classList;
-    classList.value = classList.value.replaceAll(/ (str|bool|n)/g, '') + ` ${newClass}`
+    classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass}`
 }
 
 function getOutputForInput(inputElem: HTMLElement) {

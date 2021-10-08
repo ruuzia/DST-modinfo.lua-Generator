@@ -132,7 +132,6 @@ function configSetup(config) {
     config.labelInput = document.querySelector(`#${config.id} .config-label-input`);
     config.optionsForm = document.querySelector(`#${config.id} .options`);
     config.legend = legend;
-    console.log("Config set up with id of " + config.id);
     return config;
 }
 const configCodeClone = document.querySelector(".configCode");
@@ -192,7 +191,6 @@ function optionSetup(option, optionsDiv, optionCode, radioChecked = null) {
         radioChecked = !config.optionsArr.some((option) => {
             return option.default.checked;
         });
-        console.log(radioChecked);
     }
     option.optionid = count;
     option.config = config;
@@ -250,7 +248,9 @@ function registerHoverOptionInput(input, option) {
 }
 let checkedRadio;
 function registerRadioConfigListener(unsetupRadio, config, startChecked) {
+    // console.log(config.output.children);
     unsetupRadio.output = config.output.getChildWithClass("config-default");
+    console.assert(unsetupRadio.output && true, config.output);
     if (unsetupRadio.name == null)
         throw new Error("unsetupRadio.name == null");
     unsetupRadio.name = unsetupRadio.name.replace(/[#\d]+/, config.configid.toString());

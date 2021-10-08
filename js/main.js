@@ -91,12 +91,12 @@ function adjustCodeHeight() {
     code.style.maxHeight = (newHeight - 20).toString();
 }
 function getLuaClassType(elem) {
-    const classMatch = elem.classList.value.match((/str|bool|n/));
-    return classMatch && classMatch[0] || null;
+    const classMatch = elem.classList.value.match(/ str|bool|num /);
+    return classMatch && classMatch[1] || null;
 }
 function setLuaClassType(elem, newClass) {
     const classList = elem.classList;
-    classList.value = classList.value.replaceAll(/ (str|bool|n)/g, '') + ` ${newClass}`;
+    classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass}`;
 }
 function getOutputForInput(inputElem) {
     const output = document.getElementById(inputElem.id.split("-")[0]);
