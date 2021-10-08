@@ -14,7 +14,6 @@
 <body>
 
   <!-- Import Modal -->
-
   <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog" style="max-width: 75%;">
       <div class="modal-content">
@@ -25,17 +24,20 @@
         <div class="modal-body file-upload-wrapper">
           <input type="file" class="form-control" id="customFile" accept=".lua,.txt" ondragenter="dragenter(this)"
             ondragleave="dragleave(this)" ondrop="dragdropped(this)" onchange="fileSelected(event)" />
+          <div class="error mt-3" id="import-error">
+          </div>
           <div class="form-floating mt-3">
-            <textarea id="code-input" class="form-control mb-4" placeholder="" style="min-height: 500px;"></textarea>
+            <textarea id="code-input" rows="30" class="form-control mb-4" placeholder=""
+              style="min-height: 500px;"></textarea>
             <label for="code-input" class="text-secondary">Modinfo Content</label>
           </div>
         </div>
         <div class="modal-footer">
 
-          <button type="button" class="btn btn-primary" id="import-button" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-primary" id="import-button">
             Import
           </button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Exit</button>
+          <button id="exit-import-modal" type="button" class="btn btn-danger" data-bs-dismiss="modal">Exit</button>
         </div>
       </div>
     </div>
@@ -218,8 +220,8 @@
 
             <a id="forumthread-link" target="_blank"></a>
 
-            <div class="form-floating mt-3">
-              <input type="text" class="input-code form-control mb-4" id="apiversion-input" default="10"
+            <div class="form-floating mt-3 dst-require">
+              <input type="text" class="input-code form-control" id="apiversion-input" default="10"
                 onfocus="onInputFocus(this)">
               <label for="apiversion-input">DST API Version <span class='error' id="apiversion-error" hidden>** invalid
                   characters</span></label>
@@ -230,7 +232,7 @@
               <label for="dsapiversion-input">DS Singleplayer API Version <span class='error' id="dsapiversion-error"
                   hidden>** invalid characters</span></label>
             </div>
-            <div class="form-floating">
+            <div class="form-floating mt-3">
               <input type="text" class="input-code form-control mb-3" id="priority-input" default="0"
                 onfocus="onInputFocus(this)">
               <label for="priority-input">Priority <span class='error' id="priority-error" hidden>**
@@ -322,7 +324,7 @@
     <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" id="code-div" style="max-height: 800px;">
       <code>
         <div class="overflow-scroll d-flex w-100 h-100" id="code" style="max-height: 780px; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
-          <div style="margin-top: 20%;">
+          <div style="margin-top: 20%; margin-bottom: 20%;">
             name = <span class="str">
               "<span class="code-data" id="name"></span>"
             </span><br>
@@ -398,6 +400,7 @@
                 </div>
               </div>
             }
+            <br><br><br><br><br><br><br><br>
           </div>
         </div>
       </code>

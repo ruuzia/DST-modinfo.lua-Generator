@@ -351,6 +351,7 @@ function registerHoverOptionInput(input: DefaultFormInput, option: PartiallySetu
     const line = input.output.getParentWithClass("option-hover-line");
     if (line == null) throw new Error();
     input.addEventListener("input", _ => {
+        onInputFocus(input);
         if (input.value) {
             setCodeFromInput(input, null, false)
             line.hidden = false;

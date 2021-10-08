@@ -88,6 +88,8 @@ code {
     color: rgb(194, 194, 194);
 }
 
+
+
 body {
     background-color: #62678f;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -115,6 +117,10 @@ legend {
 .smart-input-delete-button {
     height: 30px;
     border-radius: 0px;
+}
+
+#code-input {
+    line-height: 20px;
 }
 
 fieldset {

@@ -217,8 +217,8 @@ function onInputFocus(elem) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null)
         throw new Error();
-    output.hidden = false;
-    code.scrollTop = output.offsetTop - Math.min(elem.getBoundingClientRect().y, code.clientHeight - 50);
+    const inputHeightFromCodeTop = Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - 30);
+    code.scrollTop = output.offsetTop - inputHeightFromCodeTop;
 }
 const increment = {
     "modal": new bootstrap.Modal(document.getElementById("increment-settings-modal")),
@@ -419,6 +419,7 @@ function fileSelected(event) {
     fr.readAsText(file);
 }
 function resetAll() {
+    formInputs[0].focus();
     formInputs.forEach(input => {
         if (input.isCheckable() && input instanceof HTMLInputElement) {
             input.checked = Boolean(input.getAttribute("default"));
@@ -597,6 +598,7 @@ function importCodeButtonSetup() {
         "api_version": "dsapiversion-input",
         "priority": "priority-input",
     };
+    const importError = document.getElementById("import-error");
     btn.addEventListener("click", event => {
         const codeInput = codeImportInput.value;
         const foundVars = new Set();
@@ -607,9 +609,29 @@ function importCodeButtonSetup() {
         catch (error) {
             console.log(error, typeof (error));
             event.preventDefault();
-            window.alert(error.toString());
+            const errorLineMatch = error.toString().match(/Parse error on line (\d+)/);
+            console.log(errorLineMatch);
+            if (errorLineMatch) {
+                let lineNumber = parseInt(errorLineMatch[1]);
+                const inputLineMatch = codeInput.match(new RegExp(`^(?:.*\\n){${lineNumber - 1}}(.*)`));
+                console.log(inputLineMatch);
+                if (inputLineMatch && inputLineMatch.index != null) {
+                    const line = inputLineMatch[1];
+                    const endIndex = inputLineMatch.index + inputLineMatch[0].length;
+                    codeImportInput.focus();
+                    console.log(endIndex);
+                    codeImportInput.setSelectionRange(endIndex - line.length, endIndex);
+                    console.log("------------------------------");
+                    console.log(lineNumber, codeImportInput.clientHeight, codeImportInput.rows);
+                    codeImportInput.scrollTop = (lineNumber - 1) * 20; // DEPENDENT ON LINE HEIGHT
+                }
+            }
+            importError.innerText = error.toString();
+            importError.hidden = false;
+            //window.alert(error.toString());
             return;
         }
+        document.getElementById("exit-import-modal")?.dispatchEvent(new Event("click"));
         if (info.api_version_dst == null) {
             info.api_version_dst = info.api_version;
         }
