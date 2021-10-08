@@ -286,27 +286,30 @@
                         <div class="fs-6 pb-1"><span class="header"><u>Options</u></span></div>
                         <div class="options" optioncount="1">
                             <div class="option mb-2">
-                                <input type="radio" title="Default Option"
-                                    class="form-check-input me-1 option-radio-input" name="option-default-#"
-                                    onfocus="onInputFocus(event)" required>
-                                <input type="text" title="Data value returned"
-                                    class="input-config form-control d-inline option-data-input" name="option-data"
-                                    placeholder="data" onfocus="onInputFocus(event)">
-                                <input type="text" title="Label for the user"
-                                    class="input-config form-control d-inline option-label-input" name="option-label"
-                                    placeholder="label" onfocus="onInputFocus(event)">
-                                <input type="text" title="Hover text for the user"
-                                    class="input-config form-control d-inline option-hover-input" name="option-hover"
-                                    placeholder="hover text" onfocus="onInputFocus(event)">
-                                <span style="white-space: nowrap;">
-                                    <button title="Delete option"
-                                        class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
-                                        onclick="onOptionDeleteClick(event)" onloadend="test(event)" type="button"
-                                        tabindex="-1">×</button>
-                                    <button title="Duplicate option"
-                                        class="btn btn-outline-light ms-2 option-duplicate d-inline-flex"
-                                        onclick="onOptionDuplicateClick(event)" type="button" tabindex="-1">↲</button>
-                                </span>
+                                <div class="d-md-inline-flex">
+                                    <input type="radio" title="Default Option"
+                                        class="form-check-input me-2 option-radio-input" name="option-default-#"
+                                        onfocus="onInputFocus(event)" required>
+                                    <input type="text" title="Data value returned"
+                                        class="input-config form-control d-inline option-data-input" name="option-data"
+                                        placeholder="data" onfocus="onInputFocus(event)">
+                                    <input type="text" title="Label for the user"
+                                        class="input-config form-control d-inline option-label-input ms-2"
+                                        name="option-label" placeholder="label" onfocus="onInputFocus(event)">
+                                    <input type="text" title="Hover text for the user"
+                                        class="input-config form-control d-inline option-hover-input ms-2"
+                                        name="option-hover" placeholder="hover text" onfocus="onInputFocus(event)">
+                                    <span style="white-space: nowrap;">
+                                        <button title="Delete option"
+                                            class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
+                                            onclick="onOptionDeleteClick(event)" onloadend="test(event)" type="button"
+                                            tabindex="-1">×</button>
+                                        <button title="Duplicate option"
+                                            class="btn btn-outline-light ms-2 option-duplicate d-inline-flex"
+                                            onclick="onOptionDuplicateClick(event)" type="button"
+                                            tabindex="-1">↲</button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(event)">
@@ -442,8 +445,8 @@
 
 
     <script src="js/lua+parser.min.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/configurations.js"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>

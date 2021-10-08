@@ -674,4 +674,3 @@ incrementSetup();
 adjustCodeHeight();
 resetAll();
 modDependencySetup();
-advancedToggle.dispatchEvent(new Event("click")); // DEVELOPMENT

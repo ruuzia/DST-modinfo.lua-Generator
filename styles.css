@@ -32,11 +32,11 @@
 }
 
 .option-data-input {
-    width: 20%;
+    max-width: 30%;
 }
 
 .option-label-input {
-    width: 25%;
+    max-width: 40%;
 }
 
 .dragover {
@@ -44,7 +44,12 @@
 }
 
 .option-hover-input {
-    width: 35%;
+    max-width: 70%;
+}
+
+.option-radio-input {
+    min-width: 15px;
+    transform: translateY(-5px)
 }
 
 .btn-primary-2 {
