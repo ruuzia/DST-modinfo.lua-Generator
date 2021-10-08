@@ -233,6 +233,7 @@ function registerLabelOptionInput(input, option) {
 }
 function registerHoverOptionInput(input, option) {
     input.output = document.querySelector(`#${option.output.id} .option-hover`);
+    input.focusElem = document.querySelector(`#${option.output.id} .option-hover-focus`);
     const line = input.output.getParentWithClass("option-hover-line");
     if (line == null)
         throw new Error();

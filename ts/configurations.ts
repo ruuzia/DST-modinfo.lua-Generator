@@ -8,6 +8,7 @@ type CodeOutput = _CodeOutput & (HTMLSpanElement | HTMLDivElement);
 interface BaseFormInput {
     output?: CodeOutput,
     outputs?: CodeOutput[] | null,
+    focusElem?: HTMLElement | null
 
     triggerSetValue (value: string | Boolean): void;
 }
@@ -348,6 +349,7 @@ function registerLabelOptionInput(input: DefaultFormInput, option: PartiallySetu
 
 function registerHoverOptionInput(input: DefaultFormInput, option: PartiallySetupOption) {
     input.output = document.querySelector(`#${option.output.id} .option-hover`) as HTMLSpanElement;
+    input.focusElem = document.querySelector(`#${option.output.id} .option-hover-focus`) as HTMLSpanElement;
     const line = input.output.getParentWithClass("option-hover-line");
     if (line == null) throw new Error();
     input.addEventListener("input", _ => {

@@ -105,6 +105,10 @@ function getOutputForInput(inputElem) {
     }
     return output;
 }
+function getFocusForInput(inputElem) {
+    const focusElem = document.getElementById(inputElem.id.split("-")[0] + '-focus');
+    return focusElem;
+}
 function setCodeFromInput(input, override = null, typeCheck = false) {
     const inputValue = override != null ? override : input.value;
     let text;
@@ -214,10 +218,11 @@ function copyButtonHandler() {
     });
 }
 function onInputFocus(elem) {
-    const output = elem.output || elem.outputs && elem.outputs[0];
+    const output = elem.focusElem || elem.output || (elem.outputs && elem.outputs[0]);
     if (output == null)
         throw new Error();
-    const inputHeightFromCodeTop = Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - 30);
+    // 30 < (elem.getBoundingClientRect().top - code.getBoundingClientRect().top) < (code.clientHeight - 30)
+    const inputHeightFromCodeTop = Math.max(Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - 30), 30);
     code.scrollTop = output.offsetTop - inputHeightFromCodeTop;
 }
 const increment = {
@@ -355,6 +360,8 @@ function addModDependencyInput() {
         throw new Error();
     addInputBtnParentNode.insertBefore(newDependency, addInputBtn);
     codeDependencies.appendChild(newCode);
+    input.focusElem = document.createElement("span");
+    codeDependencies.appendChild(input.focusElem);
     input.output = document.querySelector(`#${newCode.id} .dependency-name-output`);
     if (input.parentNode == null)
         throw new Error();
@@ -445,6 +452,7 @@ function resetAll() {
 function respondToInputs() {
     formInputs.forEach(item => {
         item.output = getOutputForInput(item);
+        item.focusElem = getFocusForInput(item);
         formInputs.push(item);
         switch (item.id) {
             case "version-input":

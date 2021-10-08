@@ -126,12 +126,17 @@ function setLuaClassType(elem: HTMLElement, newClass: string) {
     classList.value = classList.value.replaceAll(/ (str|bool|num) /g, ' ') + ` ${newClass} `
 }
 
-function getOutputForInput(inputElem: HTMLElement) {
+function getOutputForInput(inputElem: FormInput) {
     const output = document.getElementById(inputElem.id.split("-")[0]);
     if (!output) {
         throw new Error("No output found for " + inputElem);
     }
     return output
+}
+
+function getFocusForInput(inputElem: FormInput): HTMLElement | null {
+    const focusElem = document.getElementById(inputElem.id.split("-")[0] + '-focus');
+    return focusElem
 }
 
 function setCodeFromInput(input: FormInput, override: null | string = null, typeCheck: boolean = false) {
@@ -239,9 +244,10 @@ function copyButtonHandler(): void {
 }
 
 function onInputFocus(elem: FormInput) {
-    const output = elem.output || elem.outputs && elem.outputs[0];
+    const output = elem.focusElem || elem.output || (elem.outputs && elem.outputs[0]);
     if (output == null) throw new Error();
-    const inputHeightFromCodeTop = Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - 30);
+    // 30 < (elem.getBoundingClientRect().top - code.getBoundingClientRect().top) < (code.clientHeight - 30)
+    const inputHeightFromCodeTop = Math.max(Math.min(elem.getBoundingClientRect().top - code.getBoundingClientRect().top, code.clientHeight - 30), 30);
     code.scrollTop = output.offsetTop - inputHeightFromCodeTop;
     
 }
@@ -399,7 +405,10 @@ function addModDependencyInput(): DefaultFormInput {
     if (addInputBtnParentNode == null) throw new Error();
     addInputBtnParentNode.insertBefore(newDependency, addInputBtn);
     codeDependencies.appendChild(newCode);
+    input.focusElem = document.createElement("span");
+    codeDependencies.appendChild(input.focusElem);
     input.output = document.querySelector(`#${newCode.id} .dependency-name-output`) as HTMLSpanElement;
+    
     if (input.parentNode == null) throw new Error();
     input.deleteButton = input.parentNode.getChildWithClass("smart-input-delete-button") as HTMLButtonElement;
     input.output.line = newCode;
@@ -409,7 +418,6 @@ function addModDependencyInput(): DefaultFormInput {
 }
 
 function modDependencyInputRegister(inputElem: DefaultFormInput) {
-
     inputElem.addEventListener("input", () => {
         inputElem.classList.remove("unfilled");
         let linkId = inputElem.value.match(/steamcommunity.com.+\?id=(?<id>\d{10})/)?.groups?.id;
@@ -488,6 +496,7 @@ function resetAll() {
 function respondToInputs() {
     formInputs.forEach(item => {
         item.output = getOutputForInput(item);
+        item.focusElem = getFocusForInput(item);
         formInputs.push(item);
         switch (item.id) {
             case "version-input":

@@ -245,8 +245,8 @@
             </div>
 
             <div class="moddependency-div input-group" hidden>
-              <input type="text" class="form-control smart-input moddependency-input"
-                placeholder="Steam mod ID or link">
+              <input type="text" class="form-control smart-input moddependency-input" placeholder="Steam mod ID or link"
+                onfocus="onInputFocus(this)">
               <button tabindex="-1" type="button" class="input-group-text smart-input-delete-button border-bottom-0"
                 onclick="onModDependencyDeleteClick(this)">X</span>
             </div>
@@ -391,7 +391,7 @@
                   <span class="option-code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
                     data = <span class="option-data">""</span>,
                     description = <span class="str">"<span class="option-label"></span>"</span>
-                    <span class="option-hover-line" hidden>, hover = <span class="str">"<span class="option-hover"></span>"</span></span>
+                    <span class="option-hover-focus"><span class="option-hover-line" hidden>, hover = <span class="str">"<span class="option-hover"></span>"</span></span>
                   },<br></span>
                 </div>
                 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
