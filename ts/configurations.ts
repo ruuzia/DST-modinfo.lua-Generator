@@ -83,8 +83,7 @@ function resetConfigLegendNumbers() {
     }
 }
 
-function onRemoveConfigClick(event: Event) {
-    const btn = event.target as HTMLButtonElement;
+function onRemoveConfigClick(btn: HTMLButtonElement) {
     const config = btn.getParentWithClass("configuration") as Config;
     if (config.output == null) {
         console.assert(false);
@@ -142,8 +141,7 @@ interface DuplicateButton extends HTMLButtonElement {
     config: Config,
 }
 
-function onDuplicateConfigClick(event: Event) {
-    const btn = event.target as DuplicateButton;
+function onDuplicateConfigClick(btn: DuplicateButton) {
     if (!btn.config) {
         btn.config = btn.getParentWithClass("configuration") as Config;
     }
@@ -240,8 +238,8 @@ function createConfigCode(configForm: Partial<Config>) {
 }
 
 
-function onOptionDeleteClick(event: Event) {
-    const option = (event.target as HTMLButtonElement).getParentWithClass("option") as Option;
+function onOptionDeleteClick(btn: HTMLButtonElement) {
+    const option = btn.getParentWithClass("option") as Option;
     option.output.remove();
     const optionsArr = option.config.optionsArr;
     const index = optionsArr.indexOf(option);
@@ -258,8 +256,7 @@ interface DuplicateOptionButton extends HTMLButtonElement {
     option?: Option;
 }
 
-function onOptionDuplicateClick(event: Event) {
-    const btn = event.target as DuplicateOptionButton;
+function onOptionDuplicateClick(btn: DuplicateOptionButton) {
     if (btn.option == null) {
         btn.option = btn.getParentWithClass("option") as Option;
     }
@@ -402,8 +399,7 @@ interface AddOptionButton extends HTMLButtonElement {
     select?: HTMLSelectElement,
 }
 
-function onAddOptionClick(event: Event) {
-    const btn = event.target as AddOptionButton;
+function onAddOptionClick(btn: AddOptionButton) {
     if (!btn.optionsDiv || !btn.select) {
         if(!(btn.nextElementSibling instanceof HTMLSelectElement) || !btn.parentNode) throw new Error();
         btn.optionsDiv = btn.parentNode.getChildWithClass("options") as OptionsForm;

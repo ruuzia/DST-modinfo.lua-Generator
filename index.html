@@ -24,7 +24,7 @@
                 </div>
                 <div class="modal-body file-upload-wrapper">
                     <input type="file" class="form-control" id="customFile" accept=".lua,.txt"
-                        ondragenter="dragenter(event)" ondragleave="dragleave(event)" ondrop="dragdropped(event)"
+                        ondragenter="dragenter(this)" ondragleave="dragleave(this)" ondrop="dragdropped(this)"
                         onchange="fileSelected(event)" />
                     <div class="form-floating mt-3">
                         <textarea id="code-input" class="form-control mb-4" placeholder=""
@@ -67,7 +67,7 @@
                             <div class="input-group mb-3 me-2">
                                 <select class="form-select" style="max-width: 70px;" id="increment-data-operator">
                                     <option value=".." selected>..</option>
-                                    onfocus="onInputFocus(event)" <option value="*">×</option>
+                                    onfocus="onInputFocus(this)" <option value="*">×</option>
                                     <option value="+">+</option>
                                 </select>
                                 <input type="text" class="form-control" id="increment-data-operand-input">
@@ -112,23 +112,23 @@
                     data-bs-toggle="modal">Import Code</button>
                 <div class="form-floating">
                     <input type="text" id="name-input" class="input-code form-control mb-4" placeholder=""
-                        onfocus="onInputFocus(event)" required>
+                        onfocus="onInputFocus(this)" required>
                     <label for="name-input" class="text-secondary">Name of Mod</label>
                 </div>
                 <div class="form-floating">
                     <input type="text" id="author-input" class="input-code form-control mb-4" placeholder=""
-                        onfocus="onInputFocus(event)" required>
+                        onfocus="onInputFocus(this)" required>
                     <label for="author-input" class="text-secondary">Name of Author</label>
                 </div>
                 <div class="form-floating">
                     <textarea id="description-input" class="input-code form-control mb-4" placeholder=""
-                        style="height: 100px; min-height: 60px; max-height: 300px;" onfocus="onInputFocus(event)"
+                        style="height: 100px; min-height: 60px; max-height: 300px;" onfocus="onInputFocus(this)"
                         required></textarea>
                     <label for="description-input" class="text-secondary">Mod Description</label>
                 </div>
                 <div class="form-floating">
                     <input type="text" class="input-code form-control mb-4" id="version-input" default="1.0.0"
-                        onfocus="onInputFocus(event)" required>
+                        onfocus="onInputFocus(this)" required>
                     <label for="version-input">
                         Version<span class='error' id="version-error" hidden> ** invalid characters</span>
                     </label>
@@ -137,37 +137,37 @@
                     <legend class="fs-6 ms-auto me-auto">Game Compatibilities</legend>
                     <span>
                         <input type="checkbox" class="checkbox input-code form-check-input" id="dst-check"
-                            default="check" onfocus="onInputFocus(event)" checked>
+                            default="check" onfocus="onInputFocus(this)" checked>
                         <label for="dst-check"><abbr title="Don't Starve Together">DST</abbr></label>&nbsp
                     </span>
                     <span class="dst-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="forge-check"
-                            onfocus="onInputFocus(event)">
+                            onfocus="onInputFocus(this)">
                         <label for="forge-check"><abbr title="ReForged DST Mod">Forge</abbr></label>&nbsp
                     </span>
                     <span class="dst-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="gorge-check"
-                            onfocus="onInputFocus(event)">
+                            onfocus="onInputFocus(this)">
                         <label for="gorge-check"><abbr title="Re-Gorg-itated DST Mod">Gorge</abbr></label>&nbsp
                     </span>
                     <span>
                         <input type="checkbox" class="checkbox input-code form-check-input" id="ds-check"
-                            onfocus="onInputFocus(event)">
+                            onfocus="onInputFocus(this)">
                         <label for="ds-check"><abbr title="Don't Starve">DS</abbr></label>&nbsp
                     </span>
                     <span class="ds-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="rog-check"
-                            onfocus="onInputFocus(event)">
+                            onfocus="onInputFocus(this)">
                         <label for="rog-check"><abbr title="Reign of Giants">ROG</abbr></label>&nbsp
                     </span>
                     <span class="ds-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="ham-check"
-                            onfocus="onInputFocus(event)">
+                            onfocus="onInputFocus(this)">
                         <label for="ham-check"><abbr title="Hamlet">HAM</abbr></label>&nbsp
                     </span>
                     <span class="ds-require">
                         <input type="checkbox" class="checkbox input-code form-check-input" id="sw-check"
-                            onfocus="onInputFocus(event)">
+                            onfocus="onInputFocus(this)">
                         <label for="sw-check"><abbr title="Shipwrecked">SW</abbr></label>&nbsp
                     </span>
                     </span>
@@ -177,12 +177,12 @@
                     <div class="d-flex flex-row justify-content-around">
                         <div>
                             <input type="radio" default="checked" name="modtype" id="server-check"
-                                class="input-code form-check-input me-1" onfocus="onInputFocus(event)">
+                                class="input-code form-check-input me-1" onfocus="onInputFocus(this)">
                             <label for="server-check">Server</label>
                         </div>
                         <div>
                             <input type="radio" value="client" name="modtype" id="client-check"
-                                class="input-code form-check-input ms-3 me-1" onfocus="onInputFocus(event)">
+                                class="input-code form-check-input ms-3 me-1" onfocus="onInputFocus(this)">
                             <label for="client-check">Client-Only</label>
                         </div>
                     </div>
@@ -194,12 +194,12 @@
                     <div id="modicons" hidden>
                         <div class="form-floating">
                             <input type="text" class="input-code form-control mb-4" id="modiconxml-input"
-                                default="modicon.xml" suffix=".xml" onfocus="onInputFocus(event)">
+                                default="modicon.xml" suffix=".xml" onfocus="onInputFocus(this)">
                             <label for="modiconxml-input">Name of .xml File</label>
                         </div>
                         <div class="form-floating">
                             <input type="text" class="input-code form-control mb-4" id="modicontex-input"
-                                default="modicon.tex" suffix=".tex" onfocus="onInputFocus(event)">
+                                default="modicon.tex" suffix=".tex" onfocus="onInputFocus(this)">
                             <label for="modicontex-input">Name of .tex File</label>
                         </div>
 
@@ -215,7 +215,7 @@
                             invalid characters</span>
                         <div class="form-floating">
                             <input type="text" class="input-code form-control mb-1" id="forumthread-input"
-                                onfocus="onInputFocus(event)">
+                                onfocus="onInputFocus(this)">
                             <label for="forumthread-input">Klei Forums Thread</label>
                         </div>
 
@@ -223,25 +223,25 @@
 
                         <div class="form-floating mt-3">
                             <input type="text" class="input-code form-control mb-4" id="apiversion-input" default="10"
-                                onfocus="onInputFocus(event)">
+                                onfocus="onInputFocus(this)">
                             <label for="apiversion-input">DST API Version <span class='error' id="apiversion-error"
                                     hidden>** invalid characters</span></label>
                         </div>
                         <div class="form-floating mt-3 ds-require">
                             <input type="text" class="input-code form-control mb-4" id="dsapiversion-input" default="6"
-                                onfocus="onInputFocus(event)">
+                                onfocus="onInputFocus(this)">
                             <label for="dsapiversion-input">DS Singleplayer API Version <span class='error'
                                     id="dsapiversion-error" hidden>** invalid characters</span></label>
                         </div>
                         <div class="form-floating">
                             <input type="text" class="input-code form-control mb-3" id="priority-input" default="0"
-                                onfocus="onInputFocus(event)">
+                                onfocus="onInputFocus(this)">
                             <label for="priority-input">Priority <span class='error' id="priority-error" hidden>**
                                     invalid characters</span></label>
                         </div>
                         <div class="form-floating mb-4">
                             <input type="text" class="input-code form-control" id="filtertags-input"
-                                onfocus="onInputFocus(event)">
+                                onfocus="onInputFocus(this)">
                             <label for="filtertags-input">Server Filter Tags <span class='error' id="filtertags-error"
                                     hidden>** invalid characters</span></label>
                         </div>
@@ -251,7 +251,7 @@
                                 placeholder="Steam mod ID or link">
                             <button tabindex="-1" type="button"
                                 class="input-group-text smart-input-delete-button border-bottom-0"
-                                onclick="onModDependencyDeleteClick(event)">X</span>
+                                onclick="onModDependencyDeleteClick(this)">X</span>
                         </div>
                         <button type="button"
                             class="btn btn-light btn-sm mt-1 ms-auto me-auto add-smart-input border-bottom-0"
@@ -274,45 +274,45 @@
                     <div class="configuration-content">
                         <div class="d-flex flex-row">
                             <input type="text" class="input-config form-control w-50 config-name-input me-auto"
-                                placeholder="Reference Name" onfocus="onInputFocus(event)">
+                                placeholder="Reference Name" onfocus="onInputFocus(this)">
                             <button class="btn btn-light mt-2 align-self-end translate-middle-y" type="button"
-                                id="duplicate-config" onclick="onDuplicateConfigClick(event)" tabindex="-1">Duplicate
+                                id="duplicate-config" onclick="onDuplicateConfigClick(this)" tabindex="-1">Duplicate
                                 Config</button>
                         </div>
                         <input type="text" class="input-config form-control mb-3 w-50 config-label-input"
-                            placeholder="Label" onfocus="onInputFocus(event)">
+                            placeholder="Label" onfocus="onInputFocus(this)">
                         <input type="text" class="input-config form-control mb-3 config-hover-input"
-                            placeholder="Hover Text" onfocus="onInputFocus(event)">
+                            placeholder="Hover Text" onfocus="onInputFocus(this)">
                         <div class="fs-6 pb-1"><span class="header"><u>Options</u></span></div>
                         <div class="options" optioncount="1">
                             <div class="option mb-2">
                                 <div class="d-md-inline-flex">
                                     <input type="radio" title="Default Option"
                                         class="form-check-input me-2 option-radio-input" name="option-default-#"
-                                        onfocus="onInputFocus(event)" required>
+                                        onfocus="onInputFocus(this)" required>
                                     <input type="text" title="Data value returned"
                                         class="input-config form-control d-inline option-data-input" name="option-data"
-                                        placeholder="data" onfocus="onInputFocus(event)">
+                                        placeholder="data" onfocus="onInputFocus(this)">
                                     <input type="text" title="Label for the user"
                                         class="input-config form-control d-inline option-label-input ms-2"
-                                        name="option-label" placeholder="label" onfocus="onInputFocus(event)">
+                                        name="option-label" placeholder="label" onfocus="onInputFocus(this)">
                                     <input type="text" title="Hover text for the user"
                                         class="input-config form-control d-inline option-hover-input ms-2"
-                                        name="option-hover" placeholder="hover text" onfocus="onInputFocus(event)">
+                                        name="option-hover" placeholder="hover text" onfocus="onInputFocus(this)">
                                     <span style="white-space: nowrap;">
                                         <button title="Delete option"
                                             class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
-                                            onclick="onOptionDeleteClick(event)" onloadend="test(event)" type="button"
+                                            onclick="onOptionDeleteClick(this)" onloadend="test(this)" type="button"
                                             tabindex="-1">×</button>
                                         <button title="Duplicate option"
                                             class="btn btn-outline-light ms-2 option-duplicate d-inline-flex"
-                                            onclick="onOptionDuplicateClick(event)" type="button"
+                                            onclick="onOptionDuplicateClick(this)" type="button"
                                             tabindex="-1">↲</button>
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(event)">
+                        <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
                             Add -></button>
                         <select class="add-option-select form-select">
                             <option value="1" selected>One Option</option>
@@ -320,7 +320,7 @@
                             <option value="INCREMENT">Increment</option>
                         </select>
                         <button class="btn btn-danger remove-config" type="button"
-                            onclick="onRemoveConfigClick(event)">Remove Config</button>
+                            onclick="onRemoveConfigClick(this)">Remove Config</button>
 
                     </div>
                 </fieldset>
@@ -422,7 +422,7 @@
     <div id="footer" class="mx-3 mt-5 mb-5 py-2 row justify-content-center" id="footer">
         <div class="col-sm-10 col-md-3">
             <div>
-                <b>Unofficial modinfo generator&nbsp;&nbsp;</b>
+                <b>Unofficial Modinfo Generator&nbsp;&nbsp;</b>
             </div>
         </div>
         <div class="col-sm-10 col-md-3">
@@ -433,8 +433,8 @@
         </div>
         <div class="col-sm-10 col-md-4">
             <div class="d-flex">
-                <a href="https://github.com/grassdne/DST-modinfo.lua-Generator">Source code</a> &nbsp;&nbsp;
-                <a href="https://github.com/grassdne/DST-modinfo.lua-Generator/issues/new">Report an issue</a>
+                <a href="https://github.com/grassdne/DST-modinfo.lua-Generator">Source Code</a> &nbsp;&nbsp;
+                <a href="https://github.com/grassdne/DST-modinfo.lua-Generator/issues/new">Report an Issue</a>
             </div>
         </div>
     </div>

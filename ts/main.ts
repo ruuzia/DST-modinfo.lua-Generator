@@ -224,8 +224,7 @@ function copyButtonHandler() {
     });
 }
 
-function onInputFocus(event: Event) {
-    const elem = event.target as FormInput;
+function onInputFocus(elem: FormInput) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null) throw new Error();
     code.scrollTop = code.clientHeight - output.offsetTop;
@@ -326,17 +325,13 @@ function modiconCheckBox() {
 
 let dragCount = 0;
 let dragged: HTMLElement | null = null;
-function dragenter(event: DragEvent) {
-    const elem = event.target;
-    if (!(elem instanceof HTMLElement)) throw new Error();
+function dragenter(elem: HTMLElement) {
     if (dragged == null) dragged = elem;
     elem.classList.add("dragover");
     dragCount++;
 }
 
-function dragleave(event: DragEvent) {
-    const elem = event.target;
-    if (!(elem instanceof HTMLElement)) throw new Error();
+function dragleave(elem: HTMLElement) {
     dragCount--;
     if (dragCount == 0) {
         elem.classList.remove("dragover")
@@ -345,9 +340,9 @@ function dragleave(event: DragEvent) {
 }
 
 const codeImportInput = document.getElementById("code-input") as FormInput;
-function dragdropped(event: DragEvent) {
+function dragdropped(elem: HTMLElement) {
     dragCount = 0;
-    (event.target as HTMLElement).classList.remove("dragover")
+    elem.classList.remove("dragover")
 }
 
 
@@ -417,9 +412,7 @@ function modDependencyInputRegister(inputElem: DefaultFormInput) {
     });
 }
 
-function onModDependencyDeleteClick(event: Event) {
-    const btn = event.target;
-    if (!(btn instanceof HTMLButtonElement)) throw new Error();
+function onModDependencyDeleteClick(btn: HTMLButtonElement) {
     const div = btn.getParentWithClass("moddependency-div");
     if (!(div instanceof HTMLDivElement)) throw new Error();
     const input = div.getChildWithClass("moddependency-input") as FormInput;

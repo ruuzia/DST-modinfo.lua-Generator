@@ -200,8 +200,7 @@ function copyButtonHandler() {
         //searchForErrors();
     });
 }
-function onInputFocus(event) {
-    const elem = event.target;
+function onInputFocus(elem) {
     const output = elem.output || elem.outputs && elem.outputs[0];
     if (output == null)
         throw new Error();
@@ -291,19 +290,13 @@ function modiconCheckBox() {
 }
 let dragCount = 0;
 let dragged = null;
-function dragenter(event) {
-    const elem = event.target;
-    if (!(elem instanceof HTMLElement))
-        throw new Error();
+function dragenter(elem) {
     if (dragged == null)
         dragged = elem;
     elem.classList.add("dragover");
     dragCount++;
 }
-function dragleave(event) {
-    const elem = event.target;
-    if (!(elem instanceof HTMLElement))
-        throw new Error();
+function dragleave(elem) {
     dragCount--;
     if (dragCount == 0) {
         elem.classList.remove("dragover");
@@ -311,9 +304,9 @@ function dragleave(event) {
     }
 }
 const codeImportInput = document.getElementById("code-input");
-function dragdropped(event) {
+function dragdropped(elem) {
     dragCount = 0;
-    event.target.classList.remove("dragover");
+    elem.classList.remove("dragover");
 }
 const modDependencyInputs = [];
 const codeDependencies = document.getElementById("moddependencies");
@@ -378,10 +371,7 @@ function modDependencyInputRegister(inputElem) {
         inputElem.output.line.hidden = inputElem.value ? false : true;
     });
 }
-function onModDependencyDeleteClick(event) {
-    const btn = event.target;
-    if (!(btn instanceof HTMLButtonElement))
-        throw new Error();
+function onModDependencyDeleteClick(btn) {
     const div = btn.getParentWithClass("moddependency-div");
     if (!(div instanceof HTMLDivElement))
         throw new Error();

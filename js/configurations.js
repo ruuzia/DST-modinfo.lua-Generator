@@ -20,8 +20,7 @@ function resetConfigLegendNumbers() {
         legend.innerText = legend.innerText.replace(/[\d#]+/, (i + 1).toString());
     }
 }
-function onRemoveConfigClick(event) {
-    const btn = event.target;
+function onRemoveConfigClick(btn) {
     const config = btn.getParentWithClass("configuration");
     if (config.output == null) {
         console.assert(false);
@@ -68,8 +67,7 @@ function configInputSetup(config, codeId) {
         option.config.optionsArr.push(option);
     }
 }
-function onDuplicateConfigClick(event) {
-    const btn = event.target;
+function onDuplicateConfigClick(btn) {
     if (!btn.config) {
         btn.config = btn.getParentWithClass("configuration");
     }
@@ -147,8 +145,8 @@ function createConfigCode(configForm) {
     newConfigCode.id = id;
     configInputSetup(configForm, id);
 }
-function onOptionDeleteClick(event) {
-    const option = event.target.getParentWithClass("option");
+function onOptionDeleteClick(btn) {
+    const option = btn.getParentWithClass("option");
     option.output.remove();
     const optionsArr = option.config.optionsArr;
     const index = optionsArr.indexOf(option);
@@ -160,8 +158,7 @@ function onOptionDeleteClick(event) {
     }
     option.remove();
 }
-function onOptionDuplicateClick(event) {
-    const btn = event.target;
+function onOptionDuplicateClick(btn) {
     if (btn.option == null) {
         btn.option = btn.getParentWithClass("option");
     }
@@ -277,8 +274,7 @@ optionClone.optionid = 0;
 const optionCodeClone = document.querySelector(".option-code");
 if (!optionClone || !optionCodeClone)
     throw new Error();
-function onAddOptionClick(event) {
-    const btn = event.target;
+function onAddOptionClick(btn) {
     if (!btn.optionsDiv || !btn.select) {
         if (!(btn.nextElementSibling instanceof HTMLSelectElement) || !btn.parentNode)
             throw new Error();
