@@ -620,6 +620,19 @@ function respondToInputs() {
     });
 }
 
+type LuaValue = LuaTable | string | boolean | number | Function
+
+interface LuaTable extends Object {
+    bool: {
+        "false"?: LuaValue, 
+        "true"?: LuaValue,
+    },
+    floats: { [key: number]: LuaValue},
+    objs: { [key: string]: LuaValue },
+    str: { [key: string ]: LuaValue },
+    uints: { [key: number]: LuaValue },
+}
+
 declare var lua_load: any;
 
 function importCodeButtonSetup() {
@@ -668,11 +681,7 @@ function importCodeButtonSetup() {
                     const line = inputLineMatch[1];
                     const endIndex = inputLineMatch.index + inputLineMatch[0].length;
                     codeImportInput.focus();
-                    console.log(endIndex);
                     codeImportInput.setSelectionRange(endIndex - line.length, endIndex)
-                    console.log("------------------------------");
-                    console.log(lineNumber, codeImportInput.clientHeight, codeImportInput.rows);
-                    
                     codeImportInput.scrollTop = (lineNumber - 1) * 20 // DEPENDENT ON LINE HEIGHT
                 }
             } 
@@ -682,6 +691,8 @@ function importCodeButtonSetup() {
             //window.alert(error.toString());
             return;
         }
+
+        importError.innerText = "";
 
         document.getElementById("exit-import-modal")?.dispatchEvent(new Event("click"));
         

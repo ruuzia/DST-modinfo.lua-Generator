@@ -624,10 +624,7 @@ function importCodeButtonSetup() {
                     const line = inputLineMatch[1];
                     const endIndex = inputLineMatch.index + inputLineMatch[0].length;
                     codeImportInput.focus();
-                    console.log(endIndex);
                     codeImportInput.setSelectionRange(endIndex - line.length, endIndex);
-                    console.log("------------------------------");
-                    console.log(lineNumber, codeImportInput.clientHeight, codeImportInput.rows);
                     codeImportInput.scrollTop = (lineNumber - 1) * 20; // DEPENDENT ON LINE HEIGHT
                 }
             }
@@ -636,6 +633,7 @@ function importCodeButtonSetup() {
             //window.alert(error.toString());
             return;
         }
+        importError.innerText = "";
         document.getElementById("exit-import-modal")?.dispatchEvent(new Event("click"));
         if (info.api_version_dst == null) {
             info.api_version_dst = info.api_version;
