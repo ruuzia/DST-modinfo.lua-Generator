@@ -17,7 +17,8 @@ const replacements: { [key: string]: string } = {
     "\"": "\\&quot;",
     "'": "&#039;",
     "\n": "<br>",
-    "]": "\\\]" 
+    "]": "\\\]",
+    " ": "&nbsp"
 }
 const str = '[' + Object.keys(replacements)
                     .join('')
@@ -25,9 +26,104 @@ const str = '[' + Object.keys(replacements)
 var pattern = new RegExp(str, 'g');
 
 function escapeText(text: string): string {
-    return text.replaceAll(pattern, match => {
+    return escapeEmotes(text).replaceAll(pattern, match => {
         return replacements[match]
     });
+}
+
+let dst_emotes: {[key: string]: string} = {
+    "red skull": "󰀀",
+    "beefalo": "󰀁",
+    "chest": "󰀂",
+    "chester": "󰀃",
+    "crockpot": "󰀄",
+    "eyeball": "󰀅",
+    "teeth": "󰀆",
+    "farmplot": "󰀇",
+    "flame": "󰀈",
+    "ghost": "󰀉",
+    "tomb stone": "󰀊",
+    "ham bat": "󰀋",
+    "hammer": "󰀌",
+    "heart": "󰀍",
+    "hunger": "󰀎",
+    "light bulb": "󰀏",
+    "pig man": "󰀐",
+    "poop": "󰀑",
+    "red gem": "󰀒",
+    "sanity": "󰀓",
+    "science machine": "󰀔",
+    "skull": "󰀕",
+    "top hat": "󰀖",
+    "web": "󰀗",
+    "swords": "󰀘",
+    "strong arm": "󰀙",
+    "gold nugget": "󰀚",
+    "torch": "󰀛",
+    "abigail flower": "󰀜",
+    "alchemy machine": "󰀝",
+    "backpack": "󰀞",
+    "beehive": "󰀟",
+    "berry bush": "󰀠",
+    "carrot": "󰀡",
+    "egg": "󰀢",
+    "eyeplant": "󰀣",
+    "firepit": "󰀤",
+    "beefalo horn": "󰀥",
+    "big meat": "󰀦",
+    "diamond": "󰀧",
+    "salt": "󰀨",
+    "shadow manipulator": "󰀩",
+    "shovel": "󰀪",
+    "thumbs up": "󰀫",
+    "rabbit trap": "󰀬",
+    "trophy": "󰀭",
+    "waving hand": "󰀮",
+    "wormhole": "󰀯"
+}
+
+function escapeEmotes(text: string): string {
+    let items: string[] = [];
+    let char: string;
+    let i = 0;
+    let match: string;
+    
+    function consume_escape(): string {
+        ++i;
+        let start = i;
+        for (; i < text.length; ++i) {
+            if (text[i] == ':') {
+                break;
+            }
+        }
+        return text.slice(start, i)
+    }
+
+    for (; i < text.length; ++i) {
+        char = text[i];
+        if (char == ':') {
+            match = consume_escape();
+
+            if (match == "") {
+                items.push(':');
+            }
+            else if (dst_emotes[match] != undefined) {
+                items.push(dst_emotes[match]);
+            }
+            else if (i == text.length) {
+                items.push(':');
+                items.push(match);
+            } 
+            else {
+                items.push(':' + match + ':');
+            }
+            // ++i;
+            continue;
+        } 
+        items.push(char)
+    }
+
+    return items.join('');
 }
 
 interface Node {
@@ -444,6 +540,9 @@ function onModDependencyDeleteClick(btn: HTMLButtonElement) {
         codeDependencies.hidden = true;
     }
 }
+
+
+
 
 
 function fileSelected(event: any) {
