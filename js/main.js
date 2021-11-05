@@ -106,7 +106,8 @@ function escapeEmotes(text) {
                 items.push(match);
             }
             else {
-                items.push(':' + match + ':');
+                --i;
+                items.push(':' + match);
             }
             // ++i;
             continue;
@@ -118,6 +119,58 @@ function escapeEmotes(text) {
 HTMLElement.prototype.isCheckable = function () {
     return this instanceof HTMLInputElement && /check|radio/.test(this.type);
 };
+let emoticonToWords = {
+    "󰀀": ":red skull:",
+    "󰀁": ":beefalo:",
+    "󰀂": ":chest:",
+    "󰀃": ":chester:",
+    "󰀄": ":crockpot:",
+    "󰀅": ":eyeball:",
+    "󰀆": ":teeth:",
+    "󰀇": ":farmplot:",
+    "󰀈": ":flame:",
+    "󰀉": ":ghost:",
+    "󰀊": ":tomb stone:",
+    "󰀋": ":ham bat:",
+    "󰀌": ":hammer:",
+    "󰀍": ":heart:",
+    "󰀎": ":hunger:",
+    "󰀏": ":light bulb:",
+    "󰀐": ":pig man:",
+    "󰀑": ":poop:",
+    "󰀒": ":red gem:",
+    "󰀓": ":sanity:",
+    "󰀔": ":science machine:",
+    "󰀕": ":skull:",
+    "󰀖": ":top hat:",
+    "󰀗": ":web:",
+    "󰀘": ":swords:",
+    "󰀙": ":strong arm:",
+    "󰀚": ":gold nugget:",
+    "󰀛": ":torch:",
+    "󰀜": ":abigail flower:",
+    "󰀝": ":alchemy machine:",
+    "󰀞": ":backpack:",
+    "󰀟": ":beehive:",
+    "󰀠": ":berry bush:",
+    "󰀡": ":carrot:",
+    "󰀢": ":egg:",
+    "󰀣": ":eyeplant:",
+    "󰀤": ":firepit:",
+    "󰀥": ":beefalo horn:",
+    "󰀦": ":big meat:",
+    "󰀧": ":diamond:",
+    "󰀨": ":salt:",
+    "󰀩": ":shadow manipulator:",
+    "󰀪": ":shovel:",
+    "󰀫": ":thumbs up:",
+    "󰀬": ":rabbit trap:",
+    "󰀭": ":trophy:",
+    "󰀮": ":waving hand:",
+    "󰀯": ":wormhole:"
+};
+const emoticonsStrRegex = new RegExp('(' + Object.keys(emoticonToWords).join('|') + ')', 'g');
+console.log(emoticonsStrRegex);
 HTMLInputElement.prototype.triggerSetValue = function (value) {
     if (value == null)
         return;
@@ -128,14 +181,18 @@ HTMLInputElement.prototype.triggerSetValue = function (value) {
         this.dispatchEvent(new Event("change"));
     }
     else {
-        this.value = value.toString();
+        this.value = value.toString().replaceAll(emoticonsStrRegex, match => {
+            return emoticonToWords[match];
+        });
     }
     this.dispatchEvent(new Event("input"));
 };
 HTMLTextAreaElement.prototype.triggerSetValue = function (value) {
     if (value == null)
         return;
-    this.value = value.toString() || "";
+    this.value = value.toString().replaceAll(emoticonsStrRegex, match => {
+        return emoticonToWords[match];
+    });
     this.dispatchEvent(new Event("input"));
 };
 Node.prototype.getParentWithClass = function (classHTML) {
