@@ -929,3 +929,6 @@ incrementSetup();
 adjustCodeHeight();
 resetAll();
 modDependencySetup();
+
+//start with one config to make it look fancier
+addConfig()
