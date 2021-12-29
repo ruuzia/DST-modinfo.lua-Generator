@@ -188,3 +188,7 @@ label {
     margin-bottom: 10%;
 }
 
+button, input, optgroup, select, textarea {
+    font-family: Geneva Verdana;
+}
+
