@@ -850,3 +850,5 @@ incrementSetup();
 adjustCodeHeight();
 resetAll();
 modDependencySetup();
+
+addConfig()
