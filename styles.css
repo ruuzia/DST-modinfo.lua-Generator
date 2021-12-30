@@ -1,5 +1,5 @@
 :root {
-    --bg-color: #62678f;
+    --bg-color: #a8acd2;
 }
 
 .str {
@@ -91,8 +91,8 @@ code {
 
 
 body {
-    background-color: #62678f;
-    font-family: Geneva, Verdana;
+    background-color: #b0b3d0;
+    font-family: Geneva, Verdana !important;
 }
 
 legend { 
@@ -187,8 +187,3 @@ label {
 #main {
     margin-bottom: 10%;
 }
-
-button, input, optgroup, select, textarea {
-    font-family: Geneva Verdana;
-}
-
