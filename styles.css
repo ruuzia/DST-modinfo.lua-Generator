@@ -161,9 +161,12 @@ label {
 }
 
 .add-option-select {
-    transform: scale(0.9);
+    /* transform: scale(0.9); */
+    border-style: hidden;
     width: 200px; 
+    max-width: var(width);
     display: inline;
+    font-weight: 400;
 }
 
 .remove-config {
@@ -172,7 +175,7 @@ label {
 }
 
 #duplicate-config {
-    width: 125;
+    width: 125px;
     font-size: smaller;
 }
 
