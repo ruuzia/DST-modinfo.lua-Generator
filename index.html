@@ -7,12 +7,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="styles.css">
-
   <title>Modinfo Generator</title>
 </head>
 
 <body>
-
   <!-- Import Modal -->
   <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog w-auto mw-100">
@@ -303,13 +301,15 @@
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
-              Add -></button>
-            <select class="add-option-select form-select">
-              <option value="1" selected>One Option</option>
-              <option value="KEYS">Letters A-Z</option>
-              <option value="INCREMENT">Increment</option>
-            </select>
+            <div class="input-group">
+              <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
+                Add →</button>
+              <select class="add-option-select form-select-sm">
+                <option value="1" selected>One Option</option>
+                <option value="KEYS">Letters A-Z</option>
+                <option value="INCREMENT">Increment</option>
+              </select>
+            </div>
             <button class="btn btn-danger remove-config" type="button" onclick="onRemoveConfigClick(this)">Remove
               Config</button>
 
@@ -321,7 +321,7 @@
 
     <!-- CODE -->
 
-    <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" id="code-div" style="max-height: 800px;">
+    <div class="col-11 col-md-6 bg-dark mt-5 px-3 py-3" id="code-div">
       <code>
         <div class="overflow-scroll d-flex w-100 h-100" id="code" style="max-height: 780px; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
           <div style="margin-top: 20%; margin-bottom: 20%;">
@@ -331,8 +331,11 @@
             author = <span class="str">
               "<span class="code-data" id="author"></span>"
             </span><br>
-            description = <span class="str">
-              [[<br><span class="code-data" id="description"></span><br>]]
+            description = 
+            <span class="str">
+              <span class="str-open">[[</span>
+                <br><span class="code-data" id="description"></span><br>
+              <span class="str-close">]]</span>
             </span><br>
             version = <span class="str">
               "<span class="code-data" id="version"></span>"
