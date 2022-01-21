@@ -209,7 +209,7 @@ function configSetup(config: Partial<Config>): Config {
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
 
-    const legend = (config as HTMLFieldSetElement).getChildWithClass("configuration-legend") as HTMLLegendElement;
+    const legend = (config as HTMLFieldSetElement).querySelector(".configuration-legend") as HTMLLegendElement;
     const count = configsElem.configsArr.length + 1;
     legend.innerText = legend.innerText.replace(/[#\d]+/, count.toString());
     makeCollapsable(legend, legend.nextElementSibling as HTMLElement);
@@ -371,11 +371,11 @@ let checkedRadio: OptionDefaultRadio | null;
 function registerRadioConfigListener(unsetupRadio: Partial<OptionDefaultRadio> & HTMLInputElement, config: Config, startChecked: Boolean) {
     // console.log(config.output.children);
     
-    unsetupRadio.output = config.output.getChildWithClass("config-default") as HTMLSpanElement;
+    unsetupRadio.output = config.output.querySelector(".config-default") as HTMLSpanElement;
     console.assert(unsetupRadio.output && true, config.output)
     if (unsetupRadio.name == null) throw new Error("unsetupRadio.name == null");
     unsetupRadio.name = unsetupRadio.name.replace(/[#\d]+/, config.configid.toString());
-    unsetupRadio.input = unsetupRadio.parentNode?.getChildWithClass("option-data-input") as DefaultFormInput;
+    unsetupRadio.input = unsetupRadio.parentNode?.querySelector(".option-data-input") as DefaultFormInput;
 
     const radio = unsetupRadio as OptionDefaultRadio;
     function onchange() {
@@ -406,7 +406,7 @@ interface AddOptionButton extends HTMLButtonElement {
 function onAddOptionClick(btn: AddOptionButton) {
     if (!btn.optionsDiv || !btn.select) {
         if(!(btn.nextElementSibling instanceof HTMLSelectElement) || !btn.parentNode) throw new Error();
-        btn.optionsDiv = btn.parentNode.getChildWithClass("options") as OptionsForm;
+        btn.optionsDiv = btn.parentNode.querySelector("options") as OptionsForm;
         btn.select = btn.nextElementSibling;
     }
 

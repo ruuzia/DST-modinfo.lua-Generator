@@ -9,7 +9,6 @@ const modiconCheck = document.getElementById("modicon-check") as HTMLInputElemen
 const formInputs = Array.from(document.getElementsByClassName("input-code") as HTMLCollectionOf<FormInput>);
 const advancedToggle = document.getElementById("advanced-toggle") as HTMLLegendElement;
 
-
 const replacements: { [key: string]: string } = {
     "&": "&amp;",
     "<": "&lt;",
@@ -17,7 +16,6 @@ const replacements: { [key: string]: string } = {
     "\"": "\\&quot;",
     "'": "&#039;",
     "\n": "<br>",
-    "]": "\\\]",
     " ": "&nbsp"
 }
 const str = '[' + Object.keys(replacements)
@@ -30,7 +28,6 @@ function escapeText(text: string): string {
         return replacements[match]
     });
 }
-
 
 
 let dst_emotes: {[key: string]: string} = {
@@ -130,8 +127,9 @@ function escapeEmotes(text: string): string {
 }
 
 interface Node {
+    
     getParentWithClass (classHTML: string): HTMLElement | null;
-    getChildWithClass (classHTML: string): HTMLElement | null;
+    //getChildWithClass (classHTML: string): HTMLElement | null;
     applyToAllChildrenDeep (func: Function): void;
 }
 
@@ -154,56 +152,11 @@ HTMLElement.prototype.isCheckable = function() {
 }
 
 
-let emoticonToWords: {[key: string]: string} = {
-    "󰀀": ":red skull:",
-    "󰀁": ":beefalo:",
-    "󰀂": ":chest:",
-    "󰀃": ":chester:",
-    "󰀄": ":crockpot:",
-    "󰀅": ":eyeball:",
-    "󰀆": ":teeth:",
-    "󰀇": ":farmplot:",
-    "󰀈": ":flame:",
-    "󰀉": ":ghost:",
-    "󰀊": ":tomb stone:",
-    "󰀋": ":ham bat:",
-    "󰀌": ":hammer:",
-    "󰀍": ":heart:",
-    "󰀎": ":hunger:",
-    "󰀏": ":light bulb:",
-    "󰀐": ":pig man:",
-    "󰀑": ":poop:",
-    "󰀒": ":red gem:",
-    "󰀓": ":sanity:",
-    "󰀔": ":science machine:",
-    "󰀕": ":skull:",
-    "󰀖": ":top hat:",
-    "󰀗": ":web:",
-    "󰀘": ":swords:",
-    "󰀙": ":strong arm:",
-    "󰀚": ":gold nugget:",
-    "󰀛": ":torch:",
-    "󰀜": ":abigail flower:",
-    "󰀝": ":alchemy machine:",
-    "󰀞": ":backpack:",
-    "󰀟": ":beehive:",
-    "󰀠": ":berry bush:",
-    "󰀡": ":carrot:",
-    "󰀢": ":egg:",
-    "󰀣": ":eyeplant:",
-    "󰀤": ":firepit:",
-    "󰀥": ":beefalo horn:",
-    "󰀦": ":big meat:",
-    "󰀧": ":diamond:",
-    "󰀨": ":salt:",
-    "󰀩": ":shadow manipulator:",
-    "󰀪": ":shovel:",
-    "󰀫": ":thumbs up:",
-    "󰀬": ":rabbit trap:",
-    "󰀭": ":trophy:",
-    "󰀮": ":waving hand:",
-    "󰀯": ":wormhole:"
-};
+let emoticonToWords: {[key: string]: string} = {};
+
+for (const [k, v] of Object.entries(dst_emotes)) {
+    emoticonToWords[v] = k
+}
 
 
 const emoticonsStrRegex: RegExp = new RegExp('(' + Object.keys(emoticonToWords).join('|') + ')', 'g');
@@ -241,7 +194,7 @@ Node.prototype.getParentWithClass = function(classHTML) {
     }
     return parent
 }
-
+/*
 HTMLElement.prototype.getChildWithClass = function(classHTML) {
     let correctChild;
     Array.from(this.children, child => {
@@ -256,6 +209,7 @@ HTMLElement.prototype.getChildWithClass = function(classHTML) {
     console.log("Could not find child of class", classHTML)
     return null
 }
+*/
 
 HTMLElement.prototype.applyToAllChildrenDeep = function(func) {
     function inner(parent: HTMLElement) {
@@ -549,7 +503,7 @@ interface ModDependencyInput extends DefaultFormInput {
 function addModDependencyInput(): DefaultFormInput {
     const newDependency = modDependencyClone.cloneNode(true) as HTMLDivElement;
     const newCode = codeDependencyClone.cloneNode(true) as HTMLDivElement;
-    const input = newDependency.getChildWithClass("moddependency-input") as ModDependencyInput;
+    const input = newDependency.querySelector(".moddependency-input") as ModDependencyInput;
     
     if (codeDependencies == null || !(codeDependencies instanceof HTMLDivElement)) throw new Error();
     if (addInputBtn == null || !(addInputBtn instanceof HTMLButtonElement)) throw new Error();
@@ -566,7 +520,7 @@ function addModDependencyInput(): DefaultFormInput {
     input.output = document.querySelector(`#${newCode.id} .dependency-name-output`) as HTMLSpanElement;
     
     if (input.parentNode == null) throw new Error();
-    input.deleteButton = input.parentNode.getChildWithClass("smart-input-delete-button") as HTMLButtonElement;
+    input.deleteButton = input.parentNode.querySelector(".smart-input-delete-button") as HTMLButtonElement;
     input.output.line = newCode;
     modDependencyInputRegister(input);
     dependencyIdCount++;
@@ -594,7 +548,7 @@ function modDependencyInputRegister(inputElem: DefaultFormInput) {
 function onModDependencyDeleteClick(btn: HTMLButtonElement) {
     const div = btn.getParentWithClass("moddependency-div");
     if (!(div instanceof HTMLDivElement)) throw new Error();
-    const input = div.getChildWithClass("moddependency-input") as FormInput;
+    const input = div.querySelector(".moddependency-input") as FormInput;
     modDependencyInputs.splice(modDependencyInputs.indexOf(input), 1);
     if (!input?.output?.line) throw new Error();
     input.output.line.remove();
@@ -771,6 +725,25 @@ function respondToInputs() {
                     });
                 break;
                 }
+            case "description-input": {
+                const strOpen = item.output?.parentElement?.querySelector(".str-open");
+                if (!(strOpen instanceof HTMLSpanElement)) throw new Error();
+                
+                const strClose = item.output?.parentElement?.querySelector(".str-close");
+                if (!(strClose instanceof HTMLSpanElement)) throw new Error();
+                
+                item.addEventListener("input", () => {
+                    setCodeFromInput(item);
+
+                    let delim = ''
+                    while (item.value.includes(']' + delim + ']')) {
+                        delim += '='
+                    }
+                    strOpen.innerText = '[' + delim + '['
+                    strClose.innerText = ']' + delim + ']'
+                });
+                break;
+            }
             default:
                 {
                     item.addEventListener("input", () => {

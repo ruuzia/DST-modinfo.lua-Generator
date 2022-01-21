@@ -14,7 +14,6 @@ const replacements = {
     "\"": "\\&quot;",
     "'": "&#039;",
     "\n": "<br>",
-    "]": "\\\]",
     " ": "&nbsp"
 };
 const str = '[' + Object.keys(replacements)
@@ -119,56 +118,10 @@ function escapeEmotes(text) {
 HTMLElement.prototype.isCheckable = function () {
     return this instanceof HTMLInputElement && /check|radio/.test(this.type);
 };
-let emoticonToWords = {
-    "󰀀": ":red skull:",
-    "󰀁": ":beefalo:",
-    "󰀂": ":chest:",
-    "󰀃": ":chester:",
-    "󰀄": ":crockpot:",
-    "󰀅": ":eyeball:",
-    "󰀆": ":teeth:",
-    "󰀇": ":farmplot:",
-    "󰀈": ":flame:",
-    "󰀉": ":ghost:",
-    "󰀊": ":tomb stone:",
-    "󰀋": ":ham bat:",
-    "󰀌": ":hammer:",
-    "󰀍": ":heart:",
-    "󰀎": ":hunger:",
-    "󰀏": ":light bulb:",
-    "󰀐": ":pig man:",
-    "󰀑": ":poop:",
-    "󰀒": ":red gem:",
-    "󰀓": ":sanity:",
-    "󰀔": ":science machine:",
-    "󰀕": ":skull:",
-    "󰀖": ":top hat:",
-    "󰀗": ":web:",
-    "󰀘": ":swords:",
-    "󰀙": ":strong arm:",
-    "󰀚": ":gold nugget:",
-    "󰀛": ":torch:",
-    "󰀜": ":abigail flower:",
-    "󰀝": ":alchemy machine:",
-    "󰀞": ":backpack:",
-    "󰀟": ":beehive:",
-    "󰀠": ":berry bush:",
-    "󰀡": ":carrot:",
-    "󰀢": ":egg:",
-    "󰀣": ":eyeplant:",
-    "󰀤": ":firepit:",
-    "󰀥": ":beefalo horn:",
-    "󰀦": ":big meat:",
-    "󰀧": ":diamond:",
-    "󰀨": ":salt:",
-    "󰀩": ":shadow manipulator:",
-    "󰀪": ":shovel:",
-    "󰀫": ":thumbs up:",
-    "󰀬": ":rabbit trap:",
-    "󰀭": ":trophy:",
-    "󰀮": ":waving hand:",
-    "󰀯": ":wormhole:"
-};
+let emoticonToWords = {};
+for (const [k, v] of Object.entries(dst_emotes)) {
+    emoticonToWords[v] = k;
+}
 const emoticonsStrRegex = new RegExp('(' + Object.keys(emoticonToWords).join('|') + ')', 'g');
 console.log(emoticonsStrRegex);
 HTMLInputElement.prototype.triggerSetValue = function (value) {
@@ -204,20 +157,22 @@ Node.prototype.getParentWithClass = function (classHTML) {
     }
     return parent;
 };
-HTMLElement.prototype.getChildWithClass = function (classHTML) {
+/*
+HTMLElement.prototype.getChildWithClass = function(classHTML) {
     let correctChild;
     Array.from(this.children, child => {
         if (child.classList.contains(classHTML)) {
             correctChild = child;
-            return;
+            return
         }
     });
     if (correctChild) {
-        return correctChild;
+        return correctChild
     }
-    console.log("Could not find child of class", classHTML);
-    return null;
-};
+    console.log("Could not find child of class", classHTML)
+    return null
+}
+*/
 HTMLElement.prototype.applyToAllChildrenDeep = function (func) {
     function inner(parent) {
         if (!parent.hasChildNodes())
@@ -492,7 +447,7 @@ function modDependencySetup() {
 function addModDependencyInput() {
     const newDependency = modDependencyClone.cloneNode(true);
     const newCode = codeDependencyClone.cloneNode(true);
-    const input = newDependency.getChildWithClass("moddependency-input");
+    const input = newDependency.querySelector(".moddependency-input");
     if (codeDependencies == null || !(codeDependencies instanceof HTMLDivElement))
         throw new Error();
     if (addInputBtn == null || !(addInputBtn instanceof HTMLButtonElement))
@@ -510,7 +465,7 @@ function addModDependencyInput() {
     input.output = document.querySelector(`#${newCode.id} .dependency-name-output`);
     if (input.parentNode == null)
         throw new Error();
-    input.deleteButton = input.parentNode.getChildWithClass("smart-input-delete-button");
+    input.deleteButton = input.parentNode.querySelector(".smart-input-delete-button");
     input.output.line = newCode;
     modDependencyInputRegister(input);
     dependencyIdCount++;
@@ -541,7 +496,7 @@ function onModDependencyDeleteClick(btn) {
     const div = btn.getParentWithClass("moddependency-div");
     if (!(div instanceof HTMLDivElement))
         throw new Error();
-    const input = div.getChildWithClass("moddependency-input");
+    const input = div.querySelector(".moddependency-input");
     modDependencyInputs.splice(modDependencyInputs.indexOf(input), 1);
     if (!input?.output?.line)
         throw new Error();
@@ -717,6 +672,24 @@ function respondToInputs() {
                     });
                     break;
                 }
+            case "description-input": {
+                const strOpen = item.output?.parentElement?.querySelector(".str-open");
+                if (!(strOpen instanceof HTMLSpanElement))
+                    throw new Error();
+                const strClose = item.output?.parentElement?.querySelector(".str-close");
+                if (!(strClose instanceof HTMLSpanElement))
+                    throw new Error();
+                item.addEventListener("input", () => {
+                    setCodeFromInput(item);
+                    let delim = '';
+                    while (item.value.includes(']' + delim + ']')) {
+                        delim += '=';
+                    }
+                    strOpen.innerText = '[' + delim + '[';
+                    strClose.innerText = ']' + delim + ']';
+                });
+                break;
+            }
             default:
                 {
                     item.addEventListener("input", () => {
@@ -850,5 +823,5 @@ incrementSetup();
 adjustCodeHeight();
 resetAll();
 modDependencySetup();
-
-addConfig()
+//start with one config to make it look fancier
+addConfig();

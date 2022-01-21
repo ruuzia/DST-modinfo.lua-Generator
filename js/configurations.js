@@ -123,7 +123,7 @@ function configSetup(config) {
     config.optionsArr = [];
     config.configid = configIdCount;
     config.id = `configform-${configIdCount}`;
-    const legend = config.getChildWithClass("configuration-legend");
+    const legend = config.querySelector(".configuration-legend");
     const count = configsElem.configsArr.length + 1;
     legend.innerText = legend.innerText.replace(/[#\d]+/, count.toString());
     makeCollapsable(legend, legend.nextElementSibling);
@@ -251,12 +251,12 @@ function registerHoverOptionInput(input, option) {
 let checkedRadio;
 function registerRadioConfigListener(unsetupRadio, config, startChecked) {
     // console.log(config.output.children);
-    unsetupRadio.output = config.output.getChildWithClass("config-default");
+    unsetupRadio.output = config.output.querySelector(".config-default");
     console.assert(unsetupRadio.output && true, config.output);
     if (unsetupRadio.name == null)
         throw new Error("unsetupRadio.name == null");
     unsetupRadio.name = unsetupRadio.name.replace(/[#\d]+/, config.configid.toString());
-    unsetupRadio.input = unsetupRadio.parentNode?.getChildWithClass("option-data-input");
+    unsetupRadio.input = unsetupRadio.parentNode?.querySelector(".option-data-input");
     const radio = unsetupRadio;
     function onchange() {
         if (checkedRadio)
@@ -280,7 +280,7 @@ function onAddOptionClick(btn) {
     if (!btn.optionsDiv || !btn.select) {
         if (!(btn.nextElementSibling instanceof HTMLSelectElement) || !btn.parentNode)
             throw new Error();
-        btn.optionsDiv = btn.parentNode.getChildWithClass("options");
+        btn.optionsDiv = btn.parentNode.querySelector("options");
         btn.select = btn.nextElementSibling;
     }
     switch (btn.select.value) {
