@@ -190,3 +190,16 @@ label {
 #main {
     margin-bottom: 10%;
 }
+
+.completion {
+    background-color: white;
+}
+
+.completion .dropdown-item {
+    border-bottom: 1px solid rgb(161, 161, 161);
+}
+
+#code-div {
+    max-height: 800px;
+    border-radius: .25rem;
+}
