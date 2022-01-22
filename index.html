@@ -301,7 +301,7 @@
                 </div>
               </div>
             </div>
-            <div class="input-group">
+            <div class="input-group" style="width: fit-content;">
               <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
                 Add →</button>
               <select class="add-option-select form-select-sm">
@@ -309,9 +309,10 @@
                 <option value="KEYS">Letters A-Z</option>
                 <option value="INCREMENT">Increment</option>
               </select>
+              <div style="min-width: 20vw;"></div>
+              <button class="btn btn-danger remove-config" type="button" onclick="onRemoveConfigClick(this)">Remove
+                Config</button>
             </div>
-            <button class="btn btn-danger remove-config" type="button" onclick="onRemoveConfigClick(this)">Remove
-              Config</button>
 
           </div>
         </fieldset>
