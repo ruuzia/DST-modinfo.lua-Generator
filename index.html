@@ -278,8 +278,7 @@
               <input type="text" class="input-config form-control w-50 config-name-input me-auto"
                 placeholder="Reference Name" onfocus="onInputFocus(this)">
               <button class="btn btn-light mt-2 align-self-end translate-middle-y" type="button" id="duplicate-config"
-                onclick="onDuplicateConfigClick(this)" tabindex="-1">Duplicate
-                Config</button>
+                onclick="onDuplicateConfigClick(this)" tabindex="-1">Duplicate</button>
             </div>
             <input type="text" class="input-config form-control mb-3 w-50 config-label-input" placeholder="Label"
               onfocus="onInputFocus(this)">
@@ -309,7 +308,7 @@
                 </div>
               </div>
             </div>
-            <div class="input-group">
+            <div class="input-group" style="width: fit-content;">
               <button class="btn btn-primary ms-2 add-option" type="button" onclick="onAddOptionClick(this)">
                 Add →</button>
               <select class="add-option-select form-select-sm">
@@ -317,9 +316,10 @@
                 <option value="KEYS">Letters A-Z</option>
                 <option value="INCREMENT">Increment</option>
               </select>
+              <div style="min-width: 20vw;"></div>
+              <button class="btn btn-danger remove-config" type="button" onclick="onRemoveConfigClick(this)">Remove
+                Config</button>
             </div>
-            <button class="btn btn-danger remove-config" type="button" onclick="onRemoveConfigClick(this)">Remove
-              Config</button>
 
           </div>
         </fieldset>
