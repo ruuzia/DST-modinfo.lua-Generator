@@ -174,7 +174,7 @@ label {
 }
 
 #duplicate-config {
-    width: 125px;
+    width: fit-content;
     font-size: smaller;
 }
 
