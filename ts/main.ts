@@ -160,8 +160,6 @@ for (const [k, v] of Object.entries(dst_emotes)) {
 
 
 const emoticonsStrRegex: RegExp = new RegExp('(' + Object.keys(emoticonToWords).join('|') + ')', 'g');
-console.log(emoticonsStrRegex);
-
 
 HTMLInputElement.prototype.triggerSetValue = function(value: string | boolean | number | null) {
     if (value == null) return;
@@ -224,10 +222,8 @@ HTMLElement.prototype.applyToAllChildrenDeep = function(func) {
 }
 
 function adjustCodeHeight() {
-    let overflowHeight = parseInt(codeDiv.style.maxHeight) + code.scrollHeight - code.offsetHeight;
-    let newHeight = Math.min(inputForm.clientHeight, overflowHeight);
-    codeDiv.style.maxHeight = newHeight.toString();
-    code.style.maxHeight = (newHeight - 20).toString();
+    console.log("adjustCodeHeight")
+    codeDiv.style.maxHeight = inputForm.clientHeight + "px"
 }
 
 function getLuaClassType(elem: HTMLElement) {

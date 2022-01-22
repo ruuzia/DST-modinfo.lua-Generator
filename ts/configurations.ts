@@ -406,9 +406,13 @@ interface AddOptionButton extends HTMLButtonElement {
 function onAddOptionClick(btn: AddOptionButton) {
     if (!btn.optionsDiv || !btn.select) {
         if(!(btn.nextElementSibling instanceof HTMLSelectElement) || !btn.parentNode) throw new Error();
-        btn.optionsDiv = btn.parentNode.querySelector("options") as OptionsForm;
+        btn.optionsDiv = btn.getParentWithClass("configuration-content")?.querySelector(".options") as OptionsForm;
+        if (!(btn.optionsDiv instanceof HTMLDivElement)) {
+            throw new Error();
+        }
         btn.select = btn.nextElementSibling;
     }
+    
 
     switch (btn.select.value) {
         case "1":
