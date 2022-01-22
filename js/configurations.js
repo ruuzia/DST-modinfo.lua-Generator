@@ -280,7 +280,10 @@ function onAddOptionClick(btn) {
     if (!btn.optionsDiv || !btn.select) {
         if (!(btn.nextElementSibling instanceof HTMLSelectElement) || !btn.parentNode)
             throw new Error();
-        btn.optionsDiv = btn.parentNode.querySelector("options");
+        btn.optionsDiv = btn.getParentWithClass("configuration-content")?.querySelector(".options");
+        if (!(btn.optionsDiv instanceof HTMLDivElement)) {
+            throw new Error();
+        }
         btn.select = btn.nextElementSibling;
     }
     switch (btn.select.value) {

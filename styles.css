@@ -25,6 +25,9 @@
 
 #code {
     position: relative;
+    max-height: auto;
+    overflow-y: scroll; 
+    -webkit-overflow-scrolling: touch;
 }
 
 .header {
