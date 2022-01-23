@@ -10,7 +10,7 @@
   <title>Modinfo Generator</title>
 </head>
 
-<body>
+<body class="dst-emojis">
   <!-- Import Modal -->
   <div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog w-auto mw-100">
@@ -107,32 +107,24 @@
       <div class="form-outline">
         <button type="button" class="btn btn-outline-dark mb-2" id="import-code" data-bs-target="#import-modal"
           data-bs-toggle="modal">Import Code</button>
-        <div class="form-floating" style="margin-bottom: 1.5rem;">
-          <input type="text" id="name-input" class="input-code form-control mb-4" placeholder=""
+        <div class="form-floating mb-4">
+          <input type="text" id="name-input" class="input-code form-control" placeholder=""
             onfocus="onInputFocus(this)" required style="margin-bottom: 0 !important;">
-          <label for="name-input" class="text-secondary">Name of Mod</label>
-<!--           
-          <div class="completion">
-            <div class="dropdown-menu-lg-end" aria-labelledby="dropdownMenuButton1">
-              <div><a class="dropdown-item">Action</a></div>
-              <div><a class="dropdown-item">Another action</a></div>
-              <div><a class="dropdown-item">Something else here<a></div>
-            </div>
-          </div> -->
+          <label for="name-input" class="text-secondary">Name of Mod</label>          
         </div>
-        <div class="form-floating">
-          <input type="text" id="author-input" class="input-code form-control mb-4" placeholder=""
+        <div class="form-floating mb-4">
+          <input type="text" id="author-input" class="input-code form-control" placeholder=""
             onfocus="onInputFocus(this)" required>
           <label for="author-input" class="text-secondary">Name of Author</label>
         </div>
-        <div class="form-floating">
-          <textarea id="description-input" class="input-code form-control mb-4" placeholder=""
+        <div class="form-floating mb-4">
+          <textarea id="description-input" class="input-code form-control" placeholder=""
             style="height: 150px; min-height: 100px; max-height: 400px;" onfocus="onInputFocus(this)"
             required></textarea>
           <label for="description-input" class="text-secondary">Mod Description</label>
         </div>
-        <div class="form-floating">
-          <input type="text" class="input-code form-control mb-4" id="version-input" default="1.0.0"
+        <div class="form-floating mb-4">
+          <input type="text" class="input-code form-control" id="version-input" default="1.0.0"
             onfocus="onInputFocus(this)" required>
           <label for="version-input">
             Version<span class='error' id="version-error" hidden> ** invalid characters</span>
@@ -197,13 +189,13 @@
           <label for="modicon-check" class="smaller">I have .tex and .xml files for my mod icon in my mod
             directory</label><br><br>
           <div id="modicons" hidden>
-            <div class="form-floating">
-              <input type="text" class="input-code form-control mb-4" id="modiconxml-input" default="modicon.xml"
+            <div class="form-floating mb-4">
+              <input type="text" class="input-code form-control" id="modiconxml-input" default="modicon.xml"
                 suffix=".xml" onfocus="onInputFocus(this)">
               <label for="modiconxml-input">Name of .xml File</label>
             </div>
-            <div class="form-floating">
-              <input type="text" class="input-code form-control mb-4" id="modicontex-input" default="modicon.tex"
+            <div class="form-floating mb-4">
+              <input type="text" class="input-code form-control" id="modicontex-input" default="modicon.tex"
                 suffix=".tex" onfocus="onInputFocus(this)">
               <label for="modicontex-input">Name of .tex File</label>
             </div>
@@ -218,8 +210,8 @@
           <div id="advanced" hidden>
             <span class='error' id="forumthread-error" hidden>**
               invalid characters</span>
-            <div class="form-floating">
-              <input type="text" class="input-code form-control mb-1" id="forumthread-input"
+            <div class="form-floating mb-1">
+              <input type="text" class="input-code form-control" id="forumthread-input"
                 onfocus="onInputFocus(this)">
               <label for="forumthread-input">Klei Forums Thread</label>
             </div>
@@ -232,14 +224,14 @@
               <label for="apiversion-input">DST API Version <span class='error' id="apiversion-error" hidden>** invalid
                   characters</span></label>
             </div>
-            <div class="form-floating mt-3 ds-require">
-              <input type="text" class="input-code form-control mb-4" id="dsapiversion-input" default="6"
+            <div class="form-floating mt-3 ds-require mb-4">
+              <input type="text" class="input-code form-control" id="dsapiversion-input" default="6"
                 onfocus="onInputFocus(this)">
               <label for="dsapiversion-input">DS Singleplayer API Version <span class='error' id="dsapiversion-error"
                   hidden>** invalid characters</span></label>
             </div>
-            <div class="form-floating mt-3">
-              <input type="text" class="input-code form-control mb-3" id="priority-input" default="0"
+            <div class="form-floating mt-3 mb-3">
+              <input type="text" class="input-code form-control" id="priority-input" default="0"
                 onfocus="onInputFocus(this)">
               <label for="priority-input">Priority <span class='error' id="priority-error" hidden>**
                   invalid characters</span></label>
@@ -280,25 +272,35 @@
               <button class="btn btn-light mt-2 align-self-end translate-middle-y" type="button" id="duplicate-config"
                 onclick="onDuplicateConfigClick(this)" tabindex="-1">Duplicate</button>
             </div>
-            <input type="text" class="input-config form-control mb-3 w-50 config-label-input" placeholder="Label"
-              onfocus="onInputFocus(this)">
+            <div style="position: relative;">
+              <input type="text" class="input-config form-control mb-3 w-50 config-label-input" placeholder="Label"
+                onfocus="onInputFocus(this)">
+            </div>
+            <div style="position: relative;">
             <input type="text" class="input-config form-control mb-3 config-hover-input" placeholder="Hover Text"
               onfocus="onInputFocus(this)">
+            </div>
             <div class="fs-6 pb-1"><span class="header"><u>Options</u></span></div>
             <div class="options" optioncount="1">
               <div class="option mb-2">
-                <div class="d-md-inline-flex">
+                <div class="d-md-inline-flex", style="position: relative;">
                   <input type="radio" title="Default Option" class="form-check-input me-2 option-radio-input"
                     name="option-default-#" onfocus="onInputFocus(this)" required>
-                  <input type="text" title="Data value returned"
-                    class="input-config form-control d-inline option-data-input" name="option-data" placeholder="data"
-                    onfocus="onInputFocus(this)">
-                  <input type="text" title="Label for the user"
-                    class="input-config form-control d-inline option-label-input ms-2" name="option-label"
-                    placeholder="label" onfocus="onInputFocus(this)">
-                  <input type="text" title="Hover text for the user"
-                    class="input-config form-control d-inline option-hover-input ms-2" name="option-hover"
-                    placeholder="hover text" onfocus="onInputFocus(this)">
+                  <span style="position: relative;">
+                    <input type="text" title="Data value returned"
+                      class="input-config form-control d-inline option-data-input" name="option-data" placeholder="data"
+                      onfocus="onInputFocus(this)">
+                  </span>
+                  <span style="position: relative;">
+                    <input type="text" title="Label for the user"
+                      class="input-config form-control d-inline option-label-input ms-2" name="option-label"
+                      placeholder="label" onfocus="onInputFocus(this)">
+                  </span>
+                  <span style="position: relative;">
+                    <input type="text" title="Hover text for the user"
+                      class="input-config form-control d-inline option-hover-input ms-2" name="option-hover"
+                      placeholder="hover text" onfocus="onInputFocus(this)">
+                  </span>
                   <span style="white-space: nowrap;">
                     <button title="Delete option" class="btn btn-outline-danger ms-2 option-delete d-inline-flex"
                       onclick="onOptionDeleteClick(this)" onloadend="test(this)" type="button" tabindex="-1">×</button>

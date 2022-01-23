@@ -21,108 +21,197 @@ const str = '[' + Object.keys(replacements)
     .replace(']', '\\]') + ']';
 var pattern = new RegExp(str, 'g');
 function escapeText(text) {
-    return escapeEmotes(text).replaceAll(pattern, match => {
+    return text.replaceAll(pattern, match => {
         return replacements[match];
     });
 }
-let dst_emotes = {
-    "red skull": "󰀀",
+let dstEmojis = {
+    "abigail": "󰀜",
+    "alchemy": "󰀝",
+    "arcane": "󰀀",
+    "backpack": "󰀞",
+    "battle": "󰀘",
     "beefalo": "󰀁",
+    "beehive": "󰀟",
+    "berry": "󰀠",
+    "carrot": "󰀡",
     "chest": "󰀂",
     "chester": "󰀃",
     "crockpot": "󰀄",
+    "egg": "󰀢",
     "eyeball": "󰀅",
-    "teeth": "󰀆",
-    "farmplot": "󰀇",
-    "flame": "󰀈",
+    "eyeplant": "󰀣",
+    "faketeeth": "󰀆",
+    "farm": "󰀇",
+    "fire": "󰀈",
+    "firepit": "󰀤",
+    "flex": "󰀙",
     "ghost": "󰀉",
-    "tomb stone": "󰀊",
-    "ham bat": "󰀋",
+    "gold": "󰀚",
+    "grave": "󰀊",
+    "hambat": "󰀋",
     "hammer": "󰀌",
     "heart": "󰀍",
+    "horn": "󰀥",
     "hunger": "󰀎",
-    "light bulb": "󰀏",
-    "pig man": "󰀐",
+    "lightbulb": "󰀏",
+    "meat": "󰀦",
+    "pig": "󰀐",
     "poop": "󰀑",
-    "red gem": "󰀒",
-    "sanity": "󰀓",
-    "science machine": "󰀔",
-    "skull": "󰀕",
-    "top hat": "󰀖",
-    "web": "󰀗",
-    "swords": "󰀘",
-    "strong arm": "󰀙",
-    "gold nugget": "󰀚",
-    "torch": "󰀛",
-    "abigail flower": "󰀜",
-    "alchemy machine": "󰀝",
-    "backpack": "󰀞",
-    "beehive": "󰀟",
-    "berry bush": "󰀠",
-    "carrot": "󰀡",
-    "egg": "󰀢",
-    "eyeplant": "󰀣",
-    "firepit": "󰀤",
-    "beefalo horn": "󰀥",
-    "big meat": "󰀦",
-    "diamond": "󰀧",
+    "redgem": "󰀒",
+    "refine": "󰀧",
     "salt": "󰀨",
-    "shadow manipulator": "󰀩",
+    "sanity": "󰀓",
+    "sciencemachine": "󰀔",
+    "shadow": "󰀩",
     "shovel": "󰀪",
-    "thumbs up": "󰀫",
-    "rabbit trap": "󰀬",
+    "skull": "󰀕",
+    "thumbsup": "󰀫",
+    "tophat": "󰀖",
+    "torch": "󰀛",
+    "trap": "󰀬",
     "trophy": "󰀭",
-    "waving hand": "󰀮",
+    "wave": "󰀮",
+    "web": "󰀗",
     "wormhole": "󰀯"
 };
-function escapeEmotes(text) {
-    let items = [];
-    let char;
-    let i = 0;
-    let match;
-    function consume_escape() {
-        ++i;
-        let start = i;
-        for (; i < text.length; ++i) {
-            if (text[i] == ':') {
+function emojiCompletions(input) {
+    const formFloating = input.parentElement;
+    if (formFloating === null)
+        throw new Error(input.className + ' : ' + input.parentElement?.className);
+    let completion = formFloating.querySelector(".completion");
+    const s = input.value.substring(0, input.selectionStart || -1);
+    const match = /:(\w+)$/.exec(s);
+    if (match === null) {
+        completion?.remove();
+        return;
+    }
+    let code = `<div class="dropdown-menu-lg-end">`;
+    let count = 0;
+    for (const emojiName in dstEmojis) {
+        if (emojiName.startsWith(match[1])) {
+            code += `<a class="dropdown-item${count ? '' : ' focused-completion'}">
+                       <img src="emojis/${emojiName}.png"
+                         alt="${dstEmojis[emojiName]}"
+                         width=36>
+                       <b>:${match[1]}</b>${emojiName.slice(match[1].length)}:
+                     </a>`;
+            count++;
+        }
+        if (count > 10)
+            break;
+    }
+    if (!count) {
+        completion?.remove();
+        return;
+    }
+    code += `</div>`;
+    if (completion instanceof HTMLDivElement) {
+        completion.innerHTML = code;
+    }
+    else {
+        completion = document.createElement("div");
+        completion.className = "completion";
+        completion.innerHTML = code;
+        formFloating.appendChild(completion);
+    }
+    const inputRect = input.getBoundingClientRect();
+    completion.style.top = inputRect.height + "px";
+    completion.style.width = input.clientWidth + "px";
+    //completion.style.left = inputRect.left + "px"
+}
+function listenCompleteEmoji(input) {
+    input.addEventListener("click", () => emojiCompletions(input));
+    input.addEventListener("focus", () => emojiCompletions(input));
+    input.addEventListener("input", () => emojiCompletions(input));
+    input.addEventListener("-focusout", () => {
+        input.parentElement?.querySelector(".completion")?.remove();
+    });
+    input.addEventListener("keydown", e => {
+        if (!(e instanceof KeyboardEvent))
+            throw new Error("Annoying I have to do this.");
+        const completion = input.parentElement?.querySelector(".dropdown-menu-lg-end");
+        switch (e.key) {
+            case 'ArrowLeft':
+            case 'ArrowRight':
+                window.setTimeout(() => emojiCompletions(input), 1);
+                break;
+            case 'Tab':
+            case 'ArrowDown': {
+                if (typeof completion === 'undefined' || completion === null)
+                    return;
+                if (typeof completion.children === "undefined")
+                    throw new Error();
+                e.preventDefault();
+                for (let i = 0; i < completion.children.length; i++) {
+                    if (completion.children[i].classList.contains("focused-completion")) {
+                        let newFocus = completion.children[i + 1];
+                        if (!(newFocus instanceof HTMLElement))
+                            newFocus = completion.children[0];
+                        if (!(newFocus instanceof HTMLElement))
+                            new Error();
+                        completion.children[i].classList.remove("focused-completion");
+                        newFocus.classList.add("focused-completion");
+                        return;
+                    }
+                }
+                if (!(completion.children[0] instanceof HTMLDivElement))
+                    throw new Error();
+                completion.children[0].classList.add("focused-completion");
                 break;
             }
+            case 'ArrowUp': {
+                if (typeof completion === 'undefined' || completion === null)
+                    return;
+                if (typeof completion.children === "undefined")
+                    throw new Error();
+                e.preventDefault();
+                for (let i = 0; i < completion.children.length; i++) {
+                    if (completion.children[i].classList.contains("focused-completion")) {
+                        let newFocus = completion.children[i - 1];
+                        if (!(newFocus instanceof HTMLElement))
+                            newFocus = completion.children[completion.children.length - 1];
+                        if (!(newFocus instanceof HTMLElement))
+                            throw new Error();
+                        completion.children[i].classList.remove("focused-completion");
+                        newFocus.classList.add("focused-completion");
+                        return;
+                    }
+                }
+                const newCompletion = completion.children[completion.children.length - 1];
+                if (!(newCompletion instanceof HTMLElement))
+                    throw new Error();
+                newCompletion.classList.add("focused-completion");
+                break;
+            }
+            case 'Enter':
+                {
+                    e.preventDefault();
+                    completeEmoji(input, completion?.querySelector(".focused-completion") ?? null);
+                    completion?.remove();
+                }
+                break;
+            case 'Escape':
+                completion?.remove();
+                break;
         }
-        return text.slice(start, i);
-    }
-    for (; i < text.length; ++i) {
-        char = text[i];
-        if (char == ':') {
-            match = consume_escape();
-            if (match == "") {
-                items.push(':');
-            }
-            else if (dst_emotes[match] != undefined) {
-                items.push(dst_emotes[match]);
-            }
-            else if (i == text.length) {
-                items.push(':');
-                items.push(match);
-            }
-            else {
-                --i;
-                items.push(':' + match);
-            }
-            // ++i;
-            continue;
-        }
-        items.push(char);
-    }
-    return items.join('');
+    });
+}
+function completeEmoji(input, completion) {
+    if (completion === null)
+        return;
+    const name = completion.innerText.trim().replaceAll(':', '');
+    const match = completion.querySelector("b")?.innerText ?? "";
+    const caret = input.selectionStart ?? 0;
+    input.value = input.value.slice(0, caret - match.length)
+        + dstEmojis[name]
+        + input.value.slice(caret);
+    console.log(input.value);
+    input.dispatchEvent(new Event("input"));
 }
 HTMLElement.prototype.isCheckable = function () {
     return this instanceof HTMLInputElement && /check|radio/.test(this.type);
 };
-let emoticonToWords = {};
-for (const [k, v] of Object.entries(dst_emotes)) {
-    emoticonToWords[v] = k;
-}
-const emoticonsStrRegex = new RegExp('(' + Object.keys(emoticonToWords).join('|') + ')', 'g');
 HTMLInputElement.prototype.triggerSetValue = function (value) {
     if (value == null)
         return;
@@ -133,18 +222,14 @@ HTMLInputElement.prototype.triggerSetValue = function (value) {
         this.dispatchEvent(new Event("change"));
     }
     else {
-        this.value = value.toString().replaceAll(emoticonsStrRegex, match => {
-            return emoticonToWords[match];
-        });
+        this.value = value.toString();
     }
     this.dispatchEvent(new Event("input"));
 };
 HTMLTextAreaElement.prototype.triggerSetValue = function (value) {
     if (value == null)
         return;
-    this.value = value.toString().replaceAll(emoticonsStrRegex, match => {
-        return emoticonToWords[match];
-    });
+    this.value = value.toString();
     this.dispatchEvent(new Event("input"));
 };
 Node.prototype.getParentWithClass = function (classHTML) {
@@ -186,7 +271,6 @@ HTMLElement.prototype.applyToAllChildrenDeep = function (func) {
     inner(this);
 };
 function adjustCodeHeight() {
-    console.log("adjustCodeHeight");
     codeDiv.style.maxHeight = inputForm.clientHeight + "px";
 }
 function getLuaClassType(elem) {
@@ -288,7 +372,6 @@ function roundFixFloatingPoint(num, maxDeximalPlaces = 4) {
         return num.toString();
     // round to 4th place and remove 
     const rounded = num.toFixed(maxDeximalPlaces);
-    console.log(rounded);
     for (let i = rounded.length - 1; i >= 0; i--) {
         if (/[1-9]/.test(rounded[i])) {
             return rounded.slice(0, i + 1);
@@ -548,6 +631,9 @@ function resetAll() {
 }
 function respondToInputs() {
     formInputs.forEach(item => {
+        if (item instanceof HTMLTextAreaElement || item instanceof HTMLInputElement) {
+            listenCompleteEmoji(item);
+        }
         item.output = getOutputForInput(item);
         formInputs.push(item);
         switch (item.id) {

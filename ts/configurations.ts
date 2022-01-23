@@ -117,14 +117,16 @@ function configInputSetup(config: Config, codeId: string) {
     config.labelInput.addEventListener("input", _ => {
         setCodeFromInput(config.labelInput);
     });
-
     config.nameInput.addEventListener("input", _ => {
         setCodeFromInput(config.nameInput);
     });
-    
     config.hoverInput.addEventListener("input", _ => {
         setCodeFromInput(config.hoverInput);
     });
+
+    listenCompleteEmoji(config.labelInput)
+    listenCompleteEmoji(config.nameInput)
+    listenCompleteEmoji(config.hoverInput)
 
     const options = config.optionsForm.children as HTMLCollectionOf<Option>;
     const optionCodes = document.querySelectorAll(`#${codeId} .option-code`);
@@ -309,9 +311,7 @@ function optionSetup (
     option.output = optionCode;
     option.output.id = option.id.replace("input", "output");
     optionsDiv.setAttribute("optioncount", (count + 1).toString());
-    Array.from(
-            document.querySelectorAll(`#${option.id} .input-config`) as NodeListOf<DefaultFormInput>, 
-            (input: DefaultFormInput) => {
+    for (const input of (option.querySelectorAll(`.input-config`) as NodeListOf<DefaultFormInput>)) {
         switch (input.name) {
             case "option-data":
                 option.dataInput = input;
@@ -320,13 +320,15 @@ function optionSetup (
             case "option-label":
                 option.labelInput = input;
                 registerLabelOptionInput(input, option as PartiallySetupOption);
+                listenCompleteEmoji(input)
                 break;
             case "option-hover":
                 option.hoverInput = input;
                 registerHoverOptionInput(input, option as PartiallySetupOption);
+                listenCompleteEmoji(input)
                 break;
         }
-    });
+    }
     const radio = document.querySelector(`#${option.id} .option-radio-input`) as DefaultFormInput;
     option.default = radio;
     registerRadioConfigListener(radio, config, radioChecked);

@@ -57,6 +57,9 @@ function configInputSetup(config, codeId) {
     config.hoverInput.addEventListener("input", _ => {
         setCodeFromInput(config.hoverInput);
     });
+    listenCompleteEmoji(config.labelInput);
+    listenCompleteEmoji(config.nameInput);
+    listenCompleteEmoji(config.hoverInput);
     const options = config.optionsForm.children;
     const optionCodes = document.querySelectorAll(`#${codeId} .option-code`);
     config.optionsForm.output = optionCodes[0]?.parentNode || document.querySelector(`#${codeId} .options-code`);
@@ -198,7 +201,7 @@ function optionSetup(option, optionsDiv, optionCode, radioChecked = null) {
     option.output = optionCode;
     option.output.id = option.id.replace("input", "output");
     optionsDiv.setAttribute("optioncount", (count + 1).toString());
-    Array.from(document.querySelectorAll(`#${option.id} .input-config`), (input) => {
+    for (const input of option.querySelectorAll(`.input-config`)) {
         switch (input.name) {
             case "option-data":
                 option.dataInput = input;
@@ -207,13 +210,15 @@ function optionSetup(option, optionsDiv, optionCode, radioChecked = null) {
             case "option-label":
                 option.labelInput = input;
                 registerLabelOptionInput(input, option);
+                listenCompleteEmoji(input);
                 break;
             case "option-hover":
                 option.hoverInput = input;
                 registerHoverOptionInput(input, option);
+                listenCompleteEmoji(input);
                 break;
         }
-    });
+    }
     const radio = document.querySelector(`#${option.id} .option-radio-input`);
     option.default = radio;
     registerRadioConfigListener(radio, config, radioChecked);
