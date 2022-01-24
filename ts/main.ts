@@ -81,27 +81,43 @@ let dstEmojis: {[key: string]: string} = {
     "wormhole": "󰀯"
 }
 
-//const emojiCompletionPopup = document.createElement("div")
-//emojiCompletionPopup.className = "completion"
+const emojiCompletionPopup = document.createElement("div")
+emojiCompletionPopup.className = "completion dropdown-menu-lg-end"
+document.body.appendChild(emojiCompletionPopup)
+let activeEmojiInput: null | HTMLInputElement | HTMLTextAreaElement = null
+
+function closeEmojiCompletionPopup() {
+    emojiCompletionPopup.hidden = true
+    activeEmojiInput = null
+}
+
+function onCompletionClick(completion: HTMLDivElement) {
+    if (activeEmojiInput === null) throw new Error();
+    completeEmoji(activeEmojiInput, completion)
+    closeEmojiCompletionPopup()
+}
+
+function onCompletionHover(completion: HTMLDivElement) {
+    emojiCompletionPopup.querySelector('.focused-completion')?.classList?.remove('focused-completion')
+    completion.classList.add('focused-completion')
+}
 
 function emojiCompletions(input: HTMLInputElement | HTMLTextAreaElement) {
-    const formFloating = input.parentElement
-    if (formFloating === null) throw new Error(input.className + ' : ' + input.parentElement?.className);
-    let completion: HTMLDivElement | null = formFloating.querySelector(".completion")
-
     const s = input.value.substring(0, input.selectionStart || -1)
     const match = /:(\w+)$/.exec(s)
     if (match === null) {
-        completion?.remove();
+        closeEmojiCompletionPopup()
         return;
     }
 
-    let code = `<div class="dropdown-menu-lg-end">`
+    let code = ``
     
     let count = 0
     for (const emojiName in dstEmojis) {
         if (emojiName.startsWith(match[1])) {
-            code += `<a class="dropdown-item${count ? '' : ' focused-completion'}">
+            code += `<a class="dropdown-item${count ? '' : ' focused-completion'}"
+                        onclick="onCompletionClick(this)"
+                        onmouseenter="onCompletionHover(this)">
                        <img src="emojis/${emojiName}.png"
                          alt="${dstEmojis[emojiName]}"
                          width=36>
@@ -112,46 +128,41 @@ function emojiCompletions(input: HTMLInputElement | HTMLTextAreaElement) {
         if (count > 10) break;
     }
     if (!count) {
-        completion?.remove()
+        closeEmojiCompletionPopup()
         return;
     }
-    code +=   `</div>` 
+    code +=   `` 
 
-    if (completion instanceof HTMLDivElement) {
-        completion.innerHTML = code
-    } else {
-        completion = document.createElement("div")
-        completion.className = "completion"
-        completion.innerHTML = code
-        formFloating.appendChild(completion)
-    }
-    const inputRect = input.getBoundingClientRect()
-    completion.style.top = inputRect.height + "px"
-    completion.style.width = input.clientWidth + "px"
-    //completion.style.left = inputRect.left + "px"
+    emojiCompletionPopup.hidden = false
+    emojiCompletionPopup.innerHTML = code
+    activeEmojiInput = input
+
+    const inputPos = input.getBoundingClientRect()
+    console.log(inputPos)
+    emojiCompletionPopup.style.top = inputPos.bottom + window.scrollY + "px"
+    emojiCompletionPopup.style.width = input.clientWidth + "px"
+    emojiCompletionPopup.style.left = inputPos.left + window.scrollX + "px"
 }
 
 function listenCompleteEmoji(input: HTMLInputElement | HTMLTextAreaElement) {
     input.addEventListener("click", () => emojiCompletions(input))
     input.addEventListener("focus", () => emojiCompletions(input))
     input.addEventListener("input", () => emojiCompletions(input))
-    input.addEventListener("-focusout", () => {
-        input.parentElement?.querySelector(".completion")?.remove()
-    })
+    input.addEventListener("-focusout", () => window.setTimeout(closeEmojiCompletionPopup, 1))
+
     input.addEventListener("keydown", e => { 
         if (!(e instanceof KeyboardEvent)) throw new Error("Annoying I have to do this.");
-
-        const completion = input.parentElement?.querySelector(".dropdown-menu-lg-end")
-
+        const completion = emojiCompletionPopup
 
         switch (e.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
             window.setTimeout(() => emojiCompletions(input), 1)
             break;
-
+        
         case 'Tab':
         case 'ArrowDown': {
+            if (emojiCompletionPopup.hidden) return;
             if (typeof completion === 'undefined' || completion === null) return;
             if (typeof completion.children === "undefined") throw new Error();
             e.preventDefault()
@@ -175,6 +186,7 @@ function listenCompleteEmoji(input: HTMLInputElement | HTMLTextAreaElement) {
         }
 
         case 'ArrowUp': {
+            if (emojiCompletionPopup.hidden) return;
             if (typeof completion === 'undefined' || completion === null) return;
             if (typeof completion.children === "undefined") throw new Error();
             e.preventDefault()
@@ -198,13 +210,15 @@ function listenCompleteEmoji(input: HTMLInputElement | HTMLTextAreaElement) {
         }
 
         case 'Enter': {
+            if (emojiCompletionPopup.hidden) return;
             e.preventDefault()
             completeEmoji(input, completion?.querySelector(".focused-completion") ?? null)
-            completion?.remove()
+            closeEmojiCompletionPopup()
         }
         break;
 
         case 'Escape':
+            if (emojiCompletionPopup.hidden) return;
             completion?.remove()
             break;
 
@@ -220,7 +234,6 @@ function completeEmoji(input: HTMLInputElement | HTMLTextAreaElement, completion
     input.value = input.value.slice(0, caret - match.length) 
                   + dstEmojis[name] 
                   + input.value.slice(caret)
-    console.log(input.value)
     input.dispatchEvent(new Event("input"))
 }
 

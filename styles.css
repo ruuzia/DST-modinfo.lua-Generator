@@ -206,10 +206,15 @@ label {
 
 .completion .dropdown-item {
     border-bottom: 1px solid #dddddd;
+    cursor: pointer;
+}
+
+.completion .dropdown-item:hover {
+    background-color: transparent;
 }
 
 .focused-completion {
-    background-color: grey;
+    background-color: #e9ecef !important;
 }
 
 #code-div {
