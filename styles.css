@@ -38,20 +38,21 @@
     color: red;
 }
 
+/*
 .option-data-input {
     max-width: 30%;
 }
-
 .option-label-input {
     max-width: 40%;
 }
 
-.dragover {
-    border-color: blue;
-}
-
 .option-hover-input {
     max-width: 70%;
+}
+*/
+
+.dragover {
+    border-color: blue;
 }
 
 .option-radio-input {
@@ -186,7 +187,7 @@ label {
 }
 
 .increment-settings-option-text {
-    background-color: #c9e8f4;
+    background-color: var(--bs-light)
 }
 
 #main {
@@ -195,13 +196,100 @@ label {
 
 .completion {
     background-color: white;
+    border: 2px solid #9a9a9a;
+    border-top: 0;
+    position: absolute;
+    width: 100%;
+    min-width: fit-content;
+    z-index: 300;
 }
 
 .completion .dropdown-item {
-    border-bottom: 1px solid rgb(161, 161, 161);
+    border-bottom: 1px solid #dddddd;
+    cursor: pointer;
+}
+
+.completion .dropdown-item:hover {
+    background-color: transparent;
+}
+
+.focused-completion {
+    background-color: #e9ecef !important;
 }
 
 #code-div {
     max-height: 800px;
     border-radius: .25rem;
 }
+
+@font-face {
+  font-family: 'dstemoji';
+  src: url('fonts/dstemojis.woff?ef4cfx') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.dst-emojis {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'dstemoji' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-abigail:before { content: "󰀜"; }
+.icon-alchemy:before { content: "󰀝"; }
+.icon-arcane:before { content: "󰀀"; }
+.icon-backpack:before { content: "󰀞"; }
+.icon-battle:before { content: "󰀘"; }
+.icon-beefalo:before { content: "󰀁"; }
+.icon-beehive:before { content: "󰀟"; }
+.icon-berry:before { content: "󰀠"; }
+.icon-carrot:before { content: "󰀡"; }
+.icon-chest:before { content: "󰀂"; }
+.icon-chester:before { content: "󰀃"; }
+.icon-crockpot:before { content: "󰀄"; }
+.icon-egg:before { content: "󰀢"; }
+.icon-eyeball:before { content: "󰀅"; }
+.icon-eyeplant:before { content: "󰀣"; }
+.icon-faketeeth:before { content: "󰀆"; }
+.icon-farm:before { content: "󰀇"; }
+.icon-fire:before { content: "󰀈"; }
+.icon-firepit:before { content: "󰀤"; }
+.icon-flex:before { content: "󰀙"; }
+.icon-ghost:before { content: "󰀉"; }
+.icon-gold:before { content: "󰀚"; }
+.icon-grave:before { content: "󰀊"; }
+.icon-hambat:before { content: "󰀋"; }
+.icon-hammer:before { content: "󰀌"; }
+.icon-heart:before { content: "󰀍"; }
+.icon-horn:before { content: "󰀥"; }
+.icon-hunger:before { content: "󰀎"; }
+.icon-lightbulb:before { content: "󰀏"; }
+.icon-meat:before { content: "󰀦"; }
+.icon-pig:before { content: "󰀐"; }
+.icon-poop:before { content: "󰀑"; }
+.icon-redgem:before { content: "󰀒"; }
+.icon-refine:before { content: "󰀧"; }
+.icon-salt:before { content: "󰀨"; }
+.icon-sanity:before { content: "󰀓"; }
+.icon-sciencemachine:before { content: "󰀔"; }
+.icon-shadow:before { content: "󰀩"; }
+.icon-shovel:before { content: "󰀪"; }
+.icon-skull:before { content: "󰀕"; }
+.icon-thumbsup:before { content: "󰀫"; }
+.icon-tophat:before { content: "󰀖"; }
+.icon-torch:before { content: "󰀛"; }
+.icon-trap:before { content: "󰀬"; }
+.icon-trophy:before { content: "󰀭"; }
+.icon-wave:before { content: "󰀮"; }
+.icon-web:before { content: "󰀗"; }
+.icon-wormhole:before { content: "󰀯"; }
